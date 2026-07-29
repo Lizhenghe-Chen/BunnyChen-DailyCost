@@ -1,0 +1,45 @@
+日耗仓 · DailyCost Vault — 源码可用许可（Beta 阶段）
+
+Copyright (c) 2026 BunnyChen. All rights reserved.
+
+本软件目前处于公开测试（Beta）阶段。在 Beta 阶段期间，适用以下条款：
+
+1. 个人使用
+   允许任何个人免费下载、安装和使用本软件的可执行版本（Release 安装包）
+   及网页版，用于个人资产管理目的。
+
+2. 源码使用
+   允许出于学习、研究目的查看源码。允许提交 Issue 和 Pull Request 为
+   项目做贡献。
+
+3. 禁止商业使用
+   未经作者明确书面授权，禁止将本软件或其任何部分用于商业目的，包括但
+   不限于：
+   a) 将本软件作为商业产品或服务的一部分进行销售、出租或再分发；
+   b) 将本软件集成到商业产品中；
+   c) 以本软件为基础提供付费服务。
+
+4. 禁止剽窃与仿冒
+   禁止以下行为：
+   a) 将本软件源码、设计、UI 或功能整体或实质性复制后以其他名称发布；
+   b) 修改本软件外观后以原创作品名义发布；
+   c) 将本软件的核心概念、算法、数据结构直接用于竞品开发。
+
+5. 免责声明
+   本软件按"现状"提供，不提供任何明示或暗示的担保。在任何情况下，
+   作者均不对因使用本软件而产生的任何损失承担责任。
+
+6. 许可变更
+   作者保留在 Beta 阶段结束后变更许可条款的权利。Beta 阶段结束前将
+   通过 GitHub 仓库公告通知。
+
+---
+English Summary (for reference; Chinese version prevails):
+
+DailyCost Vault is currently in Public Beta. During Beta phase:
+- ✅ Personal use: Free to download, install, and use.
+- ✅ Source viewing: Allowed for learning and contribution.
+- ❌ Commercial use: Prohibited without explicit written permission.
+- ❌ Plagiarism: Copying and redistributing under a different name is prohibited.
+- ❌ Competing products: Using core concepts/algorithms for competing apps is prohibited.
+- License terms may change after Beta phase ends.

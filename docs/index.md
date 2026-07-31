@@ -349,7 +349,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 [前往下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases){: .md-button .md-button--primary target="_blank"}
 &nbsp;
-[阅读使用指南](USER_GUIDE/){: .md-button }
+[阅读使用指南](USER_GUIDE.md){: .md-button }
 
 </div>
 

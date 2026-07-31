@@ -8,7 +8,7 @@
 
 ### Windows 桌面端
 
-1. 前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 页面
+1. 前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 页面
 2. 下载 `DailyCost Vault_*_x64-setup.exe`（推荐）或 `.msi` 安装包
 3. 双击运行安装程序，按照向导完成安装
 4. 从开始菜单或桌面快捷方式启动「日耗仓」
@@ -17,7 +17,7 @@
 
 ### Android
 
-1. 前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 页面
+1. 前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 页面
 2. 下载 `.apk` 文件
 3. 打开下载的文件，系统会提示「禁止安装未知应用」
 4. 前往「设置」→ 允许来自此来源的安装
@@ -380,7 +380,7 @@
 
 ### Android / 网页版
 
-前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 页面查看是否有新版本：
+前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 页面查看是否有新版本：
 
 - **Android**：下载新 `.apk` 文件覆盖安装
 - **网页版**：刷新页面即可获取最新版本
@@ -440,4 +440,4 @@
 
 ---
 
-> 更多问题？请查看 [FAQ](FAQ/) 或提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/issues)。
+> 更多问题？请查看 [FAQ](FAQ/) 或提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues)。

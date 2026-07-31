@@ -115,11 +115,11 @@
 
 | 平台 | 状态 | 获取方式 |
 |------|:---:|----------|
-| 🖥️ Windows | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.exe` / `.msi` |
-| 🤖 Android | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.apk` |
+| 🖥️ Windows | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 下载 `.exe` / `.msi` |
+| 🤖 Android | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 下载 `.apk` |
 | 🌐 网页版 | ✅ 已支持 | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/) 直接访问 |
-| 🍎 macOS | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.dmg`（Apple Silicon + Intel） |
-| 🐧 Linux | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.deb` / `.AppImage` |
+| 🍎 macOS | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 下载 `.dmg`（Apple Silicon + Intel） |
+| 🐧 Linux | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 下载 `.deb` / `.AppImage` |
 | 📱 iOS | 🚧 规划中 | 敬请期待 |
 
 ### 🖥️ Windows
@@ -337,4 +337,4 @@ Beta 阶段结束后许可条款可能调整，届时将通过仓库公告通知
 
 ---
 
-> 💬 有问题或建议？欢迎提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/issues)。
+> 💬 有问题或建议？欢迎提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues)。

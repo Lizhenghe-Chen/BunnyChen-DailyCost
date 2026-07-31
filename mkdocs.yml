@@ -1,14 +1,14 @@
 site_name: 日耗仓 · DailyCost Vault
 site_description: >-
   日耗仓（DailyCost Vault）—— 长期主义个人资产数字化管理工具。跨平台消费记录自动转化、日均持有成本计算、资产卡片管理。
-site_url: https://bunnychen.top/BunnyChen-DailyCost
+site_url: https://bunnychen.top/BunnyChen-DailyCost/
 site_author: BunnyChen
 
 # -------------------------------------------------------------------------- #
 # 仓库信息
 # -------------------------------------------------------------------------- #
 repo_name: BunnyChen-DailyCost
-repo_url: https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases
+repo_url: https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost
 
 # -------------------------------------------------------------------------- #
 # 主题配置

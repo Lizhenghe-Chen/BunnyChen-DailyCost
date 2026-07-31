@@ -94,7 +94,13 @@ markdown_extensions:
 # -------------------------------------------------------------------------- #
 nav:
   - 主页: index.md
-  - 使用指南: USER_GUIDE.md
+  - 使用指南:
+    - 🚀 安装与启动: getting-started.md
+    - 📥 批量导入订单: import-csv.md
+    - 📋 浏览与管理资产: manage-items.md
+    - 📊 数据分析: analytics.md
+    - ⚙️ 个性化设置: settings.md
+    - 💾 数据管理与备份: data-management.md
   - 常见问题: FAQ.md
   - 隐私说明: PRIVACY.md
 

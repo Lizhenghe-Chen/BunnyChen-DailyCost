@@ -20,7 +20,8 @@
 </p>
 
 <p align="center">
-  <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/"><b>🌐 官网 & 在线体验</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/"><b>🌐 官网</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/"><b>🖥️ 在线体验</b></a> ·
   <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/USER_GUIDE/">📖 使用指南</a> ·
   <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/FAQ/">❓ 常见问题</a> ·
   <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/PRIVACY/">🔒 隐私说明</a>

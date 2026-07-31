@@ -15,7 +15,7 @@ title: 日耗仓 · DailyCost Vault
   <a href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases" target="_blank" class="md-button md-button--primary hero-btn">
     立即下载
   </a>
-  <a href="USER_GUIDE/" class="md-button hero-btn">
+  <a href="getting-started/" class="md-button hero-btn">
     使用指南
   </a>
 </div>

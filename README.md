@@ -4,11 +4,13 @@
 
 日耗仓（DailyCost Vault）是一款**跨平台个人资产数字化管理工具**。它能自动将你在京东、淘宝、Steam 等平台的消费记录转化为直观的资产卡片，按「日均持有成本」帮你重新审视每一件物品的真实价值。
 
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android%20%7C%20Web-blue)]()
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20Web-blue)]()
 [![License](https://img.shields.io/badge/license-Source%20Available-orange)](LICENSE)
 [![Tauri](https://img.shields.io/badge/framework-Tauri%20v2-FFC131)]()
 [![Status](https://img.shields.io/badge/status-Beta-yellow)]()
 
+> 🌐 **官方网站**：[bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/) | 📖 [使用指南](https://bunnychen.top/BunnyChen-Item-Bookkeeping/USER_GUIDE/) | ❓ [常见问题](https://bunnychen.top/BunnyChen-Item-Bookkeeping/FAQ/)
+>
 > ⚠️ **公开测试阶段**：本软件目前处于开放 Beta 测试期，仅供个人免费使用。禁止商用、禁止剽窃仿冒。详见 [LICENSE](LICENSE)。
 
 ---
@@ -117,16 +119,22 @@
 | 🤖 Android | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.apk` |
 | 🌐 网页版 | ✅ 已支持 | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/) 直接访问 |
 | 🍎 macOS | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.dmg`（Apple Silicon + Intel） |
-| 🐧 Linux | 🚧 规划中 | 敬请期待 |
+| 🐧 Linux | ✅ 已支持 | [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 下载 `.deb` / `.AppImage` |
 | 📱 iOS | 🚧 规划中 | 敬请期待 |
 
 ### 🖥️ Windows
 
-下载 `DailyCost Vault_*_x64-setup.exe` 或 `.msi` 安装包，双击安装即可。
+下载 `DailyCost Vault_*_x64-setup.exe` 或 `.msi` 安装包，双击安装即可。支持 x64 和 ARM64 架构。
 
 > 支持 Windows 10 及以上系统。如果出现 SmartScreen 警告，点击「更多信息」→「仍要运行」。
 
 ### 🍎 macOS
+
+下载对应芯片的 `.dmg` 文件（Apple Silicon 或 Intel），将 `DailyCost Vault.app` 拖入「应用程序」文件夹。
+
+### 🐧 Linux
+
+下载 `.deb` 包或 `.AppImage` 文件。`.deb` 包执行 `sudo apt install ./dailycost-vault_*.deb` 安装，`.AppImage` 执行 `chmod +x` 后即可运行。
 
 下载 `.dmg` 文件（Apple Silicon 选 `aarch64`，Intel 选 `x64`），将 `DailyCost Vault.app` 拖入「应用程序」文件夹。
 

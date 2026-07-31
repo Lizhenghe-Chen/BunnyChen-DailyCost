@@ -440,4 +440,4 @@
 
 ---
 
-> 更多问题？请查看 [FAQ](FAQ/) 或提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues)。
+> 更多问题？请查看 [FAQ](FAQ.md) 或提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues)。

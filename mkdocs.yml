@@ -11,12 +11,42 @@ repo_name: BunnyChen-DailyCost
 repo_url: https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost
 
 # -------------------------------------------------------------------------- #
+# 插件配置
+# -------------------------------------------------------------------------- #
+plugins:
+  - i18n:
+      docs_structure: suffix
+      reconfigure_material: true
+      languages:
+        - locale: zh
+          default: true
+          name: 简体中文
+          build: true
+        - locale: en
+          name: English
+          build: true
+          site_name: DailyCost Vault
+          site_description: >-
+            DailyCost Vault — A long-term personal asset digital management tool.
+            Cross-platform purchase tracking, daily average cost calculation, and asset card management.
+          nav_translations:
+            主页: Home
+            使用指南: User Guide
+            🚀 安装与启动: 🚀 Installation
+            📥 批量导入订单: 📥 Import CSV Orders
+            📋 浏览与管理资产: 📋 Manage Assets
+            📊 数据分析: 📊 Analytics
+            ⚙️ 个性化设置: ⚙️ Settings
+            💾 数据管理与备份: 💾 Data & Backup
+            常见问题: FAQ
+            隐私说明: Privacy Policy
+
+# -------------------------------------------------------------------------- #
 # 主题配置
 # -------------------------------------------------------------------------- #
 theme:
   name: material
   custom_dir: overrides
-  language: zh
   icon:
     repo: octicons/mark-github-24
   logo: assets/logo.png
@@ -28,9 +58,6 @@ theme:
     # --- 导航增强 ---
     - navigation.footer
     - navigation.indexes
-    - navigation.instant
-    - navigation.instant.prefetch
-    - navigation.instant.progress
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top

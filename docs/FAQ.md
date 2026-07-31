@@ -191,4 +191,4 @@ Linux 版本正在规划中，敬请期待。
 
 ---
 
-> 没有找到答案？欢迎提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/issues) 提问。
+> 没有找到答案？欢迎提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) 提问。

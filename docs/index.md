@@ -12,7 +12,7 @@ title: 日耗仓 · DailyCost Vault
 <div class="hero-subtitle">每一件物品都有日均持有成本。长期主义个人资产数字化管理工具。</div>
 
 <div class="hero-actions">
-  <a href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases" target="_blank" class="md-button md-button--primary hero-btn">
+  <a href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases" target="_blank" class="md-button md-button--primary hero-btn">
     立即下载
   </a>
   <a href="USER_GUIDE/" class="md-button hero-btn">
@@ -319,7 +319,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ### 下载安装
 
-前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases) 选择对应平台安装包，或直接打开[网页版](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)。Windows 推荐 `.exe`，macOS 下载 `.dmg`。
+前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 选择对应平台安装包，或直接打开[网页版](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)。Windows 推荐 `.exe`，macOS 下载 `.dmg`。
 
 </div>
 
@@ -347,7 +347,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 免费 · 开放测试 · 数据完全本地
 
-[前往下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/releases){: .md-button .md-button--primary target="_blank"}
+[前往下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases){: .md-button .md-button--primary target="_blank"}
 &nbsp;
 [阅读使用指南](USER_GUIDE/){: .md-button }
 

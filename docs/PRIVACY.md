@@ -121,7 +121,7 @@
 
 如果你对隐私政策有任何疑问或建议，欢迎通过以下方式联系我们：
 
-- [提交 Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost-Releases/issues)
+- [提交 Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues)
 
 ---
 

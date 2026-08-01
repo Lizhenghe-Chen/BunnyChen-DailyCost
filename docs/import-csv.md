@@ -21,20 +21,18 @@ flowchart LR
 浏览器扩展用于从电商平台导出订单数据为 CSV 文件。支持 **Chrome** 和 **Edge** 等所有 Chromium 内核浏览器。
 
 !!! info "扩展文件位置"
-    扩展文件存放在下载的压缩包中，包含三个扩展目录：
-    
-    | 扩展 | 目录名 |
-    |------|--------|
-    | 京东 | `jd-order-exporter-extension/` |
-    | 淘宝 | `tb-order-exporter-extension/` |
-    | Steam | `steam-order-exporter-extension/` |
+    扩展是一个统一目录 `dailycost-exporter-extension/`，覆盖京东 / 淘宝 / Steam 三个平台。
+
+    [📦 获取浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
+
+    安装时在「加载已解压的扩展程序」中选择该目录即可。
 
 ### Chrome 安装步骤
 
 1. 打开 Chrome 浏览器，地址栏输入 `chrome://extensions/`
 2. 开启右上角「**开发者模式**」
 3. 点击「**加载已解压的扩展程序**」
-4. 选择对应平台的扩展目录，点击「选择文件夹」
+4. 选择 `dailycost-exporter-extension` 目录，点击「选择文件夹」
 5. 扩展安装完成，工具栏会出现对应图标
 
 ### Edge 安装步骤
@@ -42,10 +40,10 @@ flowchart LR
 1. 打开 Edge 浏览器，地址栏输入 `edge://extensions/`
 2. 开启左下角「**开发人员模式**」
 3. 点击「**加载解压缩的扩展**」
-4. 选择对应平台的扩展目录，点击「选择文件夹」
+4. 选择 `dailycost-exporter-extension` 目录，点击「选择文件夹」
 5. 扩展安装完成，工具栏会出现对应图标
 
-![安装扩展](assets/install-extension.png)
+![安装扩展](assets/install-extension.png){ loading=lazy }
 
 > 💡 导出完成后可以在扩展管理页面（`chrome://extensions/` 或 `edge://extensions/`）中移除扩展，不影响已导出的 CSV 文件。**建议用完即删**。
 
@@ -107,7 +105,7 @@ flowchart LR
 | 导出字段 | 交易ID / 日期 / 物品名称 / 类型 / 总计 |
 | 自动过滤 | 退款记录和钱包充值（总计 ≤ 0）在导入时自动过滤 |
 
-![导出扩展](assets/浏览器插件%20数据获取工具%20引导页.png)
+![导出扩展](assets/浏览器插件%20数据获取工具%20引导页.png){ loading=lazy }
 
 ---
 
@@ -133,7 +131,7 @@ flowchart LR
 - 右下角弹出 Toast 提示：`成功 X 条，跳过 X 条`
 - 「跳过」表示该订单已存在（同一平台 + 同一订单号），系统自动去重
 
-![导入结果](assets/import-result.png)
+![导入结果](assets/import-result.png){ loading=lazy }
 
 ---
 

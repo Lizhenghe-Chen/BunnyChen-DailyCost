@@ -14,6 +14,19 @@ repo_url: https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost
 # 插件配置
 # -------------------------------------------------------------------------- #
 plugins:
+  - search
+  - glightbox
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+        remove_empty_space: true
+  - optimize:
+      optimize_png: false
+      optimize_jpg_quality: 70
+      optimize_jpg_progressive: true
   - i18n:
       docs_structure: suffix
       reconfigure_material: true
@@ -50,7 +63,7 @@ theme:
   icon:
     repo: octicons/mark-github-24
   logo: assets/logo.png
-  favicon: assets/logo.png
+  favicon: assets/favicon.png
   features:
     # --- 内容增强 ---
     - content.code.copy

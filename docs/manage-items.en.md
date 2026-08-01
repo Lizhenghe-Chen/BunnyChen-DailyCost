@@ -26,7 +26,7 @@ The home page is the core interface, consisting of the following areas:
                               ➕  ← Floating action button
 ```
 
-![Home Cards · Orange Dark](assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg)
+![Home Cards · Orange Dark](assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg){ loading=lazy }
 
 !!! tip "Card Information"
     Each card shows the **platform badge** (top-left), item name and emoji icon (center), and **daily average cost** (bottom — total price display is configurable). The longer you hold an item, the lower its daily cost — this is the "long-term thinking" data proof.
@@ -44,7 +44,7 @@ As your items grow, use filters and search to quickly find what you need:
 | 📊 Sort By | Sort by time/price/daily cost | Dropdown to select sort field |
 | ▲▼ Direction | Toggle ascending/descending | Click arrow button to toggle |
 
-![Filter & Sort · Sky Blue Light](assets/浅色主题%20天之蓝%20首页%20自定义筛选.jpg)
+![Filter & Sort · Sky Blue Light](assets/浅色主题%20天之蓝%20首页%20自定义筛选.jpg){ loading=lazy }
 
 > 💡 Search supports **order ID lookup**. Can't remember which store you bought from? Just search the order number.
 
@@ -74,7 +74,7 @@ For individual items or platforms not yet supported for batch export.
 
 3. Click "**Save**" — the system auto-calculates daily cost and generates an asset card
 
-![Manual Add](assets/桌面端深色主题 首页 天之蓝.jpg)
+![Manual Add](assets/桌面端深色主题 首页 天之蓝.jpg){ loading=lazy }
 
 ### Status Types
 
@@ -97,7 +97,7 @@ Click any card to open the detail popup, showing complete information:
 - **Supplementary Info**: Store, model/variant, product link
 - **Status**: In Use / Sold / Retired, with end date and sale price
 
-![Item Detail](assets/item-detail.png)
+![Item Detail](assets/item-detail.jpg){ loading=lazy }
 
 In the detail popup you can:
 

@@ -2,7 +2,7 @@
 
 Switch to the "⚙️ Settings" tab to customize DailyCost Vault's appearance and interactions to your liking.
 
-![Settings · Berry Purple Light](assets/莓之紫%20浅色模式%20设置页.jpg)
+![Settings · Berry Purple Light](assets/莓之紫%20浅色模式%20设置页.jpg){ loading=lazy }
 
 ---
 
@@ -34,7 +34,7 @@ DailyCost Vault has a rich built-in icon system, giving every item a unique iden
 
 - **Auto-match**: During CSV import, automatically matches emojis based on product name keywords (covering 35+ categories: electronics, apparel, personal care, home, etc.)
 
-![Emoji Picker · Berry Purple Dark](assets/莓之紫%20深色模式%20emoji页面.jpg)
+![Emoji Picker · Berry Purple Dark](assets/莓之紫%20深色模式%20emoji页面.jpg){ loading=lazy }
 
 ---
 

@@ -59,7 +59,7 @@
 
 3. 点击「**保存**」，系统自动计算日均成本并生成资产卡片
 
-![手动添加](assets/add-manually.png)
+![手动添加](assets/add-manually.png){ loading=lazy }
 
 **使用状态说明**：
 
@@ -77,15 +77,17 @@
 
 #### 前置准备：安装浏览器扩展
 
-> 扩展文件存放在下载的压缩包中，目录名分别为 `jd-order-exporter-extension`、`tb-order-exporter-extension`、`steam-order-exporter-extension`。
+> 扩展是一个统一目录 `dailycost-exporter-extension/`，覆盖京东 / 淘宝 / Steam 三个平台。
+
+[📦 获取浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
 
 1. 打开 Chrome 浏览器，地址栏输入 `chrome://extensions/`
 2. 开启右上角「**开发者模式**」
 3. 点击「**加载已解压的扩展程序**」
-4. 选择对应平台的扩展目录，点击「选择文件夹」
+4. 选择 `dailycost-exporter-extension` 目录，点击「选择文件夹」
 5. 扩展安装完成，工具栏会出现对应图标
 
-![安装扩展](assets/install-extension.png)
+![安装扩展](assets/install-extension.png){ loading=lazy }
 
 > 💡 导出完成后可以在 `chrome://extensions/` 中移除扩展，不影响已导出的 CSV 文件。
 
@@ -123,7 +125,7 @@
 
 > ⚠️ Steam 导出会将退款和钱包充值记录一并导出，导入日耗仓时会自动过滤这些记录。导出的 CSV 文件命名格式为 `steam-orders-YYYYMMDD-HHmmss-complete.csv`。
 
-![导出扩展](assets/浏览器插件 数据获取工具 引导页.png)
+![导出扩展](assets/浏览器插件 数据获取工具 引导页.png){ loading=lazy }
 
 ---
 
@@ -145,7 +147,7 @@
 - 右下角弹出 Toast 提示：`成功 X 条，跳过 X 条`
 - 「跳过」表示该订单已存在（同一平台 + 同一订单号），系统自动去重
 
-![导入结果](assets/import-result.png)
+![导入结果](assets/import-result.png){ loading=lazy }
 
 **导入后发生了什么？**
 
@@ -182,7 +184,7 @@
                               ➕  ← 浮动添加按钮
 ```
 
-![主页卡片 · 橘之橙深色](assets/桌面端 首页截图 深色模式 橘之橙.jpg)
+![主页卡片 · 橘之橙深色](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
 ### 筛选与搜索
 
@@ -193,7 +195,7 @@
 | 📊 排序方式 | 按时间/价格/日均成本排序 | 下拉选择排序字段 |
 | ▲▼ 排序方向 | 切换升降序 | 点击箭头按钮切换 |
 
-![筛选排序 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg)
+![筛选排序 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
 
 > 💡 搜索框支持订单编号搜索。买完东西想不起来在哪家店买的？搜一下订单号即可。
 
@@ -208,7 +210,7 @@
 - **补充信息**：店铺、型号款式、商品链接
 - **使用状态**：使用中 / 已售出 / 已报废，含截止日期和售出价格
 
-![物品详情](assets/item-detail.png)
+![物品详情](assets/item-detail.jpg){ loading=lazy }
 
 在详情浮窗中可以：
 
@@ -254,7 +256,7 @@
 
 切换到底部导航栏的「📊 分析」页，直观洞察你的消费结构：
 
-![数据分析 · 抹茶绿深色](assets/桌面端 数据分析页面 深色模式 抹茶绿.jpg)
+![数据分析 · 抹茶绿深色](assets/桌面端 数据分析页面 深色模式 抹茶绿.jpg){ loading=lazy }
 
 | 模块 | 说明 |
 |------|------|
@@ -265,7 +267,7 @@
 
 移动端同样提供完整的数据分析体验：
 
-![移动端数据分析 · 桃之粉浅色](assets/移动端 数据分析页 桃之粉浅色主题.jpg)
+![移动端数据分析 · 桃之粉浅色](assets/移动端 数据分析页 桃之粉浅色主题.jpg){ loading=lazy }
 
 > 💡 月度图表支持按平台和时间筛选，切换柱状图 / 折线图视图；点击某个月份可下钻到当月商品明细。
 
@@ -275,7 +277,7 @@
 
 切换到「⚙️ 设置」页进行个性化配置：
 
-![设置页 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg)
+![设置页 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 ### 主题与外观
 
@@ -299,7 +301,7 @@
   - 🏷️ Mascots — Octocat + Star + Rocket + Fire
 - **自动匹配**：导入 CSV 时根据商品名称关键词自动匹配 emoji（覆盖数码/服饰/个护/家居等 35+ 品类）
 
-![Emoji 选择页 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg)
+![Emoji 选择页 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
 ### 快捷操作
 
@@ -393,11 +395,11 @@
 
 浏览器扩展内置「数据获取工具」，引导你快速完成订单数据的获取与下载：
 
-![数据获取工具 · 引导页](assets/浏览器插件 数据获取工具 引导页.png)
+![数据获取工具 · 引导页](assets/浏览器插件 数据获取工具 引导页.png){ loading=lazy }
 
 **引导页** — 打开扩展后自动识别当前访问的电商平台，一步步引导你完成数据获取，不熟悉操作也能轻松上手。
 
-![数据获取工具 · 下载页](assets/浏览器插件 数据获取工具 下载页.png)
+![数据获取工具 · 下载页](assets/浏览器插件 数据获取工具 下载页.png){ loading=lazy }
 
 **下载页** — 获取完成的订单数据集中展示，一键下载 CSV / JSONL 文件，按平台与时间批次自动命名，直接拖入日耗仓即可导入。
 
@@ -415,7 +417,7 @@
 
 | 项目 | 说明 |
 |------|------|
-| 扩展目录 | `jd-order-exporter-extension/` |
+| 扩展目录 | `dailycost-exporter-extension/`（覆盖三平台） |
 | 订单页面 | [order.jd.com/center/list.action](https://order.jd.com/center/list.action) |
 | 导出字段 | 27 个（订单信息 + 商品信息 + 支付物流 + 详情补充） |
 | 风控建议 | 按年份分段导出，避免一次性全量拉取 |
@@ -424,7 +426,7 @@
 
 | 项目 | 说明 |
 |------|------|
-| 扩展目录 | `tb-order-exporter-extension/` |
+| 扩展目录 | `dailycost-exporter-extension/`（覆盖三平台） |
 | 订单页面 | [buyertrade.taobao.com](https://buyertrade.taobao.com/trade/itemlist/list_bought_items.htm) |
 | 导出字段 | 23 个（订单信息 + 商品信息 + 支付物流 + 详情补充） |
 | 技术特点 | 通过页面内部接口获取数据，零网络开销 |
@@ -433,7 +435,7 @@
 
 | 项目 | 说明 |
 |------|------|
-| 扩展目录 | `steam-order-exporter-extension/` |
+| 扩展目录 | `dailycost-exporter-extension/`（覆盖三平台） |
 | 订单页面 | [store.steampowered.com/account/history](https://store.steampowered.com/account/history) |
 | 导出字段 | 交易ID / 日期 / 物品名称 / 类型 / 总计 |
 | 自动过滤 | 退款记录和钱包充值（总计 ≤ 0）在导入时自动过滤 |

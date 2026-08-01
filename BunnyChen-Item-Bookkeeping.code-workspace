@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../BunnyChen-Item-Bookkeeping"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
+}

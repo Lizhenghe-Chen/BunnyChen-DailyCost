@@ -918,6 +918,81 @@ body:not([data-md-color-scheme="default"]) .md-footer-meta {
   html { scroll-behavior: auto; }
 }
 
+/* ═══════ 赞赏 / 支持项目 ═══════ */
+.donation-cute {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.donation-cute img {
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  display: block;
+}
+body[data-md-color-scheme="slate"] .donation-cute img,
+body:not([data-md-color-scheme="default"]) .donation-cute img {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+.donation-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.donation-card {
+  border-radius: 16px;
+  padding: 1.6rem 1.6rem 1.4rem;
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+body[data-md-color-scheme="default"] .donation-card {
+  background: color-mix(in srgb, var(--dc-bg-raised) 75%, transparent);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid color-mix(in srgb, var(--dc-border) 25%, transparent);
+  box-shadow: 0 2px 6px rgba(58,75,53,0.04);
+}
+body[data-md-color-scheme="slate"] .donation-card,
+body:not([data-md-color-scheme="default"]) .donation-card {
+  background: color-mix(in srgb, var(--dc-bg-raised) 70%, transparent);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid color-mix(in srgb, var(--dc-border) 18%, transparent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.donation-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--dc-primary) !important;
+  box-shadow: 0 14px 40px rgba(90, 154, 75, 0.12);
+}
+.donation-card h3 {
+  margin-top: 0;
+  font-weight: 700;
+  color: var(--dc-text);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+.donation-card p {
+  margin-bottom: 0;
+  color: var(--dc-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.donation-card img {
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  margin: 0 auto;
+  display: block;
+}
+body[data-md-color-scheme="slate"] .donation-card img,
+body:not([data-md-color-scheme="default"]) .donation-card img {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
 /* ═══════ 响应式 ═══════ */
 @media screen and (max-width: 960px) {
   .hero-section { padding: 3.5rem 1.5rem 2.5rem; }
@@ -933,7 +1008,7 @@ body:not([data-md-color-scheme="default"]) .md-footer-meta {
   .hero-tagline { font-size: 1.05rem; }
   .hero-subtitle { font-size: 0.9rem; }
   .section-title { font-size: 1.25rem; }
-  .feature-grid, .platform-grid, .quickstart-section, .showcase-grid {
+  .feature-grid, .platform-grid, .quickstart-section, .showcase-grid, .donation-section {
     grid-template-columns: 1fr;
   }
   .stats-strip { gap: 1.5rem; padding: 1.5rem 0.5rem; }

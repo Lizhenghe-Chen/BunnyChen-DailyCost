@@ -348,6 +348,48 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 </div>
 
+---
+
+## 支持一下 · 请我喝杯咖啡 ☕
+
+一个人维护不易，喜欢的话，请我喝杯咖啡吧～ 🥺
+
+<div class="donation-cute" markdown>
+
+![卖萌](assets/卖萌.webp){ width="140" loading=lazy }
+
+![求打赏](assets/求打赏.jpg){ width="140" loading=lazy }
+
+</div>
+
+<div class="donation-section" markdown>
+
+<div class="donation-card" markdown>
+
+**☕ Buy Me a Coffee**
+
+[![Buy Me a Coffee](assets/bmc_button.png){ width="190" loading=lazy }](https://buymeacoffee.com/bunnychen)
+
+buymeacoffee.com/bunnychen
+
+</div>
+
+<div class="donation-card" markdown>
+
+**🧧 微信赞赏**
+
+![微信赞赏码](assets/wechat 赞赏.jpg){ width="190" loading=lazy }
+
+微信扫码 · 金额随心
+
+</div>
+
+</div>
+
+> 📬 商务合作 / 企业定制 / 平台接入：<bunnychen1024@gmail.com>
+
+---
+
 <div class="bottom-cta" markdown>
 
 ## 开始你的资产数字化之旅

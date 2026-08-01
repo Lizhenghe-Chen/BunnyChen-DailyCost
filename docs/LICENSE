@@ -1,33 +1,51 @@
-日耗仓 · DailyCost Vault — 源码可用许可（Beta 阶段）
+PolyForm Noncommercial License 1.0.0
 
-Copyright (c) 2026 BunnyChen. All rights reserved.
+日耗仓 · DailyCost Vault
+Copyright (c) 2026 BunnyChen
 
-本软件目前处于公开测试（Beta）阶段。在 Beta 阶段期间，适用以下条款：
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
 
-1. 个人使用
-   允许任何个人免费下载、安装和使用本软件的可执行版本（Release 安装包）
-   及网页版，用于个人资产管理目的。
+## Acceptance
 
-2. 源码使用
-   允许出于学习、研究目的查看源码。允许提交 Issue 和 Pull Request 为
-   项目做贡献。
+In order to get any license under these terms, you must agree
+to them as both strict obligations and conditions to your
+license.
 
-3. 禁止商业使用
-   未经作者明确书面授权，禁止将本软件或其任何部分用于商业目的，包括但
-   不限于：
-   a) 将本软件作为商业产品或服务的一部分进行销售、出租或再分发；
-   b) 将本软件集成到商业产品中；
-   c) 以本软件为基础提供付费服务。
+## Copyright License
 
-4. 禁止剽窃与仿冒
-   禁止以下行为：
-   a) 将本软件源码、设计、UI 或功能整体或实质性复制后以其他名称发布；
-   b) 修改本软件外观后以原创作品名义发布；
-   c) 将本软件的核心概念、算法、数据结构直接用于竞品开发。
+The licensor grants you a copyright license for the software
+that you may use for any purpose other than commercial use,
+as long as your use is not otherwise prohibited by law.
+The licensor may not revoke this license.
 
-5. 免责声明
-   本软件按"现状"提供，不提供任何明示或暗示的担保。在任何情况下，
-   作者均不对因使用本软件而产生的任何损失承担责任。
+## Patent License
+
+The licensor grants you a patent license for the software that
+covers patent claims licensable by the licensor that are
+necessarily infringed by the software. The licensor may not
+revoke this license.
+
+## Fair Use
+
+You may have "fair use" rights for the software under the law.
+These terms do not limit them.
+
+## No Other Rights
+
+The licensor reserves all rights not expressly granted to you.
+
+## Notices
+
+You must ensure that anyone who gets a copy of any part of the
+software from you also gets a copy of these terms or the URL
+for them above, as well as copies of any plain-text lines of
+notices that the licensor provides with the software.
+
+## Commercial Use
+
+If you or your organization use the software for commercial
+purposes, you agree to pay the licensor a license fee for that
+use. The licensor will determine the fee at its sole discretion.
 
 6. 许可变更
    作者保留在 Beta 阶段结束后变更许可条款的权利。Beta 阶段结束前将

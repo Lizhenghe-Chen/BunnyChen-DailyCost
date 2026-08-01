@@ -2,7 +2,7 @@
 
 Switch to the "📊 Analytics" tab in the bottom navigation to intuitively explore your spending structure and long-term trends.
 
-![Analytics · Matcha Green Dark](assets/桌面端%20数据分析页面%20深色模式%20抹茶绿.jpg)
+![Analytics · Matcha Green Dark](assets/桌面端%20数据分析页面%20深色模式%20抹茶绿.jpg){ loading=lazy }
 
 ---
 
@@ -45,7 +45,7 @@ The platform spending pie chart clearly shows where your money goes:
 
 Full analytics experience on mobile too:
 
-![Mobile Analytics · Peach Pink Light](assets/移动端%20数据分析页%20桃之粉浅色主题.jpg)
+![Mobile Analytics · Peach Pink Light](assets/移动端%20数据分析页%20桃之粉浅色主题.jpg){ loading=lazy }
 
 ---
 

@@ -89,6 +89,13 @@ body:not([data-md-color-scheme="default"]) .md-header {
   border-bottom: 1px solid rgba(134, 184, 114, 0.08);
 }
 
+/* ═══════ 顶栏 Logo 放大 ═══════ */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.8rem !important;
+  width: auto !important;
+}
+
 /* ═══════ 导航标签栏 ═══════ */
 .md-tabs {
   backdrop-filter: blur(20px) saturate(180%);

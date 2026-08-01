@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "DailyCost Vault Exporter",
+  "version": "1.0.0",
+  "description": "导出淘宝/京东/Steam 订单数据，用于 DailyCost Vault 资产数字化管理",
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "DailyCost Vault — 订单导出",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["scripting"],
+  "host_permissions": [
+    "https://buyertrade.taobao.com/*",
+    "https://trade.taobao.com/*",
+    "https://trade.tmall.com/*",
+    "https://order.jd.com/*",
+    "https://details.jd.com/*",
+    "https://details.yiyaojd.com/*",
+    "https://store.steampowered.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://buyertrade.taobao.com/trade/itemlist/list_bought_items*"],
+      "js": ["common.js", "content-tb.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://order.jd.com/center/list.action*"],
+      "js": ["common.js", "content-jd.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://store.steampowered.com/account/history*"],
+      "js": ["common.js", "content-steam.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["bridge.js"],
+      "matches": ["https://buyertrade.taobao.com/*"]
+    }
+  ]
+}

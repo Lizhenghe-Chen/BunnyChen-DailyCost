@@ -24,31 +24,31 @@ title: DailyCost Vault
 
 <div class="theme-slide" markdown>
 
-![Home · Matcha Green Dark](assets/首页 抹茶绿 深色模式 展示.jpg)
+![Home · Matcha Green Dark](assets/首页 抹茶绿 深色模式 展示.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![Analytics · Matcha Green Dark](assets/桌面端 数据分析页面 深色模式 抹茶绿.jpg)
+![Analytics · Matcha Green Dark](assets/桌面端 数据分析页面 深色模式 抹茶绿.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![Multi-filter · Sky Blue Light](assets/浅色主题 天之蓝 首页 自定义筛选.jpg)
+![Multi-filter · Sky Blue Light](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![Custom Emoji · Berry Purple Dark](assets/莓之紫 深色模式 emoji页面.jpg)
+![Custom Emoji · Berry Purple Dark](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![Settings · Berry Purple Light](assets/莓之紫 浅色模式 设置页.jpg)
+![Settings · Berry Purple Light](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 </div>
 
@@ -107,7 +107,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="showcase-card" markdown>
 
-![Asset Home · Tangerine Orange Dark](assets/桌面端 首页截图 深色模式 橘之橙.jpg)
+![Asset Home · Tangerine Orange Dark](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
 **Asset Cards · Spot Money-Burners at a Glance** — Stats bar, keyword search, multi-dimensional filtering, flexible sorting. Green = earned back, Red = burning money. Every item's value is clear.
 
@@ -115,7 +115,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="showcase-card" markdown>
 
-![Analytics · Sky Blue Dark](assets/桌面端深色主题 数据分析页 天之蓝.jpg)
+![Analytics · Sky Blue Dark](assets/桌面端深色主题 数据分析页 天之蓝.jpg){ loading=lazy }
 
 **Analytics · Understand Your Spending** — Monthly spending chart with platform/time filters and chart toggle. Bar chart drill-down to see monthly items. Dual pie charts for platform and category on one screen.
 
@@ -123,7 +123,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="showcase-card" markdown>
 
-![Multi-filter · Sky Blue Light](assets/浅色主题 天之蓝 首页 自定义筛选.jpg)
+![Multi-filter · Sky Blue Light](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
 
 **Multi-Dimensional Filtering · Precise Targeting** — Multi-platform checkboxes, fuzzy keyword search, 3-axis sorting combined. Find any item in seconds.
 
@@ -131,7 +131,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="showcase-card" markdown>
 
-![Custom Emoji · Berry Purple Dark](assets/莓之紫 深色模式 emoji页面.jpg)
+![Custom Emoji · Berry Purple Dark](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
 **Custom Emoji · Thousands to Choose** — Full emoji-mart Unicode emoji set + 37 custom emojis (Party Parrots / Blob / Cats / Mascots across 4 categories). Pick directly in the picker.
 
@@ -139,7 +139,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="showcase-card" markdown>
 
-![Settings · Berry Purple Light](assets/莓之紫 浅色模式 设置页.jpg)
+![Settings · Berry Purple Light](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 **Settings · Your Tool, Your Way** — 3-state theme, 5 color schemes, custom platform colors, 3-language switch, independent currency symbol. Deeply customize every detail.
 
@@ -147,7 +147,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="showcase-card" markdown>
 
-![Analytics · Dark Theme](assets/桌面端数据分析页面（深色主题）.jpg)
+![Analytics · Dark Theme](assets/桌面端数据分析页面（深色主题）.jpg){ loading=lazy }
 
 **Analytics · Dark Theme** — Four KPI cards overview your asset landscape. Monthly spending trends and platform breakdown at a glance, clear and readable even in dark theme.
 
@@ -269,7 +269,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 <div class="theme-slide" markdown>
 
-![Matcha Green · Home](assets/首页 抹茶绿 深色模式 展示.jpg)
+![Matcha Green · Home](assets/首页 抹茶绿 深色模式 展示.jpg){ loading=lazy }
 
 **🍵 Matcha Green** — Calm and healing, close to nature. Default color scheme with independent light/dark mode designs.
 
@@ -277,7 +277,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 <div class="theme-slide" markdown>
 
-![Sky Blue · Home](assets/桌面端深色主题 首页 天之蓝.jpg)
+![Sky Blue · Home](assets/桌面端深色主题 首页 天之蓝.jpg){ loading=lazy }
 
 **☁️ Sky Blue** — Clean and airy, bright yet restrained. Consistent across desktop and mobile.
 
@@ -285,7 +285,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 <div class="theme-slide" markdown>
 
-![Berry Purple · Settings](assets/莓之紫 浅色模式 设置页.jpg)
+![Berry Purple · Settings](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 **🫐 Berry Purple** — Mysterious and sophisticated, boldly distinctive. Settings and emoji pages deeply integrated.
 
@@ -293,7 +293,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 <div class="theme-slide" markdown>
 
-![Peach Pink · Desktop Light](assets/桃之粉色 桌面端 浅色主题.jpg)
+![Peach Pink · Desktop Light](assets/桃之粉色 桌面端 浅色主题.jpg){ loading=lazy }
 
 **🍑 Peach Pink** — Soft and sweet, warmly inviting. Desktop light theme shines equally bright.
 
@@ -301,7 +301,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 <div class="theme-slide" markdown>
 
-![Tangerine Orange · Home](assets/桌面端 首页截图 深色模式 橘之橙.jpg)
+![Tangerine Orange · Home](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
 **🍊 Tangerine Orange** — Energetic and vibrant, full of passion. Asset home page in dark mode.
 
@@ -327,7 +327,9 @@ Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)
 
 ### Import Data
 
-Install [browser extensions](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping/tree/main/dailycost-exporter-extension) to export JD.com, Taobao, and Steam purchase history as CSV. Drag into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
+Install [browser extensions](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension) to export JD.com, Taobao, and Steam purchase history as CSV. Drag into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
+
+[📦 Get the Browser Extension](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
 
 </div>
 

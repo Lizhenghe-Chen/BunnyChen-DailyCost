@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>DailyCost Vault Exporter</title>
+  <style>
+    :root {
+      --bg: #f7f9f4;
+      --card: #fff;
+      --text: #1f2933;
+      --sub: #52606d;
+      --border: #d9e2ec;
+      --primary: #86b872;
+      --primary-text: #fff;
+      --radius: 8px;
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      width: 340px;
+      margin: 0;
+      padding: 14px;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* 头部 */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .header-icon {
+      width: 28px; height: 28px;
+      background: var(--primary);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    /* 平台标签 */
+    .platform-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 12px;
+      font-size: 12px; font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .platform-badge.tb  { background: #fff0ed; color: #ff5000; }
+    .platform-badge.jd  { background: #fff0f0; color: #d92d20; }
+    .platform-badge.steam { background: #e8f4fd; color: #1a9fff; }
+    .platform-badge.unknown { background: #f0f0f0; color: #999; }
+
+    /* 通用表单 */
+    label {
+      display: block;
+      margin: 10px 0 4px;
+      font-size: 12px;
+      color: var(--sub);
+      font-weight: 500;
+    }
+
+    select, input[type="number"] {
+      box-sizing: border-box;
+      width: 100%; height: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 8px;
+      font-size: 13px;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .check {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 10px;
+      font-size: 13px; color: #243b53;
+    }
+    .check input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: var(--primary);
+    }
+
+    /* 按钮 */
+    .btn-row {
+      display: flex; gap: 8px; margin-top: 12px;
+    }
+    button {
+      flex: 1; height: 34px;
+      border: 0; border-radius: var(--radius);
+      font-weight: 650; font-size: 13px;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    button:disabled { opacity: .5; cursor: default; }
+    .btn-start { background: var(--primary); color: var(--primary-text); }
+    .btn-stop  { background: #52606d; color: #fff; }
+
+    /* 状态文字 */
+    #statusText {
+      min-height: 34px; margin-top: 10px;
+      font-size: 12px; line-height: 1.45; color: var(--sub);
+    }
+
+    /* 未识别平台的引导页 */
+    .landing { display: none; }
+    .landing p   { font-size: 13px; color: var(--sub); margin: 0 0 8px; }
+    .landing a   { display: block; padding: 8px 12px; margin: 4px 0;
+                   border: 1px solid var(--border); border-radius: var(--radius);
+                   font-size: 13px; color: var(--text); text-decoration: none; }
+    .landing a:hover { background: #f0f4eb; }
+
+    /* 平台面板显隐 */
+    .panel { display: none; }
+    .panel.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-icon">📦</div>
+    <h1>DailyCost Vault · 订单导出</h1>
+  </div>
+
+  <div id="badge" class="platform-badge unknown">检测中...</div>
+
+  <!-- 未识别 / 不在支持站点 -->
+  <div id="landing" class="landing panel">
+    <p>请先打开以下任一网站的订单页面，再点击扩展图标：</p>
+    <a href="https://buyertrade.taobao.com/trade/itemlist/list_bought_items.htm" target="_blank">🛒 淘宝 · 已买到的宝贝</a>
+    <a href="https://order.jd.com/center/list.action" target="_blank">🐶 京东 · 我的订单</a>
+    <a href="https://store.steampowered.com/account/history" target="_blank">🎮 Steam · 消费历史记录</a>
+  </div>
+
+  <!-- ====== 淘宝面板 ====== -->
+  <div id="panel-tb" class="panel">
+    <label for="tbStatus">订单状态</label>
+    <select id="tbStatus">
+      <option value="all">全部订单</option>
+      <option value="waitPay">待付款</option>
+      <option value="waitSend">待发货</option>
+      <option value="waitConfirm">待收货</option>
+      <option value="waitRate">待评价</option>
+    </select>
+    <div class="row">
+      <div><label for="tbDelay">请求间隔 (ms)</label><input id="tbDelay" type="number" min="300" step="100" value="500"></div>
+      <div><label for="tbMaxPages">最多导出页</label><input id="tbMaxPages" type="number" min="1" step="1" placeholder="不限"></div>
+    </div>
+    <label class="check"><input id="tbMask" type="checkbox" checked>导出时脱敏收货信息</label>
+  </div>
+
+  <!-- ====== 京东面板 ====== -->
+  <div id="panel-jd" class="panel">
+    <label for="jdDateMode">日期范围</label>
+    <select id="jdDateMode">
+      <option value="full">全量：今年 + 历年 + 2014以前</option>
+      <option value="currentYear">今年内订单</option>
+      <option value="recent3m">近三个月订单</option>
+      <option value="customYears">自定义年份范围</option>
+    </select>
+    <div class="row" id="jdYearRow" style="display:none">
+      <div><label for="jdStartYear">开始年份</label><input id="jdStartYear" type="number" min="2014" step="1"></div>
+      <div><label for="jdEndYear">结束年份</label><input id="jdEndYear" type="number" min="2014" step="1"></div>
+    </div>
+    <label for="jdStatus">订单状态</label>
+    <select id="jdStatus">
+      <option value="4096">全部状态</option>
+      <option value="1024">已完成</option>
+      <option value="-1">已取消</option>
+      <option value="128">等待收货</option>
+      <option value="1">等待付款</option>
+    </select>
+    <div class="row">
+      <div><label for="jdDelay">请求间隔 (ms)</label><input id="jdDelay" type="number" min="300" step="100" value="500"></div>
+      <div><label for="jdMaxPages">每段最多页</label><input id="jdMaxPages" type="number" min="1" step="1" placeholder="不限"></div>
+    </div>
+    <label class="check"><input id="jdMask" type="checkbox" checked>导出时脱敏收货信息</label>
+  </div>
+
+  <!-- ====== Steam 面板 ====== -->
+  <div id="panel-steam" class="panel">
+    <div class="row">
+      <div><label for="steamDelay">请求间隔 (ms)</label><input id="steamDelay" type="number" min="300" step="100" value="500"></div>
+      <div><label for="steamMaxLoads">最大加载批次 (0=不限)</label><input id="steamMaxLoads" type="number" min="0" step="1" value="0"></div>
+    </div>
+  </div>
+
+  <!-- 操作按钮 -->
+  <div class="btn-row" id="btnRow">
+    <button id="startBtn" class="btn-start">开始导出</button>
+    <button id="stopBtn" class="btn-stop" disabled>停止</button>
+  </div>
+  <div id="statusText"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

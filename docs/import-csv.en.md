@@ -21,20 +21,18 @@ flowchart LR
 Browser extensions export order data from e-commerce platforms as CSV files. Supports **Chrome**, **Edge**, and all Chromium-based browsers.
 
 !!! info "Extension File Location"
-    Extension files are in the downloaded package, containing three extension directories:
-    
-    | Extension | Directory Name |
-    |-----------|---------------|
-    | JD.com | `jd-order-exporter-extension/` |
-    | Taobao | `tb-order-exporter-extension/` |
-    | Steam | `steam-order-exporter-extension/` |
+    The extension is a single directory `dailycost-exporter-extension/` covering JD.com / Taobao / Steam.
+
+    [📦 Get the Browser Extension](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
+
+    When installing, select this directory in "Load unpacked".
 
 ### Chrome Installation
 
 1. Open Chrome, enter `chrome://extensions/` in the address bar
 2. Enable "**Developer mode**" (top-right toggle)
 3. Click "**Load unpacked**"
-4. Select the platform's extension directory, click "Select Folder"
+4. Select the `dailycost-exporter-extension` directory, click "Select Folder"
 5. Extension installed — the icon appears in the toolbar
 
 ### Edge Installation
@@ -42,10 +40,10 @@ Browser extensions export order data from e-commerce platforms as CSV files. Sup
 1. Open Edge, enter `edge://extensions/` in the address bar
 2. Enable "**Developer mode**" (bottom-left toggle)
 3. Click "**Load unpacked**"
-4. Select the platform's extension directory, click "Select Folder"
+4. Select the `dailycost-exporter-extension` directory, click "Select Folder"
 5. Extension installed — the icon appears in the toolbar
 
-![Install Extension](assets/install-extension.png)
+![Install Extension](assets/install-extension.png){ loading=lazy }
 
 > 💡 After exporting, you can remove extensions from the extensions page (`chrome://extensions/` or `edge://extensions/`). This doesn't affect exported CSV files. **We recommend removing them after use.**
 
@@ -107,7 +105,7 @@ Browser extensions export order data from e-commerce platforms as CSV files. Sup
 | Export Fields | Transaction ID / Date / Item Name / Type / Total |
 | Auto-filter | Refunds and wallet top-ups (total ≤ 0) auto-filtered during import |
 
-![Export Extensions](assets/浏览器插件%20数据获取工具%20引导页.png)
+![Export Extensions](assets/浏览器插件%20数据获取工具%20引导页.png){ loading=lazy }
 
 ---
 
@@ -133,7 +131,7 @@ Simply **drag** CSV files from your file manager and **drop** them onto the "Dat
 - A toast notification appears at bottom-right: `Success X, Skipped X`
 - "Skipped" means the order already exists (same platform + same order ID) — system auto-deduplicates
 
-![Import Result](assets/import-result.png)
+![Import Result](assets/import-result.png){ loading=lazy }
 
 ---
 

@@ -24,31 +24,31 @@ title: 日耗仓 · DailyCost Vault
 
 <div class="theme-slide" markdown>
 
-![首页 · 抹茶绿深色](assets/首页 抹茶绿 深色模式 展示.jpg)
+![首页 · 抹茶绿深色](assets/首页 抹茶绿 深色模式 展示.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![数据分析 · 抹茶绿深色](assets/桌面端 数据分析页面 深色模式 抹茶绿.jpg)
+![数据分析 · 抹茶绿深色](assets/桌面端 数据分析页面 深色模式 抹茶绿.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![多维筛选 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg)
+![多维筛选 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![自定义表情 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg)
+![自定义表情 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
 </div>
 
 <div class="theme-slide" markdown>
 
-![个性化设置 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg)
+![个性化设置 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 </div>
 
@@ -107,7 +107,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="showcase-card" markdown>
 
-![资产首页 · 橘之橙深色](assets/桌面端 首页截图 深色模式 橘之橙.jpg)
+![资产首页 · 橘之橙深色](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
 **资产卡片 · 一眼识别烧钱资产** — 顶部统计栏、关键词搜索、多维筛选、灵活排序。绿色 = 用回本，红色 = 在烧钱，每件物品的价值一目了然。
 
@@ -115,7 +115,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="showcase-card" markdown>
 
-![数据分析 · 天之蓝深色](assets/桌面端深色主题 数据分析页 天之蓝.jpg)
+![数据分析 · 天之蓝深色](assets/桌面端深色主题 数据分析页 天之蓝.jpg){ loading=lazy }
 
 **数据分析 · 洞察消费结构** — 月度消费图表支持平台 / 时间筛选与图表切换，柱状图可下钻查看当月商品，平台与分类双饼图一屏尽览。
 
@@ -123,7 +123,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="showcase-card" markdown>
 
-![多维筛选 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg)
+![多维筛选 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
 
 **多维筛选 · 精准定位** — 平台多选过滤、关键词模糊搜索、三维排序叠加使用，秒级定位任意一件物品。
 
@@ -131,7 +131,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="showcase-card" markdown>
 
-![自定义表情 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg)
+![自定义表情 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
 **自定义表情 · 数千个 emoji 可选** — emoji-mart 全量 Unicode 表情 + 37 个自定义表情（Party Parrots / Blob / Cats / Mascots 四大分类），Picker 中直接选用。
 
@@ -139,7 +139,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="showcase-card" markdown>
 
-![个性化设置 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg)
+![个性化设置 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 **个性化设置 · 你的工具你做主** — 三态主题、5 套配色、平台自定义颜色、三语切换、货币符号独立设置，深度定制每一项细节。
 
@@ -147,7 +147,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="showcase-card" markdown>
 
-![数据分析 · 深色主题](assets/桌面端数据分析页面（深色主题）.jpg)
+![数据分析 · 深色主题](assets/桌面端数据分析页面（深色主题）.jpg){ loading=lazy }
 
 **数据分析 · 深色主题** — KPI 四卡片概览资产全景，月度消费趋势与平台占比一目了然，深色主题下依旧清晰易读。
 
@@ -274,7 +274,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 <div class="theme-slide" markdown>
 
-![抹茶绿 · 首页](assets/首页 抹茶绿 深色模式 展示.jpg)
+![抹茶绿 · 首页](assets/首页 抹茶绿 深色模式 展示.jpg){ loading=lazy }
 
 **🍵 抹茶绿** — 沉稳治愈，亲近自然。默认配色，浅色 / 深色双模式独立设计。
 
@@ -282,7 +282,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 <div class="theme-slide" markdown>
 
-![天之蓝 · 首页](assets/桌面端深色主题 首页 天之蓝.jpg)
+![天之蓝 · 首页](assets/桌面端深色主题 首页 天之蓝.jpg){ loading=lazy }
 
 **☁️ 天之蓝** — 清爽通透，明亮克制。桌面与移动端一致适配。
 
@@ -290,7 +290,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 <div class="theme-slide" markdown>
 
-![莓之紫 · 设置页](assets/莓之紫 浅色模式 设置页.jpg)
+![莓之紫 · 设置页](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
 
 **🫐 莓之紫** — 神秘高级，个性鲜明。设置页与表情页深度融入。
 
@@ -298,7 +298,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 <div class="theme-slide" markdown>
 
-![桃之粉 · 桌面端浅色](assets/桃之粉色 桌面端 浅色主题.jpg)
+![桃之粉 · 桌面端浅色](assets/桃之粉色 桌面端 浅色主题.jpg){ loading=lazy }
 
 **🍑 桃之粉** — 温柔甜美，暖意十足。桌面端浅色主题同样出彩。
 
@@ -306,7 +306,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 <div class="theme-slide" markdown>
 
-![橘之橙 · 首页](assets/桌面端 首页截图 深色模式 橘之橙.jpg)
+![橘之橙 · 首页](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
 **🍊 橘之橙** — 活力四射，热情洋溢。深色模式下的资产首页。
 
@@ -332,7 +332,9 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ### 导入数据
 
-安装[浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping/tree/main/dailycost-exporter-extension)导出京东、淘宝、Steam 消费记录为 CSV。拖入应用窗口或设置页点击导入——自动解析、去重、分类。
+安装[浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension)导出京东、淘宝、Steam 消费记录为 CSV。拖入应用窗口或设置页点击导入——自动解析、去重、分类。
+
+[📦 获取浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
 
 </div>
 

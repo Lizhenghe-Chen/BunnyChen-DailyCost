@@ -352,3 +352,5 @@ Free · Open Beta · Data Fully Local
 [User Guide](USER_GUIDE.md){: .md-button }
 
 </div>
+
+*Source code: [github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping) · License: PolyForm Noncommercial 1.0.0 (no commercial use)*

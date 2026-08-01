@@ -16,15 +16,16 @@
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20Web-blue?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/framework-Tauri%20v2-FFC131?style=flat-square" alt="Tauri" />
   <img src="https://img.shields.io/badge/status-Beta-FFD700?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/license-Proprietary-red?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial-blue?style=flat-square" alt="License" />
 </p>
 
 <p align="center">
   <a href="https://bunnychen.top/BunnyChen-DailyCost/"><b>🌐 官网</b></a> ·
   <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/"><b>🖥️ 在线体验</b></a> ·
-  <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/USER_GUIDE/">📖 使用指南</a> ·
-  <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/FAQ/">❓ 常见问题</a> ·
-  <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/PRIVACY/">🔒 隐私说明</a>
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/getting-started/">🚀 安装与启动</a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/import-csv/">📥 批量导入</a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/FAQ/">❓ 常见问题</a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/">🔒 隐私说明</a>
 </p>
 
 ---
@@ -91,18 +92,11 @@
 
 ❌ 不上传数据 · ❌ 无追踪分析 · ❌ 不读取无关文件
 
-详见 [隐私说明](https://bunnychen.top/BunnyChen-Item-Bookkeeping/PRIVACY/)。
+详见 [隐私说明](https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/)。
 
 ---
 
-## ⚖️ 许可
-
-本软件为 **专有软件（Proprietary）**，源码暂不开放。
-
-- ✅ 个人免费使用
-- ❌ 禁止商用 · 禁止剽窃仿冒 · 禁止逆向工程 · 禁止以任何形式再发布
-
-详见 [LICENSE](LICENSE)。
+*源码：[github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping) · 许可：[PolyForm Noncommercial 1.0.0](LICENSE)（禁止商用）*
 
 ---
 

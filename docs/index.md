@@ -261,6 +261,11 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ---
 
+*源码可审计：[github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping) · 许可：PolyForm Noncommercial 1.0.0（禁止商用）*
+
+
+---
+
 ## 五套主题 · 五种气质
 
 <div class="carousel-hint">🎠 自动轮播 · 左右滑动或点击圆点切换</div>

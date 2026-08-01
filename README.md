@@ -100,11 +100,30 @@
 
 ---
 
+## ☕ 支持一下 · 请我喝杯咖啡
+
+一个人维护不易，喜欢的话，请我喝杯咖啡吧～ 🥺
+
+<p align="center">
+  <img src="docs/assets/卖萌.webp" alt="卖萌" width="140" />
+  <img src="docs/assets/求打赏.jpg" alt="求打赏" width="140" />
+</p>
+
+<p align="center">
+  <a href="https://buymeacoffee.com/bunnychen">
+    <img src="docs/assets/bmc_button.png" alt="Buy Me a Coffee" width="200" />
+  </a>
+  <img src="docs/assets/wechat%20赞赏.jpg" alt="微信赞赏码" width="200" />
+</p>
+
+<p align="center">
+  ☕ <b>Buy Me a Coffee</b>：<a href="https://buymeacoffee.com/bunnychen">buymeacoffee.com/bunnychen</a> · 🧧 <b>微信赞赏</b>：扫码金额随心
+</p>
+
+---
+
 ## 🤝 寻求合作
 
-日耗仓目前由个人独立开发维护。如果你认可这个项目，欢迎以下方式支持：
-
-- 🧧 **赞助支持** — 帮助覆盖开发与其它成本
 - 🤝 **商业合作** — 企业定制、平台接入、联合运营等合作洽谈
 
 > 📧 联系方式：[bunnychen1024@gmail.com](mailto:bunnychen1024@gmail.com)

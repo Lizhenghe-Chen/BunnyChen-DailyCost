@@ -386,7 +386,7 @@ buymeacoffee.com/bunnychen
 
 </div>
 
-> 📬 商务合作 / 企业定制 / 平台接入：<bunnychen1024@gmail.com>
+> 📬 商务合作 / 企业定制 / 平台接入：欢迎通过上方赞赏入口联系
 
 ---
 

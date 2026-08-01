@@ -1,0 +1,22 @@
+{#-
+  日耗仓 · DailyCost Vault
+  覆盖 Material 主题：在 <head> 注入 Open Graph / Twitter Card 社交分享标签
+  通过 base.html 的 extrahead block 注入；对 page 可能为 None 的上下文做了防御
+-#}
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {% set pg_title = page.title if page and page.title else config.site_name %}
+  {% set pg_desc = page.meta.description if page and page.meta and page.meta.description else config.site_description %}
+  <meta property="og:title" content="{{ pg_title }}" />
+  <meta property="og:description" content="{{ pg_desc }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ page.canonical_url if page else config.site_url }}" />
+  <meta property="og:image" content="{{ config.site_url }}assets/logo.png" />
+  <meta property="og:site_name" content="{{ config.site_name }}" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{ pg_title }}" />
+  <meta name="twitter:description" content="{{ pg_desc }}" />
+  <meta name="twitter:image" content="{{ config.site_url }}assets/logo.png" />
+{% endblock %}

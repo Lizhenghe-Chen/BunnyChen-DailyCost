@@ -78,6 +78,11 @@
       const tid = (row.getAttribute("onclick") || "").match(/transid=(\d+)/);
       if (!tid) return null;
 
+      // 跳过已被退款的购买行：Steam 以 td.wht_type 上的 wht_refunded 类标记
+      // "该购买已退款"（退款行本身 wht_type 无此标记，仍正常导出，由客户端过滤）
+      const typeCell = row.querySelector(".wht_type");
+      if (typeCell?.classList.contains("wht_refunded")) return null;
+
       // 物品名（过滤 "退款" 徽章）
       const itemCell = row.querySelector(".wht_items");
       const items = [];
@@ -93,7 +98,6 @@
       }
 
       // 类型 & 支付方式
-      const typeCell = row.querySelector(".wht_type");
       const paymentDivs = typeCell ? [...typeCell.querySelectorAll(".wth_payment div")]
         .map(d => D.clean(d.textContent)).filter(Boolean) : [];
 
@@ -121,7 +125,9 @@
 
   function addAll(map, rows) {
     for (const r of rows) {
-      const k = r["交易ID"] + "|" + r["类型"];
+      // 去重键需能区分同一交易 ID 的多笔同类型行（如同一订单部分退款出现多笔退款行），
+      // 否则会把它们合并为一行，导致退款金额丢失、客户端净额计算偏高
+      const k = r["交易ID"] + "|" + r["类型"] + "|" + r["物品名称"] + "|" + r["总计"] + "|" + r["日期"];
       if (!map.has(k)) map.set(k, r);
     }
   }

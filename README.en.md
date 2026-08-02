@@ -1,0 +1,168 @@
+<p align="right">
+  <a href="README.md"><b>简体中文</b></a> · <b>English</b>
+</p>
+
+<p align="center">
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/">
+    <img src="docs/assets/logo.png" alt="DailyCost Vault" width="96" />
+  </a>
+</p>
+
+<h1 align="center">
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/">日耗仓 · DailyCost Vault</a>
+</h1>
+
+<p align="center">
+  <b>A long-term personal asset digital management tool</b>
+</p>
+
+<p align="center">
+  <i>"Own your data — know exactly where every cent goes"</i>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20Web-blue?style=flat-square" alt="Platform" />
+  <img src="https://img.shields.io/badge/framework-Tauri%20v2-FFC131?style=flat-square" alt="Tauri" />
+  <img src="https://img.shields.io/badge/status-Beta-FFD700?style=flat-square" alt="Status" />
+  <img src="https://img.shields.io/badge/license-All%20Rights%20Reserved-blue?style=flat-square" alt="All Rights Reserved" />
+</p>
+
+<p align="center">
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/"><b>🌐 Website</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-Item-Bookkeeping/"><b>🖥️ Try Online</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/getting-started/"><b>🚀 Getting Started</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/import-csv/"><b>📥 Bulk Import</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/FAQ/"><b>❓ FAQ</b></a> ·
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/"><b>🔒 Privacy</b></a>
+</p>
+
+---
+
+## 💡 Why This Project?
+
+Plenty of bookkeeping and asset-management tools already exist — yet most share the same frustrating flaws:
+
+- 💸 **They charge** — the good features hide behind paywalls and only get pricier
+- ⌨️ **They're manual** — you have to type every record by hand, and you're exhausted before you even start
+- 🗂️ **They're scattered** — JD.com, Taobao, and Steam each keep their own records, so the full picture of your spending stays fragmented
+
+But think about it: **every order you place on any platform already belongs to you.** It shouldn't be locked away in your purchase history, nor should you have to re-type it over and over.
+
+That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** new app that gathers and organizes those scattered orders for you in one click, lets the data speak for itself, and helps you truly understand your own spending habits.
+
+> 🐰 [**BunnyChen**](https://github.com/Lizhenghe-Chen) doesn't expect you to use it every day or depend on it long-term. It only hopes that, in some unexpected moment — maybe while reviewing your past, maybe while finally calculating what something really costs — you'll have an "aha!" moment, revisit your own history, and gain a little insight worth keeping. That alone makes it all worthwhile.
+
+---
+
+## 📸 Preview
+
+<p align="center">
+  <img src="docs/assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg" alt="Home" width="45%" />
+  <img src="docs/assets/桌面端数据分析页面（深色主题）.jpg" alt="Analytics" width="45%" />
+</p>
+<p align="center">
+  <img src="docs/assets/莓之紫%20浅色模式%20设置页.jpg" alt="Settings" width="45%" />
+  <img src="docs/assets/莓之紫%20深色模式%20emoji页面.jpg" alt="Emoji" width="45%" />
+</p>
+
+---
+
+## ✨ Highlights
+
+- 💖 **Completely Free** — no subscriptions, no in-app purchases, no ads. Every feature, no holds barred
+- 🧮 **Daily Average Cost** — calculated per item. Paying more but using it longer = worth it
+- 🏷️ **Asset Card Grid** — platform badge + emoji + name + daily cost at a glance
+- 📥 **Rich Data Sources** — one-click import from JD.com / Taobao / Steam, auto-deduplication, continuously expanding
+- 🔄 **Item Lifecycle** — In Use / Sold / Retired, with archive & restore
+- 🎨 **Personalization** — 3-state theme × 5 color schemes × custom emoji × platform colors
+- 🌐 **Internationalization** — 简体中文 / 繁體中文 / English
+- 💾 **Fully Local Storage** — SQLite, data never leaves your device, zero server dependency
+- 🚀 **Continuously Maintained** — new platforms and features keep rolling out
+
+---
+
+## 📥 Supported Platforms
+
+| Platform    | Status | Download                                                                                                  |
+| :---------- | :----: | :-------------------------------------------------------------------------------------------------------- |
+| 🖥️ Windows |  ✅  | [`.exe` / `.msi`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                         |
+| 🍎 macOS     |  ✅  | [`.dmg` (Apple Silicon + Intel)](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)         |
+| 🐧 Linux     |  ✅  | [`.deb` / `.AppImage`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                   |
+| 🤖 Android   |  ✅  | [`.apk`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                                 |
+| 🌐 Web       |  ✅  | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)                                       |
+| 📱 iOS       |  🚧  | Coming soon                                                                                              |
+
+---
+
+## 🛠 Tech Stack
+
+| Layer      | Technology                      |
+| :--------- | :------------------------------ |
+| Desktop    | **Tauri v2**                    |
+| Frontend   | **TypeScript** + Vite           |
+| Backend    | **Rust**                        |
+| Database   | **SQLite** (rusqlite, bundled)  |
+| UI         | Vanilla HTML/CSS                |
+
+---
+
+## 🔒 Privacy & Security · Rest Assured
+
+**DailyCost Vault runs fully offline, and all data stays on your device. BunnyChen has neither the interest nor any need to access any of your information.**
+
+- 🖥️ Desktop → SQLite database in the `AppData` directory
+- 🤖 Android → SQLite database in the app's private directory
+- 🌐 Web → browser localStorage
+
+❌ No data uploads · ❌ No tracking analytics · ❌ No reading of unrelated files
+
+> 🗝️ **The source code is not open yet, but BunnyChen promises to never collect, upload, or pry into any of your data.** Your data belongs only to you — and please, **keep it safe yourself**.
+
+See the [Privacy Policy](https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/).
+
+---
+
+*Source code not public yet · All Rights Reserved · Your data will always belong only to you*
+
+---
+
+## ☕ Support · Buy Me a Coffee
+
+Maintained single-handedly — if you like it, why not buy me a coffee? 🥺
+
+<p align="center">
+  <img src="docs/assets/卖萌.webp" alt="Cute" width="140" />
+  <img src="docs/assets/求打赏.jpg" alt="Support" width="140" />
+</p>
+
+<p align="center">
+  <a href="https://buymeacoffee.com/bunnychen">
+    <img src="docs/assets/bmc_button.png" alt="Buy Me a Coffee" width="200" />
+  </a>
+  <img src="docs/assets/wechat%20赞赏.jpg" alt="WeChat Donation QR" width="200" />
+</p>
+
+<p align="center">
+  ☕ <b>Buy Me a Coffee</b>: <a href="https://buymeacoffee.com/bunnychen">buymeacoffee.com/bunnychen</a> · 🧧 <b>WeChat Donation</b>: scan any amount
+</p>
+
+---
+
+## 🤝 Let's Collaborate
+
+DailyCost Vault is currently developed and maintained independently. If you appreciate this project, here are ways to support it:
+
+- 🧧 **Sponsorship** — help cover development and other costs
+- 🤝 **Business Collaboration** — enterprise customization, platform integration, co-operation, etc.
+
+> 📧 Contact: [bunnychen1024@gmail.com](mailto:bunnychen1024@gmail.com)
+
+---
+
+<p align="center">
+  <sub>© 2025–2026 BunnyChen · Made with ❤️</sub>
+</p>
+
+---
+
+> 💬 Questions or suggestions? Feel free to open an [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues).

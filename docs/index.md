@@ -8,7 +8,7 @@ title: 日耗仓 · DailyCost Vault
 <div class="hero-section" markdown>
 
 <div class="hero-logo">日耗仓 · DailyCost Vault</div>
-<div class="hero-tagline">重新理解你花的每一分钱</div>
+<div class="hero-tagline">你的数据你做主，每一分钱都花得明明白白</div>
 <div class="hero-subtitle">每一件物品都有日均持有成本。长期主义个人资产数字化管理工具。</div>
 
 <div class="hero-actions">
@@ -63,7 +63,25 @@ title: 日耗仓 · DailyCost Vault
   <span class="badge">🎨 多主题配色</span>
   <span class="badge">😀 emoji 自定义</span>
   <span class="badge">🌍 三语界面</span>
+  <span class="badge">💖 完全免费</span>
+  <span class="badge">🚀 持续更新</span>
 </div>
+
+---
+
+## 💡 为什么做这个项目？
+
+市面上的记账 / 资产管理工具并不少，但总有几个让人头疼的地方：
+
+- 💸 **要么收费** —— 好用的功能都藏在付费墙后面，越用越贵
+- ⌨️ **要么手动** —— 数据要一条一条自己填，还没开始记账就已经累了
+- 🗂️ **要么分散** —— 京东、淘宝、Steam 各记各的，消费全貌支离破碎
+
+可你有没有想过：**你在各个平台买下的每一样东西，订单信息本来就是属于你自己的**。它不该被锁在购物记录里，更不该让你反复手动搬运。
+
+于是就有了 **日耗仓 · DailyCost Vault** —— 一个 **免费、好用、功能齐全** 的新兴应用，帮你把这些散落的订单一键整理、拿下，让数据自己说话，帮你真正看懂自己的消费习惯。
+
+> 🐰 [**BunnyChen**](https://github.com/Lizhenghe-Chen) 不指望你天天用、长期依赖。只希望在某一个不经意的瞬间——也许是回顾过往，也许是算清某件东西真正的成本——让你突然“恍然大悟”，感叹自己曾经的过往，收获一点有趣的启发。那一刻，就已经很有意义了。
 
 ---
 
@@ -261,7 +279,21 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ---
 
-*源码可审计：[github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping) · 许可：PolyForm Noncommercial 1.0.0（禁止商用）*
+## 🔒 隐私安全 · 请放心
+
+**日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 既没有兴趣、也没有任何必要获取你的任何信息。**
+
+- 🖥️ 桌面端 → `AppData` 目录下的 SQLite 数据库
+- 🤖 Android → 应用私有目录的 SQLite 数据库
+- 🌐 网页版 → 浏览器 localStorage
+
+❌ 不上传数据 · ❌ 无追踪分析 · ❌ 不读取无关文件
+
+> 🗝️ **项目目前暂不开源，但 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。
+
+---
+
+*源码暂不公开 · 保留所有权利（All Rights Reserved）· 你的数据永远只属于你自己*
 
 
 ---
@@ -347,6 +379,48 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 </div>
 
 </div>
+
+---
+
+## 支持一下 · 请我喝杯咖啡 ☕
+
+一个人维护不易，喜欢的话，请我喝杯咖啡吧～ 🥺
+
+<div class="donation-cute" markdown>
+
+![卖萌](assets/卖萌.webp){ width="140" loading=lazy }
+
+![求打赏](assets/求打赏.jpg){ width="140" loading=lazy }
+
+</div>
+
+<div class="donation-section" markdown>
+
+<div class="donation-card" markdown>
+
+**☕ Buy Me a Coffee**
+
+[![Buy Me a Coffee](assets/bmc_button.png){ width="190" loading=lazy }](https://buymeacoffee.com/bunnychen)
+
+buymeacoffee.com/bunnychen
+
+</div>
+
+<div class="donation-card" markdown>
+
+**🧧 微信赞赏**
+
+![微信赞赏码](assets/wechat 赞赏.jpg){ width="190" loading=lazy }
+
+微信扫码 · 金额随心
+
+</div>
+
+</div>
+
+> 📬 商务合作 / 企业定制 / 平台接入：欢迎通过上方赞赏入口联系
+
+---
 
 <div class="bottom-cta" markdown>
 

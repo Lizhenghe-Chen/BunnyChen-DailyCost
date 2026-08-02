@@ -8,7 +8,7 @@ title: DailyCost Vault
 <div class="hero-section" markdown>
 
 <div class="hero-logo">DailyCost Vault</div>
-<div class="hero-tagline">Rethink Every Penny You Spend</div>
+<div class="hero-tagline">Own your data — know exactly where every cent goes</div>
 <div class="hero-subtitle">Every item has a daily average cost. A long-term personal asset digital management tool.</div>
 
 <div class="hero-actions">
@@ -355,4 +355,4 @@ Free · Open Beta · Data Fully Local
 
 </div>
 
-*Source code: [github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping) · License: PolyForm Noncommercial 1.0.0 (no commercial use)*
+*Source code is not public yet · All Rights Reserved*

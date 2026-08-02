@@ -13,14 +13,14 @@
 </p>
 
 <p align="center">
-  <i>“一切可以变现的都是资产”</i>
+  <i>“你的数据你做主，每一分钱都花得明明白白”</i>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20Web-blue?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/framework-Tauri%20v2-FFC131?style=flat-square" alt="Tauri" />
   <img src="https://img.shields.io/badge/status-Beta-FFD700?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial-blue?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/license-保留所有权利-blue?style=flat-square" alt="All Rights Reserved" />
 </p>
 
 <p align="center">
@@ -34,7 +34,23 @@
 
 ---
 
-## 📸 预览
+## � 为什么做这个项目？
+
+市面上的记账 / 资产管理工具并不少，但总有几个让人头疼的地方：
+
+- 💸 **要么收费** —— 好用的功能都藏在付费墙后面，越用越贵
+- ⌨️ **要么手动** —— 数据要一条一条自己填，还没开始记账就已经累了
+- 🗂️ **要么分散** —— 京东、淘宝、Steam 各记各的，消费全貌支离破碎
+
+可你有没有想过：**你在各个平台买下的每一样东西，订单信息本来就是属于你自己的**。它不该被锁在购物记录里，更不该让你反复手动搬运。
+
+于是就有了 **日耗仓 · DailyCost Vault** —— 一个 **免费、好用、功能齐全** 的新兴应用，帮你把这些散落的订单一键整理、拿下，让数据自己说话，帮你真正看懂自己的消费习惯。
+
+> 🐰 [**BunnyChen**](https://github.com/Lizhenghe-Chen) 不指望你天天用、长期依赖。只希望在某一个不经意的瞬间——也许是回顾过往，也许是算清某件东西真正的成本——让你突然“恍然大悟”，感叹自己曾经的过往，收获一点有趣的启发。那一刻，就已经很有意义了。
+
+---
+
+## �📸 预览
 
 <p align="center">
   <img src="docs/assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg" alt="主页" width="45%" />
@@ -49,13 +65,15 @@
 
 ## ✨ 亮点
 
+- 💖 **完全免费** — 无订阅、无内购、无广告，所有功能毫无保留
 - 🧮 **日均持有成本** — 每件物品独立计算，买贵但用久 = 划算
 - 🏷️ **资产卡片网格** — 平台徽章 + emoji + 名称 + 日均成本一目了然
-- 📥 **多平台导入** — 京东 / 淘宝 / Steam CSV 批量导入，自动去重
+- 📥 **数据来源丰富** — 京东 / 淘宝 / Steam 一键导入，自动去重，持续扩展
 - 🔄 **物品生命周期** — 使用中 / 已售出 / 已报废，归档与恢复
 - 🎨 **个性化定制** — 三态主题 × 5 套配色 × 自定义表情 × 平台颜色
 - 🌐 **国际化** — 简体中文 / 繁體中文 / English
 - 💾 **完全本地存储** — SQLite，数据不离设备，零服务器依赖
+- 🚀 **持续更新维护** — 新平台、新功能持续迭代，越用越好用
 
 ---
 
@@ -86,9 +104,9 @@
 
 ---
 
-## 🔒 隐私安全
+## 🔒 隐私安全 · 请放心
 
-**日耗仓完全离线运行，所有数据仅存储在本地。**
+**日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 既没有兴趣、也没有任何必要获取你的任何信息。**
 
 - 🖥️ 桌面端 → `AppData` 目录下的 SQLite 数据库
 - 🤖 Android → 应用私有目录的 SQLite 数据库
@@ -96,11 +114,35 @@
 
 ❌ 不上传数据 · ❌ 无追踪分析 · ❌ 不读取无关文件
 
+> 🗝️ **项目目前暂不开源，但 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。
+
 详见 [隐私说明](https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/)。
 
 ---
 
-*源码：[github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping](https://github.com/Lizhenghe-Chen/BunnyChen-Item-Bookkeeping) · 许可：[PolyForm Noncommercial 1.0.0](LICENSE)（禁止商用）*
+*源码暂不公开 · 保留所有权利（All Rights Reserved）· 你的数据永远只属于你自己*
+
+---
+
+## ☕ 支持一下 · 请我喝杯咖啡
+
+一个人维护不易，喜欢的话，请我喝杯咖啡吧～ 🥺
+
+<p align="center">
+  <img src="docs/assets/卖萌.webp" alt="卖萌" width="140" />
+  <img src="docs/assets/求打赏.jpg" alt="求打赏" width="140" />
+</p>
+
+<p align="center">
+  <a href="https://buymeacoffee.com/bunnychen">
+    <img src="docs/assets/bmc_button.png" alt="Buy Me a Coffee" width="200" />
+  </a>
+  <img src="docs/assets/wechat%20赞赏.jpg" alt="微信赞赏码" width="200" />
+</p>
+
+<p align="center">
+  ☕ <b>Buy Me a Coffee</b>：<a href="https://buymeacoffee.com/bunnychen">buymeacoffee.com/bunnychen</a> · 🧧 <b>微信赞赏</b>：扫码金额随心
+</p>
 
 ---
 

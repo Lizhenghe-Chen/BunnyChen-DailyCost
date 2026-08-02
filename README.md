@@ -1,3 +1,7 @@
+<p align="right">
+  <b>简体中文</b> · <a href="README.en.md"><b>English</b></a>
+</p>
+
 <p align="center">
   <a href="https://bunnychen.top/BunnyChen-DailyCost/">
     <img src="docs/assets/logo.png" alt="DailyCost Vault" width="96" />

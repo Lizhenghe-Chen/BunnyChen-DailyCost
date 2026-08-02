@@ -1,8 +1,12 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="DailyCost Vault" width="96" />
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/">
+    <img src="docs/assets/logo.png" alt="DailyCost Vault" width="96" />
+  </a>
 </p>
 
-<h1 align="center">日耗仓 · DailyCost Vault</h1>
+<h1 align="center">
+  <a href="https://bunnychen.top/BunnyChen-DailyCost/">日耗仓 · DailyCost Vault</a>
+</h1>
 
 <p align="center">
   <b>长期主义个人资产数字化管理工具</b>

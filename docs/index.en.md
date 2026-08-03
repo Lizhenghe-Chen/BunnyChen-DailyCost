@@ -12,7 +12,7 @@ title: DailyCost Vault
 <div class="hero-subtitle">Every item has a daily average cost. A long-term personal asset digital management tool.</div>
 
 <div class="hero-actions">
-  <a href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases" target="_blank" class="md-button md-button--primary hero-btn">
+  <a href="download/" class="md-button md-button--primary hero-btn">
     Download
   </a>
   <a href="getting-started/" class="md-button hero-btn">

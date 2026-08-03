@@ -7,7 +7,7 @@ site_author: BunnyChen
 # -------------------------------------------------------------------------- #
 # 仓库信息
 # -------------------------------------------------------------------------- #
-repo_name: BunnyChen-DailyCost
+repo_name: ""
 repo_url: https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost
 
 # -------------------------------------------------------------------------- #
@@ -44,6 +44,7 @@ plugins:
             Cross-platform purchase tracking, daily average cost calculation, and asset card management.
           nav_translations:
             主页: Home
+            📥 下载: 📥 Download
             使用指南: User Guide
             🚀 安装与启动: 🚀 Installation
             📥 批量导入订单: 📥 Import CSV Orders
@@ -134,6 +135,7 @@ markdown_extensions:
 # -------------------------------------------------------------------------- #
 nav:
   - 主页: index.md
+  - 📥 下载: download.md
   - 使用指南:
     - 🚀 安装与启动: getting-started.md
     - 📥 批量导入订单: import-csv.md

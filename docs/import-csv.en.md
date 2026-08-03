@@ -7,12 +7,7 @@
 
 ## Overall Process
 
-```mermaid
-flowchart LR
-    A[Install Browser Extension] --> B[Export Orders CSV]
-    B --> C[Import to DailyCost Vault]
-    C --> D[✅ Auto-generate Asset Cards]
-```
+🧩 Install browser extension → 📤 Export order CSV → 📥 Import to DailyCost Vault → ✅ Auto-generate asset cards
 
 ---
 

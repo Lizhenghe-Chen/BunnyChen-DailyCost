@@ -425,9 +425,7 @@ buymeacoffee.com/bunnychen
 
 免费 · 开放测试 · 数据完全本地
 
-[前往下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases){: .md-button .md-button--primary target="_blank"}
-&nbsp;
-[阅读使用指南](USER_GUIDE.md){: .md-button }
+[快速开始](getting-started/){: .md-button .md-button--primary }
 
 </div>
 

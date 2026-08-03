@@ -6,8 +6,10 @@ DailyCost Vault supports Windows, macOS, Linux, Android, and Web — choose the 
 
 ## 📥 Download & Install
 
-!!! tip "Desktop Recommended"
-    Desktop version stores data in a local SQLite database, supports auto-update, drag-and-drop CSV import, and quick file manager access to the database — the best overall experience.
+!!! tip "Recommended workflow: Desktop first, Mobile as companion"
+    The browser extension runs in Chrome / Edge to export order CSVs, so **we recommend importing on desktop first**, then migrating the archive to **Android** via "Export Database". Desktop stores data in local SQLite with auto-update, drag-drop CSV import, and quick database access — the best experience.
+
+    🖥️ Desktop import → 📤 Export database `.db` → 📱 Android import
 
 !!! info "Download Tips"
     All installers are from the official [GitHub Release](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases). If GitHub is slow in your region, prefer the "CN Mirror" link; if mirrors fail, fall back to the [Gitee mirror](https://gitee.com/lizhenghechen/BunnyChen-DailyCost/releases).

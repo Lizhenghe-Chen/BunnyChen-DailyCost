@@ -1,0 +1,47 @@
+# ────────────────────────────────────────────────────────────
+# 同步 GitHub Release → Gitee（国内用户直连下载）
+# 触发：本仓库（下载仓库）有 v*.*.* 版本 Release 发布，或手动在 Actions 页面触发
+#
+# 说明：
+#   - 放在下载仓库而非构建仓库：GITEE_TOKEN 配置在本仓库，
+#     且 release 事件只在发布仓库触发。
+#   - 通过 if 只同步版本 tag（v*.*.*），跳过 updater tag——
+#     其 update.json 内容指向 GitHub，同步到 Gitee 无意义且会重复触发。
+#   - 幂等：Gitee 已存在的 tag 只补附件，可反复执行（也用于首次全量回填）。
+#
+# 需要 Secrets:
+#   GITEE_TOKEN — Gitee API Token（Settings → Secrets and variables → Actions 配置）
+# ────────────────────────────────────────────────────────────
+
+name: Sync to Gitee
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 避免并发同步（比如连续发布时）
+concurrency:
+  group: sync-gitee
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync GitHub Release to Gitee
+    runs-on: ubuntu-latest
+    # 仅版本 tag 触发同步；workflow_dispatch 手动触发不受限
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) }}
+    steps:
+      - name: Sync GitHub Release to Gitee
+        uses: trustedinster/sync-release-gitee@v1.3
+        with:
+          gitee_owner: lizhenghechen
+          gitee_repo: BunnyChen-DailyCost
+          gitee_token: ${{ secrets.GITEE_TOKEN }}
+          github_owner: Lizhenghe-Chen
+          github_repo: BunnyChen-DailyCost
+          gitee_upload_retry_times: 3
+          debug: false

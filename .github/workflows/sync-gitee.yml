@@ -52,7 +52,8 @@ jobs:
           EVENT_TAG: ${{ github.event.release.tag_name }}
         run: |
           set -e
-          python3 <<'PYEOF'
+          # -u：无缓冲，让 print 进度实时出现在日志（否则块缓冲要到进程结束才刷新）
+          python3 -u <<'PYEOF'
           import json, os, re, subprocess, sys, time, urllib.parse, urllib.request
 
           gitee_owner  = os.environ["GITEE_OWNER"]

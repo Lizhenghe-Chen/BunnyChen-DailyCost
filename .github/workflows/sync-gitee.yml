@@ -1,19 +1,16 @@
 # ────────────────────────────────────────────────────────────
-# 同步最新 GitHub Release → Gitee（国内用户直连下载）
+# 同步 GitHub Release → Gitee（国内用户直连下载）
 # 触发：本仓库（下载仓库）有 v*.*.* 版本 Release 发布，或手动在 Actions 页面触发
 #
 # 说明：
 #   - 放在下载仓库而非构建仓库：GITEE_TOKEN 配置在本仓库，
 #     且 release 事件只在发布仓库触发。
-#   - 只同步「最新」版本 Release（历史版本不回填）：
-#       · release 事件 → 只同步触发的那一个 tag
-#       · workflow_dispatch → 自动选最新 v*.*.* tag
-#     原因：GitHub runner → Gitee 跨境上传约 12-16kB/s，一个 Release ≈184MB
-#     需 ~3.6h，逼近 6h job 超时上限，无法串行同步多个版本。
-#   - 幂等：附件已存在则跳过，可反复执行（失败的文件下次运行会自动补）。
-#   - 只改写「Gitee 侧」Release body 的下载链接为 Gitee 链接，
-#     绝不修改 GitHub 的 Release（GitHub 仅被只读访问）。
-#   - 跳过 updater tag（其 update.json 指向 GitHub，同步到 Gitee 无意义）。
+#   - sync job：用 sync-release-to-gitee（trustedinster/sync-release-gitee@v1.3）
+#     同步 Release + 附件到 Gitee；GitHub runner → Gitee 跨境上传较慢
+#     （~12-16kB/s），会同步所有版本，慢但幂等（已存在的 tag 只补附件）。
+#   - rewrite-links job：独立于慢速同步，快速把 Gitee 侧 Release body 的
+#     GitHub 下载链接改写为 Gitee 附件链接（用 Gitee API 真实 URL）。
+#   - 通过 if 只处理版本 tag（v*.*.*），跳过 updater tag。
 #
 # 需要 Secrets:
 #   GITEE_TOKEN — Gitee API Token（Settings → Secrets and variables → Actions 配置）
@@ -35,14 +32,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  sync-latest:
-    name: Sync latest release to Gitee
+  sync:
+    name: Sync GitHub Release to Gitee
     runs-on: ubuntu-latest
     timeout-minutes: 360
     # 仅版本 tag 触发同步；workflow_dispatch 手动触发不受限
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) }}
     steps:
-      - name: Sync latest release to Gitee
+      - name: Sync GitHub Release to Gitee
+        uses: trustedinster/sync-release-gitee@v1.3
+        with:
+          gitee_owner: lizhenghechen
+          gitee_repo: BunnyChen-DailyCost
+          gitee_token: ${{ secrets.GITEE_TOKEN }}
+          github_owner: Lizhenghe-Chen
+          github_repo: BunnyChen-DailyCost
+          gitee_upload_retry_times: 3
+          debug: false
+
+  # ── 独立改写 Gitee 侧 Release body 链接（不依赖慢速同步） ──
+  rewrite-links:
+    name: Rewrite Gitee release links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # 与 sync 相同的触发条件
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) }}
+    steps:
+      - name: Rewrite release bodies to point to Gitee
         env:
           GITEE_OWNER: lizhenghechen
           GITEE_REPO: BunnyChen-DailyCost
@@ -51,131 +67,71 @@ jobs:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
           EVENT_TAG: ${{ github.event.release.tag_name }}
         run: |
-          set -e
-          # -u：无缓冲，让 print 进度实时出现在日志（否则块缓冲要到进程结束才刷新）
           python3 -u <<'PYEOF'
-          import json, os, re, subprocess, sys, time, urllib.parse, urllib.request
+          import json, os, re, urllib.parse, urllib.request
 
-          gitee_owner  = os.environ["GITEE_OWNER"]
+          gitee_owner = os.environ["GITEE_OWNER"]
           gitee_repo   = os.environ["GITEE_REPO"]
           github_owner = os.environ["GITHUB_OWNER"]
           github_repo  = os.environ["GITHUB_REPO"]
           gitee_token  = os.environ["GITEE_TOKEN"]
           event_tag    = os.environ.get("EVENT_TAG", "") or ""
 
-          GH = f"https://api.github.com/repos/{github_owner}/{github_repo}"
-          GE = f"https://gitee.com/api/v5/repos/{gitee_owner}/{gitee_repo}"
+          base = f"https://gitee.com/api/v5/repos/{gitee_owner}/{gitee_repo}"
 
-          def gh_api(url):
-              # GitHub 只读公开 API（不写 GitHub）
-              with urllib.request.urlopen(url, timeout=60) as r:
-                  return json.loads(r.read().decode())
-
-          def ge_api(url, method="GET", fields=None):
+          def api(url, method="GET", data=None):
               req = urllib.request.Request(url, method=method)
               payload = None
-              if fields:
+              if data:
                   req.add_header("Content-Type", "application/x-www-form-urlencoded")
-                  payload = urllib.parse.urlencode(fields).encode()
+                  payload = data.encode()
               with urllib.request.urlopen(req, data=payload, timeout=120) as r:
                   return json.loads(r.read().decode())
 
-          # ── 1) 确定目标 tag（只处理最新版本） ──
+          # 1) 决定要处理的 tag：release 事件只处理触发 tag；手动则全量版本 tag
           if event_tag:
-              tag = event_tag
+              tags = [event_tag]
           else:
-              rels = gh_api(f"{GH}/releases?per_page=100")
-              vers = sorted(
-                  (r["tag_name"] for r in rels if re.fullmatch(r"v\d+\.\d+\.\d+", r["tag_name"])),
-                  key=lambda v: [int(x) for x in v[1:].split(".")])
-              tag = vers[-1] if vers else None
+              rels = api(f"{base}/releases?access_token={gitee_token}&per_page=100")
+              tags = [r["tag_name"] for r in rels
+                      if re.fullmatch(r"v\d+\.\d+\.\d+", r["tag_name"])]
 
-          if not tag:
-              print("⚠️ 没有找到版本 Release，跳过")
-              sys.exit(0)
-          print(f"🎯 目标 tag：{tag}")
-
-          # ── 2) 拉取 GitHub Release（只读）与附件清单 ──
-          gh_rel = gh_api(f"{GH}/releases/tags/{urllib.parse.quote(tag)}")
-          gh_assets = {a["name"]: a["browser_download_url"] for a in gh_rel.get("assets", [])}
-          print(f"📦 GitHub 附件：{len(gh_assets)} 个")
-
-          # ── 3) 确保 Gitee Release 存在（不存在则创建，body 用 GitHub 的） ──
-          try:
-              gitee_rel = ge_api(f"{GE}/releases/tags/{urllib.parse.quote(tag)}?access_token={gitee_token}")
-              rel_id = gitee_rel["id"]
-              gitee_assets = {
-                  a["name"]: a["browser_download_url"]
-                  for a in gitee_rel.get("assets", []) if a.get("browser_download_url")
-              }
-              print(f"🏷  Gitee Release 已存在 (id={rel_id})，已有附件 {len(gitee_assets)} 个")
-          except Exception:
-              print("🏷  Gitee Release 不存在，创建中…")
-              created = ge_api(f"{GE}/releases", method="POST", fields={
-                  "access_token": gitee_token,
-                  "tag_name": tag,
-                  "name": gh_rel.get("name") or tag,
-                  "body": gh_rel.get("body") or "",
-                  "target_commitish": gh_rel.get("target_commitish") or "main",
-                  "prerelease": "false",
-              })
-              rel_id = created["id"]
-              gitee_assets = {}
-              print(f"🏷  创建成功 (id={rel_id})")
-
-          # ── 4) 逐文件：下载(GitHub→runner，快) → 上传(runner→Gitee，慢) ──
-          for name, url in gh_assets.items():
-              if name in gitee_assets:
-                  print(f"  ⏭ SKIP {name}：已存在")
-                  continue
-              local = f"/tmp/{name}"
-              try:
-                  subprocess.run(["curl", "-sSL", "--fail", "--max-time", "600", "-o", local, url],
-                                 check=True, timeout=700)
-              except Exception as e:
-                  print(f"  ⚠ 下载失败 {name}：{e}，跳过（下次运行补）")
-                  continue
-              print(f"  ⬇ 下载 {name} ({os.path.getsize(local)/1048576:.1f}MB)")
-              ok = False
-              for attempt in (1, 2, 3):
-                  try:
-                      r = subprocess.run(
-                          ["curl", "-sS", "--fail", "--max-time", "10800", "-X", "POST",
-                           f"{GE}/releases/{rel_id}/attach_files",
-                           "-F", f"access_token={gitee_token}",
-                           "-F", f"file=@{local}"],
-                          capture_output=True, text=True, timeout=10900)
-                      if r.returncode == 0 and r.stdout.strip():
-                          resp = json.loads(r.stdout)
-                          gitee_assets[name] = resp.get("browser_download_url", "")
-                          print(f"  ⬆ 上传成功 {name}")
-                          ok = True
-                          break
-                      print(f"  ⚠ 上传失败(第{attempt}次)：{r.stderr[:200]}")
-                  except Exception as e:
-                      print(f"  ⚠ 上传异常(第{attempt}次)：{e}")
-                  time.sleep(5)
-              if not ok:
-                  print(f"  ❌ {name} 上传失败，跳过（下次运行会补）")
-              os.remove(local)
-
-          # ── 5) 只改写 Gitee 侧 body：GitHub 下载链接 → Gitee 链接 ──
-          # ⚠️ 只 PATCH Gitee Release，绝不修改 GitHub 的 Release
-          body = gh_rel.get("body") or ""
           gh_prefix = f"https://github.com/{github_owner}/{github_repo}/releases/download/"
-          if gh_prefix in body:
-              def repl(m):
-                  fn = urllib.parse.unquote(m.group(1).rsplit("/", 1)[-1])
-                  u = gitee_assets.get(fn)
-                  return u if u else m.group(0)
-              new_body = re.sub(re.escape(gh_prefix) + r"([^)\s]+)", repl, body)
-              if new_body != body:
-                  ge_api(f"{GE}/releases/{rel_id}", method="PATCH",
-                         fields={"access_token": gitee_token, "body": new_body})
-                  print("✅ Gitee body 下载链接已改写为 Gitee（未动 GitHub）")
-              else:
-                  print("ℹ️ Gitee body 无需改动")
-          else:
-              print("ℹ️ body 中没有 GitHub 下载链接")
-          print("🎉 同步完成")
+
+          for tag in tags:
+              try:
+                  rel = api(f"{base}/releases/tags/{urllib.parse.quote(tag)}?access_token={gitee_token}")
+              except Exception as e:
+                  print(f"  WARN {tag}: fetch release failed ({e})")
+                  continue
+              rel_id = rel.get("id")
+              body = rel.get("body") or ""
+              if gh_prefix not in body:
+                  print(f"  SKIP {tag}: no GitHub download links in body")
+                  continue
+
+              # filename -> Gitee 附件真实下载地址
+              assets = {
+                  a["name"]: a["browser_download_url"]
+                  for a in rel.get("assets", [])
+                  if a.get("browser_download_url")
+              }
+
+              def replace_link(m):
+                  filename = urllib.parse.unquote(m.group(1).rsplit("/", 1)[-1])
+                  gitee_url = assets.get(filename)
+                  if gitee_url:
+                      return gitee_url
+                  print(f"  WARN {tag}: asset not on Gitee yet, keep GitHub link: {filename}")
+                  return m.group(0)
+
+              new_body = re.sub(re.escape(gh_prefix) + r"([^)\s]+)", replace_link, body)
+              if new_body == body:
+                  print(f"  SKIP {tag}: no change")
+                  continue
+
+              api(f"{base}/releases/{rel_id}",
+                  method="PATCH",
+                  data=urllib.parse.urlencode({"access_token": gitee_token, "body": new_body}))
+              print(f"  OK   {tag}: release body links rewritten to Gitee")
           PYEOF

@@ -20,32 +20,18 @@ flowchart LR
 
 Browser extensions export order data from e-commerce platforms as CSV files. Supports **Chrome**, **Edge**, and all Chromium-based browsers.
 
-!!! info "Extension File Location"
-    The extension is a single directory `dailycost-exporter-extension/` covering JD.com / Taobao / Steam.
+[📥 Download the Browser Extension (zip)](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
 
-    [📦 Get the Browser Extension](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
-
-    When installing, select this directory in "Load unpacked".
-
-### Chrome Installation
-
-1. Open Chrome, enter `chrome://extensions/` in the address bar
-2. Enable "**Developer mode**" (top-right toggle)
-3. Click "**Load unpacked**"
-4. Select the `dailycost-exporter-extension` directory, click "Select Folder"
-5. Extension installed — the icon appears in the toolbar
-
-### Edge Installation
-
-1. Open Edge, enter `edge://extensions/` in the address bar
-2. Enable "**Developer mode**" (bottom-left toggle)
-3. Click "**Load unpacked**"
-4. Select the `dailycost-exporter-extension` directory, click "Select Folder"
-5. Extension installed — the icon appears in the toolbar
+1. **Download and unzip** the zip above to get the `dailycost-exporter-extension` folder (containing `manifest.json`). Don't delete this folder.
+2. **Chrome**: open `chrome://extensions/`, enable "Developer mode" (top-right) → click "Load unpacked" → select the folder
+3. **Edge**: open `edge://extensions/`, enable "Developer mode" (bottom-left) → click "Load unpacked" → select the folder
+4. Installed — the icon appears in the toolbar, ready to export
 
 ![Install Extension](assets/install-extension.png){ loading=lazy }
 
-> 💡 After exporting, you can remove extensions from the extensions page (`chrome://extensions/` or `edge://extensions/`). This doesn't affect exported CSV files. **We recommend removing them after use.**
+> 💡 After exporting, you can remove the extension from the extensions page. This doesn't affect your CSV files. **We recommend removing it after use.**
+
+> Alternative: get it from the [GitHub source directory](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension).
 
 ---
 

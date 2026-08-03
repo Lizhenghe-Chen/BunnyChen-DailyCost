@@ -56,11 +56,6 @@
       this.downloadText(filename, "\uFEFF" + csv, "text/csv;charset=utf-8");
     },
 
-    downloadJSONL(filename, rows) {
-      const text = rows.map(r => JSON.stringify(r)).join("\n");
-      this.downloadText(filename, text, "application/x-ndjson;charset=utf-8");
-    },
-
     // ========== CSV 生成 ==========
 
     toCsv(rows, headers) {

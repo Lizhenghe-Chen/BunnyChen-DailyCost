@@ -333,7 +333,6 @@
 
     const final = orders.map(o => prepareOutput(o, options.maskSensitive));
     const suffix = D.cancelRequested ? "partial" : "complete";
-    D.downloadJSONL("tb-orders-" + batch + "-" + suffix + ".jsonl", final);
     D.downloadCSV("tb-orders-" + batch + "-" + suffix + ".csv", final, HEADERS);
     D.updateOverlay("导出完成：" + final.length + " 个订单。" + (D.cancelRequested ? "（提前停止）" : ""), true);
   }

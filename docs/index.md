@@ -12,11 +12,8 @@ title: 日耗仓 · DailyCost Vault
 <div class="hero-subtitle">每一件物品都有日均持有成本。长期主义个人资产数字化管理工具。</div>
 
 <div class="hero-actions">
-  <a href="download/" class="md-button md-button--primary hero-btn">
-    立即下载
-  </a>
-  <a href="getting-started/" class="md-button hero-btn">
-    使用指南
+  <a href="getting-started/" class="md-button md-button--primary hero-btn">
+    快速开始
   </a>
 </div>
 
@@ -364,9 +361,9 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ### 导入数据
 
-安装[浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension)导出京东、淘宝、Steam 消费记录为 CSV。拖入应用窗口或设置页点击导入——自动解析、去重、分类。
+安装[浏览器扩展](assets/dailycost-exporter-extension.zip)导出京东、淘宝、Steam 消费记录为 CSV。拖入应用窗口或设置页点击导入——自动解析、去重、分类。
 
-[📦 获取浏览器扩展](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
+[📥 下载浏览器扩展](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
 
 </div>
 

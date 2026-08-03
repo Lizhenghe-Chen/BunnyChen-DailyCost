@@ -26,8 +26,7 @@ function collectTBOptions() {
     status: el("tbStatus").value,
     delayMs: Math.max(300, Number(el("tbDelay").value || 1500)),
     maxPages: el("tbMaxPages").value.trim() ? Math.max(1, Number(el("tbMaxPages").value)) : null,
-    includeDetails: el("tbDetails").checked,
-    maskSensitive: el("tbMask").checked
+    maskSensitive: el("tbMask")?.checked ?? false
   };
 }
 
@@ -39,8 +38,7 @@ function collectJDOptions() {
     status: el("jdStatus").value,
     delayMs: Math.max(300, Number(el("jdDelay").value || 1000)),
     maxPages: el("jdMaxPages").value.trim() ? Math.max(1, Number(el("jdMaxPages").value)) : null,
-    includeDetails: el("jdDetails").checked,
-    maskSensitive: el("jdMask").checked
+    maskSensitive: el("jdMask")?.checked ?? false
   };
 }
 

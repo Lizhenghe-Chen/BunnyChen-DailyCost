@@ -12,11 +12,8 @@ title: DailyCost Vault
 <div class="hero-subtitle">Every item has a daily average cost. A long-term personal asset digital management tool.</div>
 
 <div class="hero-actions">
-  <a href="download/" class="md-button md-button--primary hero-btn">
-    Download
-  </a>
-  <a href="getting-started/" class="md-button hero-btn">
-    User Guide
+  <a href="getting-started/" class="md-button md-button--primary hero-btn">
+    Quick Start
   </a>
 </div>
 
@@ -327,9 +324,9 @@ Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)
 
 ### Import Data
 
-Install [browser extensions](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension) to export JD.com, Taobao, and Steam purchase history as CSV. Drag into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
+Install [browser extensions](assets/dailycost-exporter-extension.zip) to export JD.com, Taobao, and Steam purchase history as CSV. Drag into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
 
-[📦 Get the Browser Extension](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/tree/main/dailycost-exporter-extension){: .md-button .md-button--primary }
+[📥 Download the Browser Extension](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
 
 </div>
 

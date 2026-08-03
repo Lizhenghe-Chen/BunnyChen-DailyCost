@@ -63,7 +63,6 @@
     // 3) 导出
     const list = [...map.values()];
     const suffix = D.cancelRequested ? "partial" : "complete";
-    D.downloadJSONL("steam-orders-" + batch + "-" + suffix + ".jsonl", list);
     D.downloadCSV("steam-orders-" + batch + "-" + suffix + ".csv", list, HEADERS);
     D.updateOverlay(
       "导出完成：" + list.length + " 条。" + (D.cancelRequested ? "（已提前停止）" : ""),

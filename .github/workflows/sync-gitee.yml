@@ -48,6 +48,7 @@ jobs:
           GITEE_REPO: BunnyChen-DailyCost
           GITHUB_OWNER: Lizhenghe-Chen
           GITHUB_REPO: BunnyChen-DailyCost
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
           EVENT_TAG: ${{ github.event.release.tag_name }}
         run: |
           set -e

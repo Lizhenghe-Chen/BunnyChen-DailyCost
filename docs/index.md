@@ -12,7 +12,7 @@ title: 日耗仓 · DailyCost Vault
 <div class="hero-subtitle">每一件物品都有日均持有成本。长期主义个人资产数字化管理工具。</div>
 
 <div class="hero-actions">
-  <a href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases" target="_blank" class="md-button md-button--primary hero-btn">
+  <a href="download/" class="md-button md-button--primary hero-btn">
     立即下载
   </a>
   <a href="getting-started/" class="md-button hero-btn">

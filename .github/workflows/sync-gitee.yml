@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Sync GitHub Release to Gitee
         uses: trustedinster/sync-release-gitee@v1.3
+        # 2026-08 起已移除全平台汇总 ZIP，所有安装包均低于 Gitee 附件 100MB 上限，
+        # 不再需要 continue-on-error 容错；失败如实暴露（幂等，可重跑补齐）。
         with:
           gitee_owner: lizhenghechen
           gitee_repo: BunnyChen-DailyCost

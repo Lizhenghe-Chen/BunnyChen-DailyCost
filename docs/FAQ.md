@@ -148,7 +148,7 @@
 
 ### Q: 支持 macOS 吗？
 
-macOS 版本正在规划中，敬请期待。
+支持。前往 **[🚀 安装与启动](getting-started.md)** 下载对应芯片的 `.dmg` 安装包（Apple M 系列 / Intel）。
 
 ### Q: 支持 iOS 吗？
 
@@ -156,7 +156,7 @@ iOS 版本正在规划中。目前可以使用网页版。
 
 ### Q: 支持 Linux 吗？
 
-Linux 版本正在规划中，敬请期待。
+支持。前往 **[🚀 安装与启动](getting-started.md)** 下载 `.deb` 或 `.AppImage` 安装包。
 
 ### Q: 网页版和桌面版有什么区别？
 

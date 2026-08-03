@@ -39,6 +39,8 @@ The desktop version shows the full SQLite database file path at the bottom of th
 
 ## Data Migration
 
+> 💡 **Recommended path**: Use **desktop** as your primary database (import orders via the browser extension), with Android as a mobile companion. Sync across devices via "Export Database" → "Import Database".
+
 ### Desktop → Desktop
 
 1. Export database on the old device (`.db` file)

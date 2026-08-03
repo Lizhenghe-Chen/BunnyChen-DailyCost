@@ -6,8 +6,10 @@
 
 ## 📥 下载与安装
 
-!!! tip "推荐使用桌面端"
-    桌面端数据存储在本地 SQLite 数据库，支持自动更新、拖拽导入 CSV、文件管理器快速定位数据库等功能，体验最佳。
+!!! tip "推荐使用路径：桌面端为主，移动端为辅"
+    浏览器扩展需在 Chrome / Edge 中导出订单 CSV，所以**推荐先在桌面端完成导入**；之后再通过「导出数据库」把存档迁移到 **Android 端**随身查看。桌面端数据存本地 SQLite，支持自动更新、拖拽导入 CSV、快速定位数据库，体验最佳。
+
+    🖥️ 桌面端导入订单 → 📤 导出数据库 `.db` → 📱 Android 端导入查看
 
 !!! info "下载提示"
     所有安装包均来自官方 [GitHub Release](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)。国内用户若 GitHub 下载慢，可优先用「国内加速」链接；若加速不可用，可到 [Gitee 镜像](https://gitee.com/lizhenghechen/BunnyChen-DailyCost/releases) 下载。

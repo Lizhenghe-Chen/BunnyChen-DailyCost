@@ -148,7 +148,7 @@ Edit the item → expand "Optional Info" → set status to "Sold" → set end da
 
 ### Q: Is macOS supported?
 
-The macOS version is being planned — stay tuned.
+Yes. Download the matching `.dmg` installer (Apple Silicon / Intel) from the **[🚀 Installation guide](getting-started.md)**.
 
 ### Q: Is iOS supported?
 
@@ -156,7 +156,7 @@ The iOS version is being planned. You can use the web version for now.
 
 ### Q: Is Linux supported?
 
-The Linux version is being planned — stay tuned.
+Yes. Download the `.deb` or `.AppImage` installer from the **[🚀 Installation guide](getting-started.md)**.
 
 ### Q: What's the difference between the desktop and web versions?
 

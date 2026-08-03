@@ -24,18 +24,18 @@ Four KPI cards at the top give you a complete picture of your assets at a glance
 The monthly spending chart helps you understand your spending rhythm:
 
 - Filter by **platform** and **time range**
-- Toggle between **bar chart** and **line chart** views
+- **Bar chart** by default, with an optional **cumulative spending line**
 - Color gradient intensifies with higher values; peak values highlighted in warm orange
 
 > 💡 **Drill Down**: Click a month's bar in the chart to expand a spending detail panel for that month; click a specific item to jump to its detail popup.
 
 ---
 
-## Platform Share
+## Platform & Category Share
 
-The platform spending pie chart clearly shows where your money goes:
+Twin donut charts for **platform** and **category** share clearly show where your money goes:
 
-- Pie chart colors automatically follow the current theme
+- Chart colors automatically follow the current theme
 - Legend placed outside the chart for clarity
 - Mobile layout auto-stacks vertically
 

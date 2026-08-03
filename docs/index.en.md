@@ -346,9 +346,7 @@ The home page card grid displays all items. Green = earned back. Red = burning m
 
 Free · Open Beta · Data Fully Local
 
-[Download](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases){: .md-button .md-button--primary target="_blank"}
-&nbsp;
-[User Guide](USER_GUIDE.md){: .md-button }
+[Quick Start](getting-started/){: .md-button .md-button--primary }
 
 </div>
 

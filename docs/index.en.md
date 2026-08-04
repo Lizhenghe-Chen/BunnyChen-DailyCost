@@ -12,7 +12,7 @@ title: DailyCost Vault
 <div class="hero-subtitle">Every item has a daily average cost. A long-term personal asset digital management tool.</div>
 
 <div class="hero-actions">
-  <a href="getting-started/" class="md-button md-button--primary hero-btn">
+  <a href="getting-started.md" class="md-button md-button--primary hero-btn">
     Quick Start
   </a>
 </div>
@@ -346,7 +346,7 @@ The home page card grid displays all items. Green = earned back. Red = burning m
 
 Free · Open Beta · Data Fully Local
 
-[Quick Start](getting-started/){: .md-button .md-button--primary }
+[Quick Start](getting-started.md){: .md-button .md-button--primary }
 
 </div>
 

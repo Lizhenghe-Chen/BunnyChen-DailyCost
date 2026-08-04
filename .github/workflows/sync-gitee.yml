@@ -5,11 +5,14 @@
 # 说明：
 #   - 放在下载仓库而非构建仓库：GITEE_TOKEN 配置在本仓库，
 #     且 release 事件只在发布仓库触发。
-#   - sync job：用 sync-release-to-gitee（trustedinster/sync-release-gitee@v1.3）
-#     同步 Release + 附件到 Gitee；GitHub runner → Gitee 跨境上传较慢
-#     （~12-16kB/s），会同步所有版本，慢但幂等（已存在的 tag 只补附件）。
+#   - sync job：内嵌 Python 脚本直接调 Gitee API（不再依赖第三方 action），
+#     只对「最新版 + 上一个版本」做完整同步（Release 元数据 + 安装包附件），
+#     更老的版本不再同步安装包，避免 GitHub runner → Gitee 跨境上传
+#     （~12-16kB/s）每次都把所有历史版本附件重传一遍。
+#     附件已存在则跳过（幂等，可重跑补齐）；失败如实暴露。
 #   - rewrite-links job：独立于慢速同步，快速把 Gitee 侧 Release body 的
-#     GitHub 下载链接改写为 Gitee 附件链接（用 Gitee API 真实 URL）。
+#     GitHub 下载链接改写为 Gitee 附件链接（用 Gitee API 真实 URL），
+#     同样只处理最新两个版本，与 sync 保持一致。
 #   - 通过 if 只处理版本 tag（v*.*.*），跳过 updater tag。
 #
 # 需要 Secrets:
@@ -33,24 +36,149 @@ concurrency:
 
 jobs:
   sync:
-    name: Sync GitHub Release to Gitee
+    name: Sync latest 2 releases to Gitee
     runs-on: ubuntu-latest
     timeout-minutes: 360
     # 仅版本 tag 触发同步；workflow_dispatch 手动触发不受限
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')) }}
     steps:
-      - name: Sync GitHub Release to Gitee
-        uses: trustedinster/sync-release-gitee@v1.3
-        # 2026-08 起已移除全平台汇总 ZIP，所有安装包均低于 Gitee 附件 100MB 上限，
-        # 不再需要 continue-on-error 容错；失败如实暴露（幂等，可重跑补齐）。
-        with:
-          gitee_owner: lizhenghechen
-          gitee_repo: BunnyChen-DailyCost
-          gitee_token: ${{ secrets.GITEE_TOKEN }}
-          github_owner: Lizhenghe-Chen
-          github_repo: BunnyChen-DailyCost
-          gitee_upload_retry_times: 3
-          debug: false
+      - name: Sync latest 2 releases + installers to Gitee
+        env:
+          GITEE_OWNER: lizhenghechen
+          GITEE_REPO: BunnyChen-DailyCost
+          GITHUB_OWNER: Lizhenghe-Chen
+          GITHUB_REPO: BunnyChen-DailyCost
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 -u <<'PYEOF'
+          import io, json, os, re, sys, uuid, urllib.parse, urllib.request
+
+          gitee_owner = os.environ["GITEE_OWNER"]
+          gitee_repo  = os.environ["GITEE_REPO"]
+          gh_owner    = os.environ["GITHUB_OWNER"]
+          gh_repo     = os.environ["GITHUB_REPO"]
+          gitee_token = os.environ["GITEE_TOKEN"]
+
+          GH_API    = f"https://api.github.com/repos/{gh_owner}/{gh_repo}"
+          GITEE_API = f"https://gitee.com/api/v5/repos/{gitee_owner}/{gitee_repo}"
+          VERSION_RE = re.compile(r"v\d+\.\d+\.\d+")
+
+          def gh_api(path):
+              headers = {"User-Agent": "sync-gitee", "Accept": "application/vnd.github+json"}
+              tok = os.environ.get("GITHUB_TOKEN")
+              if tok:
+                  headers["Authorization"] = f"Bearer {tok}"
+              req = urllib.request.Request(GH_API + path, headers=headers)
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  return json.loads(r.read().decode())
+
+          def gitee_api(path, method="GET", data=None):
+              req = urllib.request.Request(GITEE_API + path, method=method)
+              payload = None
+              if data:
+                  req.add_header("Content-Type", "application/x-www-form-urlencoded")
+                  payload = data.encode()
+              with urllib.request.urlopen(req, data=payload, timeout=120) as r:
+                  return json.loads(r.read().decode())
+
+          def semver(tag):
+              return tuple(int(x) for x in tag.lstrip("v").split("."))
+
+          def download(url):
+              req = urllib.request.Request(url, headers={"User-Agent": "sync-gitee"})
+              with urllib.request.urlopen(req, timeout=1800) as r:
+                  return r.read()
+
+          def upload_asset(release_id, filename, content):
+              boundary = uuid.uuid4().hex
+              buf = io.BytesIO()
+              buf.write(f"--{boundary}\r\nContent-Disposition: form-data; name=\"access_token\"\r\n\r\n{gitee_token}\r\n".encode())
+              buf.write(f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{filename}\"\r\nContent-Type: application/octet-stream\r\n\r\n".encode())
+              buf.write(content)
+              buf.write(f"\r\n--{boundary}--\r\n".encode())
+              req = urllib.request.Request(
+                  f"{GITEE_API}/releases/{release_id}/attach_files",
+                  data=buf.getvalue(), method="POST")
+              req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
+              with urllib.request.urlopen(req, timeout=1800) as r:
+                  return json.loads(r.read().decode())
+
+          # 1) 拉取 GitHub 全部 release，过滤出版本 tag，按版本号倒序，取最新 2 个做完整同步
+          releases, page = [], 1
+          while True:
+              batch = gh_api(f"/releases?per_page=100&page={page}")
+              if not batch:
+                  break
+              releases += batch
+              if len(batch) < 100:
+                  break
+              page += 1
+
+          version_rel = sorted(
+              (r for r in releases if VERSION_RE.fullmatch(r.get("tag_name", ""))),
+              key=lambda r: semver(r["tag_name"]), reverse=True)
+          full_tags = {r["tag_name"] for r in version_rel[:2]}
+          print(f"共 {len(version_rel)} 个版本 release；完整同步（含安装包）: {sorted(full_tags)}")
+
+          # 2) Gitee 已有 release（tag -> release 信息）
+          gitee_releases = {}
+          page = 1
+          while True:
+              batch = gitee_api(f"/releases?access_token={gitee_token}&per_page=100&page={page}")
+              if not batch:
+                  break
+              for it in batch:
+                  gitee_releases[it["tag_name"]] = it
+              if len(batch) < 100:
+                  break
+              page += 1
+
+          failed = False
+          for rel in version_rel:
+              tag = rel["tag_name"]
+              if tag not in full_tags:
+                  print(f"SKIP {tag}: 非最新/上一个版本，不再同步安装包")
+                  continue
+
+              # 3) 确保 Gitee release 存在（创建很便宜，只写元数据）
+              if tag not in gitee_releases:
+                  print(f"创建 Gitee release {tag}")
+                  created = gitee_api("/releases", method="POST", data=urllib.parse.urlencode({
+                      "access_token": gitee_token,
+                      "tag_name": tag,
+                      "name": rel.get("name") or tag,
+                      "body": rel.get("body") or "",
+                      "target_commitish": rel.get("target_commitish") or "master",
+                  }))
+                  created["assets"] = []
+                  gitee_releases[tag] = created
+
+              rel_id = gitee_releases[tag]["id"]
+              existing = {a["name"] for a in gitee_releases[tag].get("assets", [])}
+
+              # 4) 同步安装包（已存在则跳过，幂等）
+              for asset in rel.get("assets", []):
+                  name = asset.get("name")
+                  if not name or name in existing:
+                      if name:
+                          print(f"  {tag}: 附件 {name} 已存在，跳过")
+                      continue
+                  url = asset.get("browser_download_url")
+                  if not url:
+                      print(f"  WARN {tag}: 附件 {name} 无下载链接")
+                      continue
+                  try:
+                      print(f"  {tag}: 下载并上传 {name} ...")
+                      upload_asset(rel_id, name, download(url))
+                      print(f"  {tag}: {name} 完成")
+                  except Exception as e:
+                      failed = True
+                      print(f"  ERROR {tag}: {name} 同步失败: {e}")
+
+          if failed:
+              sys.exit(1)
+          PYEOF
 
   # ── 独立改写 Gitee 侧 Release body 链接（不依赖慢速同步） ──
   rewrite-links:
@@ -67,6 +195,7 @@ jobs:
           GITHUB_OWNER: Lizhenghe-Chen
           GITHUB_REPO: BunnyChen-DailyCost
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           EVENT_TAG: ${{ github.event.release.tag_name }}
         run: |
           python3 -u <<'PYEOF'
@@ -90,13 +219,25 @@ jobs:
               with urllib.request.urlopen(req, data=payload, timeout=120) as r:
                   return json.loads(r.read().decode())
 
-          # 1) 决定要处理的 tag：release 事件只处理触发 tag；手动则全量版本 tag
+          # 1) 决定要处理的 tag：release 事件只处理触发 tag；手动则取 GitHub 最新 2 个版本
           if event_tag:
               tags = [event_tag]
           else:
-              rels = api(f"{base}/releases?access_token={gitee_token}&per_page=100")
-              tags = [r["tag_name"] for r in rels
-                      if re.fullmatch(r"v\d+\.\d+\.\d+", r["tag_name"])]
+              def semver(tag):
+                  return tuple(int(x) for x in tag.lstrip("v").split("."))
+              gh_headers = {"User-Agent": "sync-gitee", "Accept": "application/vnd.github+json"}
+              gh_token = os.environ.get("GITHUB_TOKEN", "")
+              if gh_token:
+                  gh_headers["Authorization"] = f"Bearer {gh_token}"
+              gh_req = urllib.request.Request(
+                  f"https://api.github.com/repos/{github_owner}/{github_repo}/releases?per_page=100",
+                  headers=gh_headers)
+              with urllib.request.urlopen(gh_req, timeout=60) as r:
+                  rels = json.loads(r.read().decode())
+              tags = sorted(
+                  (x["tag_name"] for x in rels
+                   if re.fullmatch(r"v\d+\.\d+\.\d+", x.get("tag_name", ""))),
+                  key=semver, reverse=True)[:2]
 
           gh_prefix = f"https://github.com/{github_owner}/{github_repo}/releases/download/"
 

@@ -16,7 +16,7 @@ Each CSV import creates an import batch, displayed in the Settings page's "Impor
 
 The desktop version shows the full SQLite database file path at the bottom of the Settings page. **Click the path text** to locate the file in your file manager for manual backup.
 
-- Windows: `AppData/com.bunnychen-item-dailycost/bookkeeping.db`
+- Windows: `AppData/com.bunnychen.dailycostvault/bookkeeping.db`
 - Android: SQLite file in app private directory
 - Web: Data stored in browser localStorage
 

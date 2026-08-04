@@ -65,7 +65,7 @@
 
 | 平台 | 存储位置 |
 |------|----------|
-| Windows 桌面端 | `AppData/com.bunnychen-item-dailycost/bookkeeping.db` |
+| Windows 桌面端 | `AppData/com.bunnychen.dailycostvault/bookkeeping.db` |
 | Android | 应用私有目录的 SQLite 数据库 |
 | 网页版 | 浏览器 localStorage |
 

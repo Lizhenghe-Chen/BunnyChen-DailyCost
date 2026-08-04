@@ -35,7 +35,7 @@
 
 | 平台 | 存储方式 | 路径 |
 |------|----------|------|
-| Windows | SQLite 数据库 | `%AppData%/com.bunnychen-item-dailycost/bookkeeping.db` |
+| Windows | SQLite 数据库 | `%AppData%/com.bunnychen.dailycostvault/bookkeeping.db` |
 | macOS | SQLite 数据库 | 应用数据目录（设置页可查看完整路径） |
 | Linux | SQLite 数据库 | 应用数据目录（设置页可查看完整路径） |
 | Android | SQLite 数据库 | 应用私有目录 |

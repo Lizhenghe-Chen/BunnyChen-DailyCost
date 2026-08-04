@@ -16,7 +16,7 @@
 
 桌面端在设置页底部显示 SQLite 数据库文件的完整路径，**点击路径文字**可在文件管理器中定位文件，方便手动备份。
 
-- Windows：`AppData/com.bunnychen-item-dailycost/bookkeeping.db`
+- Windows：`AppData/com.bunnychen.dailycostvault/bookkeeping.db`
 - Android：应用私有目录下的 SQLite 文件
 - 网页版：数据存储在浏览器 localStorage 中
 

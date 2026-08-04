@@ -12,16 +12,16 @@
     🖥️ 桌面端导入订单 → 📤 导出数据库 `.db` → 📱 Android 端导入查看
 
 !!! info "下载提示"
-    所有安装包均来自官方 [GitHub Release](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)。国内用户若 GitHub 下载慢，可优先用「国内加速」链接；若加速不可用，可到 [Gitee 镜像](https://gitee.com/lizhenghechen/BunnyChen-DailyCost/releases) 下载。
+    所有安装包均来自官方 [GitHub Release](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)。每个安装包提供多个下载源（按优先级）：**① GitHub 官方 → ② v4.gh-proxy.org（国内加速）→ ③ gh-proxy.com → ④ v6.gh-proxy.org → ⑤ gh-proxy.org（备用）**；国内用户优先用 ②，若加速均不可用，可到 [Gitee 镜像](https://gitee.com/lizhenghechen/BunnyChen-DailyCost/releases) 下载保底。
 
 === "🪟 Windows"
 
-    | 安装包 | 说明 | 下载 |
-    |--------|------|:---:|
-    | `DailyCost.Vault_1.0.8_x64-setup.exe` | x64（推荐） | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe) |
-    | `DailyCost.Vault_1.0.8_x64_en-US.msi` | x64 MSI | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi) |
-    | `DailyCost.Vault_1.0.8_arm64-setup.exe` | ARM64 | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe) |
-    | `DailyCost.Vault_1.0.8_arm64_en-US.msi` | ARM64 MSI | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi) |
+    | 安装包 | 说明 | ① GitHub 官方 | ② v4.gh-proxy.org | ③ gh-proxy.com | ④ v6.gh-proxy.org | ⑤ gh-proxy.org |
+    |--------|------|:-:|:-:|:-:|:-:|:-:|
+    | `DailyCost.Vault_1.0.8_x64-setup.exe` | x64（推荐） | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64-setup.exe) |
+    | `DailyCost.Vault_1.0.8_x64_en-US.msi` | x64 MSI | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64_en-US.msi) |
+    | `DailyCost.Vault_1.0.8_arm64-setup.exe` | ARM64（Snapdragon X 等 ARM 设备） | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64-setup.exe) |
+    | `DailyCost.Vault_1.0.8_arm64_en-US.msi` | ARM64 MSI | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_arm64_en-US.msi) |
 
     **安装：** 下载 `x64-setup.exe`（推荐）或 `.msi`，双击按向导完成安装，再从开始菜单启动「日耗仓」。
 
@@ -29,10 +29,10 @@
 
 === "🍎 macOS"
 
-    | 安装包 | 说明 | 下载 |
-    |--------|------|:---:|
-    | `DailyCost.Vault_1.0.8_aarch64.dmg` | Apple M 系列（推荐） | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg) |
-    | `DailyCost.Vault_1.0.8_x64.dmg` | Intel | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg) |
+    | 安装包 | 说明 | ① GitHub 官方 | ② v4.gh-proxy.org | ③ gh-proxy.com | ④ v6.gh-proxy.org | ⑤ gh-proxy.org |
+    |--------|------|:-:|:-:|:-:|:-:|:-:|
+    | `DailyCost.Vault_1.0.8_aarch64.dmg` | Apple M 系列（推荐） | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_aarch64.dmg) |
+    | `DailyCost.Vault_1.0.8_x64.dmg` | Intel | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_x64.dmg) |
 
     **安装：** Apple M 系列下载 `aarch64.dmg`（推荐）、Intel 下载 `x64.dmg`，打开 `.dmg` 后把 `DailyCost Vault.app` 拖入「应用程序」即可。
 
@@ -45,16 +45,16 @@
 
 === "🐧 Linux"
 
-    | 安装包 | 说明 | 下载 |
-    |--------|------|:---:|
-    | `DailyCost.Vault_1.0.8_amd64.deb` | Debian / Ubuntu | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb) |
-    | `DailyCost.Vault_1.0.8_amd64.AppImage` | 通用（AppImage） | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage) |
+    | 安装包 | 说明 | ① GitHub 官方 | ② v4.gh-proxy.org | ③ gh-proxy.com | ④ v6.gh-proxy.org | ⑤ gh-proxy.org |
+    |--------|------|:-:|:-:|:-:|:-:|:-:|
+    | `DailyCost.Vault_1.0.8_amd64.deb` | Debian / Ubuntu | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.deb) |
+    | `DailyCost.Vault_1.0.8_amd64.AppImage` | 通用（AppImage） | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/DailyCost.Vault_1.0.8_amd64.AppImage) |
 
 === "📱 Android"
 
-    | 安装包 | 说明 | 下载 |
-    |--------|------|:---:|
-    | `app-universal-release.apk` | Android（需允许未知来源） | [GitHub 官方](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk) · [国内加速](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk) |
+    | 安装包 | 说明 | ① GitHub 官方 | ② v4.gh-proxy.org | ③ gh-proxy.com | ④ v6.gh-proxy.org | ⑤ gh-proxy.org |
+    |--------|------|:-:|:-:|:-:|:-:|:-:|
+    | `app-universal-release.apk` | Android（需允许未知来源） | **[下载](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk)** | [下载](https://v4.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk) | [下载](https://gh-proxy.com/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk) | [下载](https://v6.gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk) | [下载](https://gh-proxy.org/https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/v1.0.8/app-universal-release.apk) |
 
     **安装：** 下载 `.apk` 后打开，按提示允许「未知来源」即可完成安装。
 

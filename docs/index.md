@@ -12,7 +12,7 @@ title: 日耗仓 · DailyCost Vault
 <div class="hero-subtitle">每一件物品都有日均持有成本。长期主义个人资产数字化管理工具。</div>
 
 <div class="hero-actions">
-  <a href="getting-started/" class="md-button md-button--primary hero-btn">
+  <a href="getting-started.md" class="md-button md-button--primary hero-btn">
     快速开始
   </a>
 </div>
@@ -343,41 +343,6 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 </div>
 
----
-
-## 快速开始
-
-<div class="quickstart-section" markdown>
-
-<div class="quickstart-step" markdown>
-
-### 下载安装
-
-前往 [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 选择对应平台安装包，或直接打开[网页版](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)。Windows 推荐 `.exe`，macOS 下载 `.dmg`。
-
-</div>
-
-<div class="quickstart-step" markdown>
-
-### 导入数据
-
-安装[浏览器扩展](assets/dailycost-exporter-extension.zip)导出京东、淘宝、Steam 消费记录为 CSV。拖入应用窗口或设置页点击导入——自动解析、去重、分类。
-
-[📥 下载浏览器扩展](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
-
-</div>
-
-<div class="quickstart-step" markdown>
-
-### 一切就绪
-
-主页卡片网格展示所有物品。绿色 = 用回本，红色 = 在烧钱。点击卡片查看详情，进入分析页查看月度趋势和平台占比。开始重新认识你的每一笔消费。
-
-</div>
-
-</div>
-
----
 
 ## 支持一下 · 请我喝杯咖啡 ☕
 
@@ -425,7 +390,7 @@ buymeacoffee.com/bunnychen
 
 免费 · 开放测试 · 数据完全本地
 
-[快速开始](getting-started/){: .md-button .md-button--primary }
+[快速开始](getting-started.md){: .md-button .md-button--primary }
 
 </div>
 

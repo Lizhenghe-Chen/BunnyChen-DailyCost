@@ -65,7 +65,7 @@ This usually happens when the purchase date is today or yesterday, making the ho
 
 | Platform | Storage Location |
 |----------|-----------------|
-| Windows Desktop | `AppData/com.bunnychen-item-dailycost/bookkeeping.db` |
+| Windows Desktop | `AppData/com.bunnychen.dailycostvault/bookkeeping.db` |
 | Android | SQLite database in app private directory |
 | Web | Browser localStorage |
 

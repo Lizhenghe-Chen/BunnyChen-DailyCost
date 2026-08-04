@@ -35,7 +35,7 @@ All data is stored **exclusively on your local device**:
 
 | Platform | Storage Method | Path |
 |----------|---------------|------|
-| Windows | SQLite Database | `%AppData%/com.bunnychen-item-dailycost/bookkeeping.db` |
+| Windows | SQLite Database | `%AppData%/com.bunnychen.dailycostvault/bookkeeping.db` |
 | macOS | SQLite Database | App data directory (full path shown in Settings) |
 | Linux | SQLite Database | App data directory (full path shown in Settings) |
 | Android | SQLite Database | App private directory |

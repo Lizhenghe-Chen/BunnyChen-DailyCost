@@ -12,7 +12,7 @@ title: DailyCost Vault
 <div class="hero-subtitle">Every item has a daily average cost. A long-term personal asset digital management tool.</div>
 
 <div class="hero-actions">
-  <a href="getting-started.md" class="md-button md-button--primary hero-btn">
+  <a href="getting-started/" class="md-button md-button--primary hero-btn">
     Quick Start
   </a>
 </div>

@@ -60,6 +60,8 @@ plugins:
 theme:
   name: material
   custom_dir: overrides
+  # 禁用 Google Fonts（国内不可达、render-blocking）：使用系统字体栈，中文字形不受影响
+  font: false
   icon:
     repo: octicons/mark-github-24
   logo: assets/logo.png

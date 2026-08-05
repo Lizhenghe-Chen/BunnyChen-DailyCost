@@ -1016,3 +1016,54 @@ body:not([data-md-color-scheme="default"]) .donation-card img {
   .bottom-cta { padding: 3rem 1.2rem; }
   .bottom-cta h2 { font-size: 1.2rem; }
 }
+
+/* ═══════ 批量导入平台（首页强调） ═══════ */
+.import-platforms {
+  text-align: center;
+  margin: 0.5rem 0 2.2rem;
+}
+.import-platforms-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--dc-text);
+  margin-bottom: 0.7rem;
+}
+.import-platform-badges {
+  margin-bottom: 0.7rem !important;
+}
+.import-platforms-hint {
+  font-size: 0.84rem;
+  color: var(--dc-text-secondary);
+}
+.import-platforms-hint a {
+  color: var(--dc-accent-deep);
+  font-weight: 600;
+}
+body[data-md-color-scheme="slate"] .import-platforms-hint a,
+body:not([data-md-color-scheme="default"]) .import-platforms-hint a {
+  color: var(--dc-accent);
+}
+
+/* ═══════ 隐私承诺（首页强调） ═══════ */
+.privacy-promise {
+  text-align: center;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.7;
+  color: var(--dc-text);
+  border-radius: 14px;
+  padding: 1.1rem 1.5rem;
+  margin: 1rem 0 1.4rem;
+}
+body[data-md-color-scheme="default"] .privacy-promise {
+  background: var(--dc-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--dc-primary) 35%, transparent);
+}
+body[data-md-color-scheme="slate"] .privacy-promise,
+body:not([data-md-color-scheme="default"]) .privacy-promise {
+  background: rgba(134, 184, 114, 0.1);
+  border: 1px solid rgba(134, 184, 114, 0.25);
+}
+.privacy-badges {
+  margin: 1rem 0 1.4rem !important;
+}

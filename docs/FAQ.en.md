@@ -10,14 +10,21 @@ The system automatically deduplicates: records with the same order ID from the s
 
 ### Q: Which platforms are supported for order import?
 
-Currently supports **JD.com, Taobao/Tmall, and Steam**. Other platforms (e.g., Pinduoduo, Meituan) can be entered manually via the "Add Item" feature.
+Currently supports **four platforms**: **JD.com, Taobao/Tmall, Steam, and WeChat**.
+- **JD.com / Taobao / Tmall / Steam**: export CSV via the browser extension, then import
+- **WeChat**: export your bill as CSV / Excel from inside the WeChat app, then import — no extension needed
+
+Other platforms (e.g., Pinduoduo, Meituan) can be entered manually via the "Add Item" feature.
 
 ### Q: Why are some orders missing after import?
 
 The following orders are automatically filtered during import:
 - **JD/Taobao**: Incomplete orders (pending payment, cancelled, etc.)
 - **Steam**: Refunds, wallet top-ups (total amount ≤ 0)
+- **WeChat**: non-expense records (income / not-expense); refund or abnormal statuses (Fully Refunded, Refunded ¥X, Counterparty Refunded, etc.); records with amount ≤ 0 or duplicate transaction IDs
 - **All platforms**: Duplicate existing orders
+
+> 💡 WeChat transfers, red packets, QR-code payments, and group collections are **kept and imported** (product name falls back to the counterparty), so you can see your full daily spending.
 
 ### Q: What if JD.com triggers risk control during export?
 
@@ -29,7 +36,7 @@ Chrome automatically downloads to your system's "Downloads" folder after export.
 
 ### Q: Can I import Excel files?
 
-Currently only CSV format is supported. If you have Excel files, you can save them as CSV using Excel/WPS first, then import.
+Both **CSV** and **Excel (.xlsx)** formats are supported. WeChat bills can be exported as Excel and imported directly; other Excel files are also supported (if a specific file fails to parse, save it as CSV with Excel/WPS first, then import).
 
 ### Q: Can I edit data after import?
 

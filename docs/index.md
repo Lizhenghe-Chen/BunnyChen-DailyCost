@@ -64,6 +64,24 @@ title: 日耗仓 · DailyCost Vault
   <span class="badge">🚀 持续更新</span>
 </div>
 
+<!-- 批量导入平台 -->
+<div class="import-platforms" markdown>
+
+<div class="import-platforms-title">📥 一键批量导入 · 四大平台</div>
+
+<div class="hero-badges import-platform-badges">
+
+<span class="badge">🐶 京东</span>
+<span class="badge">🛒 淘宝 / 天猫</span>
+<span class="badge">🎮 Steam</span>
+<span class="badge">💬 微信账单</span>
+
+</div>
+
+<div class="import-platforms-hint" markdown>自动识别平台 · 自动匹配 emoji · 自动去重 — [📥 查看导入教程](import-csv.md)</div>
+
+</div>
+
 ---
 
 ## 💡 为什么做这个项目？
@@ -72,7 +90,7 @@ title: 日耗仓 · DailyCost Vault
 
 - 💸 **要么收费** —— 好用的功能都藏在付费墙后面，越用越贵
 - ⌨️ **要么手动** —— 数据要一条一条自己填，还没开始记账就已经累了
-- 🗂️ **要么分散** —— 京东、淘宝、Steam 各记各的，消费全貌支离破碎
+- 🗂️ **要么分散** —— 京东、淘宝、Steam、微信各记各的，消费全貌支离破碎
 
 可你有没有想过：**你在各个平台买下的每一样东西，订单信息本来就是属于你自己的**。它不该被锁在购物记录里，更不该让你反复手动搬运。
 
@@ -98,9 +116,9 @@ title: 日耗仓 · DailyCost Vault
 
 <div class="feature-card" markdown>
 
-### 📥 三平台智能导入
+### 📥 四平台智能导入
 
-京东、淘宝、Steam 订单 CSV 拖入即导入。Rust 后端与 TypeScript 前端双解析器，自动识别平台、过滤无效订单、emoji 匹配、多商品合并。批量预加载去重，万条数据秒级入库。
+京东、淘宝、Steam 订单 CSV 与微信账单（CSV / Excel）拖入即导入。Rust 后端与 TypeScript 前端双解析器，自动识别平台、过滤无效订单、emoji 匹配、多商品合并。批量预加载去重，万条数据秒级入库。
 
 </div>
 
@@ -276,15 +294,31 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ---
 
-## 🔒 隐私安全 · 请放心
+## 🔒 隐私安全 · 我们的承诺
 
-**日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 既没有兴趣、也没有任何必要获取你的任何信息。**
+<div class="privacy-promise" markdown>
+
+**日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 郑重承诺：绝不收集、绝不上传、绝不窥探你的任何数据。**
+
+</div>
+
+**你的数据存储在哪里？**
 
 - 🖥️ 桌面端 → `AppData` 目录下的 SQLite 数据库
 - 🤖 Android → 应用私有目录的 SQLite 数据库
 - 🌐 网页版 → 浏览器 localStorage
 
-❌ 不上传数据 · ❌ 无追踪分析 · ❌ 不读取无关文件
+**我们绝不会做什么？**
+
+<div class="hero-badges privacy-badges">
+
+<span class="badge">🚫 不上传数据</span>
+<span class="badge">🚫 无追踪分析</span>
+<span class="badge">🚫 不读取无关文件</span>
+<span class="badge">🚫 无用户系统</span>
+<span class="badge">🚫 无云同步</span>
+
+</div>
 
 > 🗝️ **项目目前暂不开源，但 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。
 

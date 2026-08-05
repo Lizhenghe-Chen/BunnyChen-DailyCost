@@ -1,17 +1,31 @@
 # 📥 Import CSV Orders
 
 !!! tip "⭐ Recommended First Step"
-    If you have purchase history on JD.com, Taobao, or Steam, CSV batch import is the **fastest** way to add items. The import automatically detects the platform, matches emojis, and deduplicates records, so there is no need to enter anything by hand.
+    If you have purchase history on JD.com, Taobao, or Steam, CSV batch import is the **fastest** way to add items; WeChat bills (CSV / Excel) are also supported with one-click import. The import automatically detects the platform, matches emojis, and deduplicates records, so there is no need to enter anything by hand.
 
 ---
 
-## Three Simple Steps
+## Supported Batch-Import Platforms
+
+Batch import currently supports **four platforms**:
+
+| Platform | File Format | How to Get the File |
+|------|---------|---------|
+| 🐶 JD.com | CSV | One-click export via the browser extension |
+| 🛒 Taobao / Tmall | CSV | One-click export via the browser extension |
+| 🎮 Steam | CSV | One-click export via the browser extension |
+| 💬 WeChat | CSV / Excel | Export "Download Bill" inside the WeChat app |
+
+- **JD.com / Taobao / Steam** → see "Method 1: Import via the Browser Extension" below
+- **WeChat** → no extension needed, see "Method 2: Import WeChat Bills" below
+
+---
+
+## Method 1: Import via the Browser Extension (JD.com / Taobao / Steam)
 
 🧩 Install the extension → 📤 Export CSV → 📥 Import into DailyCost Vault
 
----
-
-## 1. Install the Browser Extension
+### 1. Install the Browser Extension
 
 Supported browsers: **Chrome**, **Edge**, and other Chromium-based browsers.
 
@@ -30,7 +44,7 @@ Supported browsers: **Chrome**, **Edge**, and other Chromium-based browsers.
 
 ---
 
-## 2. Export the Order CSV
+### 2. Export the Order CSV
 
 The three platforms follow the same basic flow:
 
@@ -55,12 +69,12 @@ The three platforms follow the same basic flow:
 
 ---
 
-## 3. Import into DailyCost Vault
+### 3. Import into DailyCost Vault
 
 After you have the CSV files, you can import them in either of two ways:
 
-- **Method 1: Drag and drop, recommended** — drag the CSV files into the **Data Import** area on the Settings page. You can drop multiple files at once.
-- **Method 2: Select files** — go to **Settings** → **Data Import** → click **Select CSV Files**, then hold ++ctrl++ to select multiple files.
+- **Drag and drop (recommended)** — drag the CSV files into the **Data Import** area on the Settings page. You can drop multiple files at once.
+- **Select files** — go to **Settings** → **Data Import** → click **Select CSV Files**, then hold ++ctrl++ to select multiple files.
 
 ![Import Result](assets/import-result.png){ loading=lazy }
 
@@ -68,9 +82,43 @@ After import, you will see a message like **Success X, Skipped X**. **Skipped** 
 
 ---
 
+## Method 2: Import WeChat Bills (No Extension Needed)
+
+WeChat bills can be exported directly from inside the WeChat app — **no browser extension required**. The exported file is CSV / Excel and can be imported by dragging it into DailyCost Vault:
+
+1. Open WeChat → **Me** → **Services** → **Wallet**
+2. Tap **"Bills"** in the top-right corner
+3. Tap **"FAQ"** in the top-right corner
+4. Tap **"Download Bill"**
+5. Choose **"For Personal Reconciliation"**
+6. Select the **transaction type** and **time range**, then tap **"Next"**
+7. Enter your **email address** and submit. WeChat will send the bill download link to that email
+8. Download the bill **archive (zip)** from your email, **unzip** it to get the CSV / Excel file, then drag it into DailyCost Vault (or click "Select File" in Settings to import)
+
+> 📖 For a detailed illustrated guide, see: [How to Export WeChat Bills as Excel (Baidu Experience)](https://jingyan.baidu.com/article/0eb457e5dee27d42f0a90568.html)
+
+### WeChat Bill Import Rules: Kept vs Filtered
+
+The system automatically distinguishes data during import, so you always know what is **kept** and what is **filtered out**:
+
+**✅ Kept (imported)**
+
+- **Only "Expense" records** are imported (Income/Expense column = 支出 / Expense)
+- **Status whitelist**: 支付成功 (Payment Successful) / 已支付 (Paid) / 交易成功 (Transaction Successful) / 完成 (Completed) / 已转账 (Transferred) / 对方已收钱 (Received) / empty
+- **No transaction-type filtering**: transfers, red packets, QR-code payments, group collections, and family-card payments are **kept too**, so you see your full daily spending (product name falls back to the counterparty when empty)
+- Amount is taken as an absolute value; payment method + remark are merged into the model/style field; records are deduplicated by transaction ID
+
+**❌ Filtered (skipped)**
+
+- **Income / not-expense** records
+- **Refund or abnormal statuses**: 已全额退款 (Fully Refunded), 已退款(¥X) (Refunded ¥X), 对方已退还 (Counterparty Refunded), etc.
+- Records with an empty transaction ID, amount ≤ 0, or duplicates of existing records
+
+---
+
 ## What the System Does Automatically
 
-- ✅ Detects the platform (JD.com / Taobao / Steam)
+- ✅ Detects the platform (JD.com / Taobao / Steam / WeChat)
 - ✅ Imports only completed orders and skips pending or cancelled ones
 - ✅ Matches the right emoji icon for each item
 - ✅ Extracts JD.com product detail links

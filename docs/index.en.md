@@ -62,6 +62,24 @@ title: DailyCost Vault
   <span class="badge">🌍 Multi-Language</span>
 </div>
 
+<!-- Batch-import platforms -->
+<div class="import-platforms" markdown>
+
+<div class="import-platforms-title">📥 One-Click Batch Import · Four Platforms</div>
+
+<div class="hero-badges import-platform-badges">
+
+<span class="badge">🐶 JD.com</span>
+<span class="badge">🛒 Taobao / Tmall</span>
+<span class="badge">🎮 Steam</span>
+<span class="badge">💬 WeChat Bills</span>
+
+</div>
+
+<div class="import-platforms-hint" markdown>Auto platform detection · Auto emoji matching · Auto deduplication — [📥 Import Guide](import-csv.md)</div>
+
+</div>
+
 ---
 
 ## Core Innovation
@@ -80,9 +98,9 @@ Cheap ≠ economical. Expensive ≠ wasteful. DailyCost Vault independently calc
 
 <div class="feature-card" markdown>
 
-### 📥 Smart Import from 3 Platforms
+### 📥 Smart Import from 4 Platforms
 
-Drag and drop JD.com, Taobao, and Steam order CSVs. Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. Batch preload deduplication — tens of thousands of records imported in seconds.
+Drag and drop JD.com, Taobao, and Steam order CSVs, plus WeChat bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. Batch preload deduplication — tens of thousands of records imported in seconds.
 
 </div>
 
@@ -258,6 +276,36 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 ---
 
+## 🔒 Privacy & Security · Our Commitment
+
+<div class="privacy-promise" markdown>
+
+**DailyCost Vault runs fully offline and stores all data locally. BunnyChen solemnly commits: we never collect, upload, or peek into any of your data.**
+
+</div>
+
+**Where your data lives**
+
+- 🖥️ Desktop → SQLite database in the `AppData` directory
+- 🤖 Android → SQLite database in the app's private directory
+- 🌐 Web → Browser localStorage
+
+**What we will never do**
+
+<div class="hero-badges privacy-badges">
+
+<span class="badge">🚫 No data upload</span>
+<span class="badge">🚫 No tracking analytics</span>
+<span class="badge">🚫 No reading unrelated files</span>
+<span class="badge">🚫 No user accounts</span>
+<span class="badge">🚫 No cloud sync</span>
+
+</div>
+
+> 🗝️ **The project is not open source yet, but BunnyChen promises never to collect, upload, or snoop on any of your data.** Your data belongs only to you — please keep it safe.
+
+---
+
 ## Five Themes · Five Personalities
 
 <div class="carousel-hint">🎠 Auto-rotating · Swipe or click dots to switch</div>
@@ -324,7 +372,7 @@ Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)
 
 ### Import Data
 
-Install [browser extensions](assets/dailycost-exporter-extension.zip) to export JD.com, Taobao, and Steam purchase history as CSV. Drag into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
+Install [browser extensions](assets/dailycost-exporter-extension.zip) to export JD.com, Taobao, and Steam purchase history as CSV, or export WeChat bills directly from the WeChat app. Drag them into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
 
 [📥 Download the Browser Extension](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
 

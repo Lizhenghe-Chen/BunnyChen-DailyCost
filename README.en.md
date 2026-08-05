@@ -44,7 +44,7 @@ Plenty of bookkeeping and asset-management tools already exist — yet most shar
 
 - 💸 **They charge** — the good features hide behind paywalls and only get pricier
 - ⌨️ **They're manual** — you have to type every record by hand, and you're exhausted before you even start
-- 🗂️ **They're scattered** — JD.com, Taobao, and Steam each keep their own records, so the full picture of your spending stays fragmented
+- 🗂️ **They're scattered** — JD.com, Taobao, Steam, and WeChat each keep their own records, so the full picture of your spending stays fragmented
 
 But think about it: **every order you place on any platform already belongs to you.** It shouldn't be locked away in your purchase history, nor should you have to re-type it over and over.
 
@@ -72,7 +72,7 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 - 💖 **Completely Free** — no subscriptions, no in-app purchases, no ads. Every feature, no holds barred
 - 🧮 **Daily Average Cost** — calculated per item. Paying more but using it longer = worth it
 - 🏷️ **Asset Card Grid** — platform badge + emoji + name + daily cost at a glance
-- 📥 **Rich Data Sources** — one-click import from JD.com / Taobao / Steam, auto-deduplication, continuously expanding
+- 📥 **Rich Data Sources** — one-click import from JD.com / Taobao / Steam / WeChat, auto-deduplication, continuously expanding
 - 🔄 **Item Lifecycle** — In Use / Sold / Retired, with archive & restore
 - 🎨 **Personalization** — 3-state theme × 5 color schemes × custom emoji × platform colors
 - 🌐 **Internationalization** — 简体中文 / 繁體中文 / English

@@ -7,7 +7,7 @@ DailyCost Vault supports Windows, macOS, Linux, Android, and Web — choose the 
 ## 📥 Download & Install
 
 !!! tip "Recommended workflow: Desktop first, Mobile as companion"
-    The browser extension runs in Chrome / Edge to export order CSVs, so **we recommend importing on desktop first**, then migrating the archive to **Android** via "Export Database". Desktop stores data in local SQLite with auto-update, drag-drop CSV import, and quick database access — the best experience.
+    JD.com / Taobao / Steam orders are exported as CSV via the browser extension, while WeChat bills are exported directly inside the WeChat app (no extension needed), so **we recommend importing on desktop first**, then migrating the archive to **Android** via "Export Database". Desktop stores data in local SQLite with auto-update, drag-drop CSV / Excel import, and quick database access — the best experience.
 
     🖥️ Desktop import → 📤 Export database `.db` → 📱 Android import
 
@@ -70,7 +70,7 @@ Visit [bunnychen.top/BunnyChen-Item-Bookkeeping](https://bunnychen.top/BunnyChen
 |------------|:-------:|:---:|
 | Data Storage | SQLite local database | Browser localStorage |
 | Auto-update | ✅ Built-in | — |
-| Drag-drop CSV import | ✅ | ✅ |
+| Drag-drop CSV / Excel import | ✅ | ✅ |
 | Offline use | ✅ | Requires page loaded first |
 | Data persistence | High | Lost on cache clear |
 
@@ -94,6 +94,6 @@ See [GitHub Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/rele
 
 ## Next Steps
 
-After installation, we recommend starting with **[📥 Import CSV Orders](import-csv.md)** — if you have purchase history on JD.com, Taobao, or Steam, this is the fastest way to populate your assets.
+After installation, we recommend starting with **[📥 Import CSV Orders](import-csv.md)** — if you have purchase history on JD.com, Taobao, Steam, or WeChat, this is the fastest way to populate your assets.
 
 You can also **[manually add items](manage-items.md)** to record individual assets.

@@ -58,7 +58,7 @@ DailyCost Vault provides the following data export features:
 
 ## Browser Extension Privacy
 
-DailyCost Vault provides browser extensions for JD.com, Taobao, and Steam to export order data. These extensions follow the same strict privacy principles:
+DailyCost Vault provides browser extensions for JD.com, Taobao, and Steam to export order data; WeChat bills are imported directly in the app without any extension. These extensions follow the same strict privacy principles:
 
 ### Data Access Scope
 

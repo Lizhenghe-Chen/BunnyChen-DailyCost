@@ -26,6 +26,12 @@ The following orders are automatically filtered during import:
 
 > 💡 WeChat transfers, red packets, QR-code payments, and group collections are **kept and imported** (product name falls back to the counterparty), so you can see your full daily spending.
 
+### Q: Will JD / Taobao orders paid with WeChat be counted twice?
+
+Yes, they can be. Deduplication is **per platform**: JD orders by order number, WeChat records by transaction ID — the two are not linked. If the same order appears in both a JD / Taobao order CSV and a WeChat bill (e.g., you paid for a JD order with WeChat Pay), it will be imported separately and counted twice. Cross-platform deduplication is not yet implemented in the current version.
+
+**Recommendation**: treat the platform's own order export as the source of truth and use WeChat bills for daily spending that cannot be exported; if both are imported, delete the duplicate record with the same amount on the same day.
+
 ### Q: What if JD.com triggers risk control during export?
 
 We recommend exporting by year segments rather than all history at once. For example: export 2024 first, then 2025 after completion.

@@ -116,6 +116,19 @@ The system automatically distinguishes data during import, so you always know wh
 
 ---
 
+!!! note "About duplicates between JD / Taobao orders and WeChat bills"
+    Deduplication in DailyCost Vault is **per platform**: JD orders are deduplicated by JD order number and WeChat records by WeChat transaction ID — the two are not linked.
+
+    If you pay for a **JD / Taobao order with WeChat Pay**, the same purchase appears in both:
+    1. The order CSV exported from the platform (recorded by order number)
+    2. Your WeChat bill (the counterparty is a JD / Taobao-related merchant, and the merchant order number is usually the platform's order number)
+
+    Both will be imported, so the same expense is **counted twice**. Cross-platform deduplication is not yet implemented in the current version.
+
+    **Recommendation**: treat the platform's own order export (JD / Taobao CSV) as the source of truth, and use WeChat bills mainly for daily spending that cannot be exported from a platform. If both are imported, watch for records with the same amount on the same day and delete one manually from its detail view.
+
+---
+
 ## What the System Does Automatically
 
 - ✅ Detects the platform (JD.com / Taobao / Steam / WeChat)

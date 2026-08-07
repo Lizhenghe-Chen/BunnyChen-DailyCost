@@ -204,4 +204,12 @@ No. Browser extensions run only in your local Chrome and don't upload data to th
 
 ---
 
+## Project
+
+### Q: Is the project open source?
+
+Not at the moment — **All Rights Reserved**. BunnyChen solemnly commits: we never collect, upload, or peek into any of your data. Your data belongs only to you, so please keep it safe. See the [Privacy Policy](PRIVACY.md).
+
+---
+
 > Didn't find an answer? Submit an [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) to ask.

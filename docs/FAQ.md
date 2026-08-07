@@ -204,4 +204,12 @@ iOS 版本正在规划中。目前可以使用网页版。
 
 ---
 
+## 项目相关
+
+### Q: 项目开源吗？
+
+目前**暂不开源**，保留所有权利（All Rights Reserved）。BunnyChen 郑重承诺：绝不收集、绝不上传、绝不窥探你的任何数据，你的数据只属于你自己，也请务必自己保管好它们。详见 [隐私说明](PRIVACY.md)。
+
+---
+
 > 没有找到答案？欢迎提交 [Issue](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) 提问。

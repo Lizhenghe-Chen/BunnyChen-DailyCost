@@ -1044,6 +1044,21 @@ body:not([data-md-color-scheme="default"]) .import-platforms-hint a {
   color: var(--dc-accent);
 }
 
+/* ═══════ 数据来源平台清单（首页 · 可点击 checkbox） ═══════ */
+.import-platforms-checklist {
+  display: inline-block;
+  text-align: left;
+  margin: 0 auto 0.6rem;
+}
+.import-platforms-checklist > p {
+  margin: 0.6rem 0 0.3rem;
+  font-weight: 600;
+  color: var(--dc-text-secondary);
+}
+.import-platforms-checklist ul.task-list {
+  margin: 0 0 0.4rem;
+}
+
 /* ═══════ 隐私承诺（首页强调） ═══════ */
 .privacy-promise {
   text-align: center;

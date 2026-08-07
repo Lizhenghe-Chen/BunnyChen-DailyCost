@@ -41,6 +41,19 @@ Twin donut charts for **platform** and **category** share clearly show where you
 
 ---
 
+## WeChat Income & Expense Analysis
+
+After importing WeChat bills, the analytics page also shows a dedicated **WeChat Income & Expense** section to help you understand your daily cash flow:
+
+- **Overview**: expenses / cashback (income) / net spending at a glance
+- **Cashback Structure**: cashback sources split by transaction type (AA transfers, refunds, red packets, etc.; "refund" types are grouped into one item)
+- **Top 10 Sources**: cashback source ranking; click to drill down into all transactions from that source
+- **Monthly Income & Expense**: monthly spending vs. cashback trends
+
+> 💡 The WeChat section appears only when the platform filter is set to "All" or "WeChat". Cashback data is independent of asset items and does not count toward asset or spending analysis.
+
+---
+
 ## Mobile Experience
 
 Full analytics experience on mobile too:

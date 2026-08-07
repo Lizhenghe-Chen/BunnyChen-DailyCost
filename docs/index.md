@@ -183,6 +183,14 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 </div>
 
+<div class="showcase-card" markdown>
+
+![微信收支 · 分析页](assets/微信分析页.jpg){ loading=lazy }
+
+**微信收支 · 看清日常现金流** — 导入微信账单后，分析页新增微信收支区块：支出 / 回款 / 净支出一目了然，回款结构、来源 Top 10 与月度趋势一键掌握。
+
+</div>
+
 </div>
 
 ---
@@ -299,11 +307,11 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ---
 
-## 🔒 隐私安全 · 我们的承诺
+## 🔒 隐私安全 · 郑重承诺
 
 <div class="privacy-promise" markdown>
 
-**日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 郑重承诺：绝不收集、绝不上传、绝不窥探你的任何数据。**
+**日耗仓完全离线运行，所有数据仅存储在本地。绝不收集、绝不上传、绝不窥探你的任何数据。**
 
 </div>
 
@@ -313,7 +321,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 - 🤖 Android → 应用私有目录的 SQLite 数据库
 - 🌐 网页版 → 浏览器 localStorage
 
-**我们绝不会做什么？**
+**绝不会做什么？**
 
 <div class="hero-badges privacy-badges">
 
@@ -391,7 +399,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ### ① 下载安装
 
-到 [GitHub Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 选择对应平台的安装包，或直接打开[网页版](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)即点即用。Windows 推荐 `.exe`，macOS 下载 `.dmg`，Android 安装 `.apk`。
+[安装与启动 →](getting-started.md)
 
 </div>
 
@@ -399,9 +407,9 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ### ② 导入数据
 
-安装[浏览器扩展](assets/dailycost-exporter-extension.zip)，一键导出京东 / 淘宝 / Steam 消费记录为 CSV；微信账单直接在微信 App 内「下载账单」。把文件拖进设置页导入区即可——自动解析、去重、分类，不用手打一条。
+通过浏览器扩展一键导出京东 / 淘宝 / Steam 消费记录为 CSV；微信账单直接在微信 App 内「下载账单」。
 
-[📥 下载浏览器扩展](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
+[批量导入教程 →](import-csv.md)
 
 </div>
 
@@ -409,16 +417,16 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 ### ③ 开始使用
 
-主页卡片网格展示全部资产：绿色 = 用回本，红色 = 在烧钱。点击卡片查看详情，到「分析」页看月度趋势、平台占比与微信收支。重新审视你的每一笔消费吧。
+[浏览与管理资产](manage-items.md) · [数据分析](analytics.md)
 
 </div>
 
 </div>
 
 
-## 支持一下 · 请我喝杯咖啡 ☕
+## 支持一下 · 请喝杯咖啡 ☕
 
-一个人维护不易，喜欢的话，请我喝杯咖啡吧～ 🥺
+一个人维护不易，喜欢的话，请喝杯咖啡吧～ 🥺
 
 <div class="donation-cute" markdown>
 

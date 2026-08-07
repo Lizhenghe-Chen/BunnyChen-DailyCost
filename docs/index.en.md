@@ -65,11 +65,14 @@ title: DailyCost Vault
 <!-- Batch-import platforms -->
 <div class="import-platforms" markdown>
 
-<div class="import-platforms-title">📥 One-Click Batch Import · Data Source Platforms</div>
+<div class="import-platforms-title">📥 One-Click Batch Import · Four Platforms</div>
 
-<div class="import-platforms-checklist" markdown>
+<div class="hero-badges import-platform-badges">
 
---8<-- "platforms.en.md"
+<span class="badge">🐶 JD.com</span>
+<span class="badge">🛒 Taobao / Tmall</span>
+<span class="badge">🎮 Steam</span>
+<span class="badge">💬 WeChat Bills</span>
 
 </div>
 
@@ -95,9 +98,9 @@ Cheap ≠ economical. Expensive ≠ wasteful. DailyCost Vault independently calc
 
 <div class="feature-card" markdown>
 
-### 📥 Smart Import from Multiple Platforms
+### 📥 Smart Import from 4 Platforms
 
-Drag and drop JD.com, Taobao/Tmall, and Steam order CSVs, plus WeChat bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. **WeChat bills auto-split income vs expense**: expenses become assets, income goes to the cashback ledger — both deduplicated, tens of thousands of records imported in seconds. More platforms are on the way.
+Drag and drop JD.com, Taobao, and Steam order CSVs, plus WeChat bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. Batch preload deduplication — tens of thousands of records imported in seconds.
 
 </div>
 
@@ -165,6 +168,14 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 </div>
 
+<div class="showcase-card" markdown>
+
+![WeChat Cash Flow · Analytics](assets/微信分析页.jpg){ loading=lazy }
+
+**WeChat Cash Flow · Daily Spending in Focus** — After importing WeChat bills, the analytics page adds a WeChat section: expenses / cashback / net spending at a glance, with cashback structure, Top 10 sources, and monthly trends.
+
+</div>
+
 </div>
 
 ---
@@ -175,7 +186,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🪟 Windows ✅
+### 🪟 Windows
 
 `.exe` / `.msi`
 
@@ -183,7 +194,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🍎 macOS ✅
+### 🍎 macOS
 
 `.dmg` · Apple Silicon & Intel
 
@@ -191,7 +202,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🐧 Linux ✅
+### 🐧 Linux
 
 `.deb` / `.AppImage`
 
@@ -199,7 +210,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 📱 Android ✅
+### 📱 Android
 
 `.apk`
 
@@ -207,17 +218,9 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🌐 Web ✅
+### 🌐 Web
 
 Works in browser
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 📱 iOS 🚧
-
-Coming soon
 
 </div>
 
@@ -233,7 +236,7 @@ Coming soon
 
 ### 🦀 Rust Backend
 
-Tauri v2 framework, 35 Rust commands handling all data operations. SQLite WAL mode, foreign key constraints, automatic database migration. Daily cost calculated dynamically on every query — formula updates without re-importing.
+Tauri v2 framework, 29 Rust commands handling all data operations. SQLite WAL mode, foreign key constraints, automatic database migration. Daily cost calculated dynamically on every query — formula updates without re-importing.
 
 </div>
 
@@ -281,11 +284,11 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 ---
 
-## 🔒 Privacy & Security · Our Commitment
+## 🔒 Privacy & Security · A Solemn Promise
 
 <div class="privacy-promise" markdown>
 
-**DailyCost Vault runs fully offline and stores all data locally. BunnyChen solemnly commits: we never collect, upload, or peek into any of your data.**
+**DailyCost Vault runs fully offline and stores all data locally. Never collect, upload, or peek into any of your data.**
 
 </div>
 
@@ -295,7 +298,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 - 🤖 Android → SQLite database in the app's private directory
 - 🌐 Web → Browser localStorage
 
-**What we will never do**
+**What is never done**
 
 <div class="hero-badges privacy-badges">
 
@@ -361,7 +364,9 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 ---
 
-## Quick Start
+## Quick Start — See Your Data in 3 Steps
+
+**Data-driven · Import beats manual entry** — No need to type every record by hand. Export your orders from each platform, import them in bulk, and the data organizes itself into asset cards. Manual entry barely covers a handful per day; bulk import gets thousands of orders into your library in seconds.
 
 <div class="quickstart-section" markdown>
 
@@ -371,6 +376,8 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) to choose your platform installer, or open the [Web version](https://bunnychen.top/BunnyChen-Item-Bookkeeping/) directly. Windows: `.exe` recommended. macOS: download `.dmg`.
 
+[Getting Started →](getting-started.md)
+
 </div>
 
 <div class="quickstart-step" markdown>
@@ -379,7 +386,7 @@ Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)
 
 Install [browser extensions](assets/dailycost-exporter-extension.zip) to export JD.com, Taobao, and Steam purchase history as CSV, or export WeChat bills directly from the WeChat app. Drag them into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
 
-[📥 Download the Browser Extension](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
+[Download the Browser Extension](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary } · [Import Guide →](import-csv.md)
 
 </div>
 
@@ -388,6 +395,8 @@ Install [browser extensions](assets/dailycost-exporter-extension.zip) to export 
 ### All Set
 
 The home page card grid displays all items. Green = earned back. Red = burning money. Click cards for details, go to Analytics for monthly trends and platform breakdown. Start rethinking every purchase you make.
+
+[Manage Assets](manage-items.md) · [Analytics](analytics.md)
 
 </div>
 

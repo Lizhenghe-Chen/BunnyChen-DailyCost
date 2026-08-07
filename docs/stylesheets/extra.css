@@ -1006,8 +1006,6 @@ body:not([data-md-color-scheme="default"]) .donation-card img {
   .stats-strip { gap: 2rem; }
   .stat-number { font-size: 1.45rem; }
 }
-
-@media screen and (max-width: 640px) {
   .hero-section { padding: 2.5rem 1rem 2rem; }
   .hero-logo { font-size: 1.8rem; }
   .hero-tagline { font-size: 1.05rem; }
@@ -1086,4 +1084,13 @@ body:not([data-md-color-scheme="default"]) .privacy-promise {
 }
 .privacy-badges {
   margin: 1rem 0 1.4rem !important;
+}
+
+/* ═══════ 移动端搜索全屏修复 ═══════ */
+/* backdrop-filter 创建 containing block，使 position:fixed 的 inner 相对 header（~49px）
+   而非 viewport 定位，Material 原 height:100% 因此失效；改用 100dvh 直接取 viewport */
+@media screen and (max-width: 59.984375em) {
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+    height: 100dvh !important;
+  }
 }

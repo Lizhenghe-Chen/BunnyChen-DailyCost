@@ -72,7 +72,7 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 - 💖 **Completely Free** — no subscriptions, no in-app purchases, no ads. Every feature, no holds barred
 - 🧮 **Daily Average Cost** — calculated per item. Paying more but using it longer = worth it
 - 🏷️ **Asset Card Grid** — platform badge + emoji + name + daily cost at a glance
-- 📥 **Rich Data Sources** — one-click import from JD.com / Taobao / Steam / WeChat, auto-deduplication, continuously expanding
+- 📥 **Rich Data Sources** — batch import from JD.com / Taobao / Steam / WeChat with auto-deduplication; more platforms rolling out
 - 🔄 **Item Lifecycle** — In Use / Sold / Retired, with archive & restore
 - 🎨 **Personalization** — 3-state theme × 5 color schemes × custom emoji × platform colors
 - 🌐 **Internationalization** — 简体中文 / 繁體中文 / English
@@ -82,6 +82,26 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 ---
 
 ## 📥 Supported Platforms
+
+### Data Sources · One-Click Batch Import
+
+**✅ Now Supported**
+
+- [x] 🐶 **JD.com** — one-click CSV export via the browser extension
+- [x] 🛒 **Taobao / Tmall** — one-click CSV export via the browser extension
+- [x] 🎮 **Steam** — one-click CSV export via the browser extension
+- [x] 💬 **WeChat Bills** — "Download Bill" inside the WeChat app (CSV / Excel)
+
+**⏳ Coming Soon (in the pipeline)**
+
+- [ ] 💳 **Alipay**
+- [ ] 🛍️ **Pinduoduo**
+- [ ] 🐟 **Xianyu**
+- [ ] 📱 **Douyin Mall**
+
+> 💡 "Add Item" supports any platform (Tmall, Pinduoduo, Xianyu, Dewu, etc.) — not limited by the batch-import list above.
+
+### Supported Devices
 
 | Platform    | Status | Download                                                                                                  |
 | :---------- | :----: | :-------------------------------------------------------------------------------------------------------- |

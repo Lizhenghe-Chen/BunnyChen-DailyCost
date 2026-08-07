@@ -7,21 +7,17 @@
 
 ## Supported Batch-Import Platforms
 
-Batch import currently supports **four platforms**:
+Batch import supports the following **data source platforms** (✅ checked = now supported):
 
-| Platform | File Format | How to Get the File |
-|------|---------|---------|
-| 🐶 JD.com | CSV | One-click export via the browser extension |
-| 🛒 Taobao / Tmall | CSV | One-click export via the browser extension |
-| 🎮 Steam | CSV | One-click export via the browser extension |
-| 💬 WeChat | CSV / Excel | Export "Download Bill" inside the WeChat app |
+--8<-- "platforms.en.md"
 
-- **JD.com / Taobao / Steam** → see "Method 1: Import via the Browser Extension" below
-- **WeChat** → no extension needed, see "Method 2: Import WeChat Bills" below
+- **JD.com / Taobao / Steam** → see "Import via the Browser Extension" below
+- **WeChat** → no extension needed, see "Import WeChat Bills" below
+- **Other platforms** (Alipay / Pinduoduo / Xianyu / Douyin Mall, etc.) are in the pipeline. In the meantime, use "Add Item" to enter them manually
 
 ---
 
-## Method 1: Import via the Browser Extension (JD.com / Taobao / Steam)
+## Import via the Browser Extension (JD.com / Taobao / Steam)
 
 🧩 Install the extension → 📤 Export CSV → 📥 Import into DailyCost Vault
 
@@ -82,7 +78,7 @@ After import, you will see a message like **Success X, Skipped X**. **Skipped** 
 
 ---
 
-## Method 2: Import WeChat Bills (No Extension Needed)
+## Import WeChat Bills (No Extension Needed)
 
 WeChat bills can be exported directly from inside the WeChat app — **no browser extension required**. The exported file is CSV / Excel and can be imported by dragging it into DailyCost Vault:
 

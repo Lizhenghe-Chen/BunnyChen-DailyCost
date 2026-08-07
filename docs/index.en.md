@@ -65,14 +65,11 @@ title: DailyCost Vault
 <!-- Batch-import platforms -->
 <div class="import-platforms" markdown>
 
-<div class="import-platforms-title">📥 One-Click Batch Import · Four Platforms</div>
+<div class="import-platforms-title">📥 One-Click Batch Import · Data Source Platforms</div>
 
-<div class="hero-badges import-platform-badges">
+<div class="import-platforms-checklist" markdown>
 
-<span class="badge">🐶 JD.com</span>
-<span class="badge">🛒 Taobao / Tmall</span>
-<span class="badge">🎮 Steam</span>
-<span class="badge">💬 WeChat Bills</span>
+--8<-- "platforms.en.md"
 
 </div>
 
@@ -98,9 +95,9 @@ Cheap ≠ economical. Expensive ≠ wasteful. DailyCost Vault independently calc
 
 <div class="feature-card" markdown>
 
-### 📥 Smart Import from 4 Platforms
+### 📥 Smart Import from Multiple Platforms
 
-Drag and drop JD.com, Taobao, and Steam order CSVs, plus WeChat bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. Batch preload deduplication — tens of thousands of records imported in seconds.
+Drag and drop JD.com, Taobao/Tmall, and Steam order CSVs, plus WeChat bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. **WeChat bills auto-split income vs expense**: expenses become assets, income goes to the cashback ledger — both deduplicated, tens of thousands of records imported in seconds. More platforms are on the way.
 
 </div>
 
@@ -178,7 +175,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🪟 Windows
+### 🪟 Windows ✅
 
 `.exe` / `.msi`
 
@@ -186,7 +183,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🍎 macOS
+### 🍎 macOS ✅
 
 `.dmg` · Apple Silicon & Intel
 
@@ -194,7 +191,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🐧 Linux
+### 🐧 Linux ✅
 
 `.deb` / `.AppImage`
 
@@ -202,7 +199,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 📱 Android
+### 📱 Android ✅
 
 `.apk`
 
@@ -210,9 +207,17 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 <div class="platform-card" markdown>
 
-### 🌐 Web
+### 🌐 Web ✅
 
 Works in browser
+
+</div>
+
+<div class="platform-card" markdown>
+
+### 📱 iOS 🚧
+
+Coming soon
 
 </div>
 
@@ -228,7 +233,7 @@ Works in browser
 
 ### 🦀 Rust Backend
 
-Tauri v2 framework, 29 Rust commands handling all data operations. SQLite WAL mode, foreign key constraints, automatic database migration. Daily cost calculated dynamically on every query — formula updates without re-importing.
+Tauri v2 framework, 35 Rust commands handling all data operations. SQLite WAL mode, foreign key constraints, automatic database migration. Daily cost calculated dynamically on every query — formula updates without re-importing.
 
 </div>
 

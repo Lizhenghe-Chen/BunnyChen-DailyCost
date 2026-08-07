@@ -10,11 +10,11 @@ The system automatically deduplicates: records with the same order ID from the s
 
 ### Q: Which platforms are supported for order import?
 
-Currently supports **four platforms**: **JD.com, Taobao/Tmall, Steam, and WeChat**.
-- **JD.com / Taobao / Tmall / Steam**: export CSV via the browser extension, then import
-- **WeChat**: export your bill as CSV / Excel from inside the WeChat app, then import — no extension needed
+Currently supports **four platforms** for batch import — **JD.com, Taobao/Tmall, Steam, and WeChat** — with more platforms on the way:
 
-Other platforms (e.g., Pinduoduo, Meituan) can be entered manually via the "Add Item" feature.
+--8<-- "platforms.en.md"
+
+Other platforms (e.g., Meituan, Dewu) can be entered manually via the "Add Item" feature.
 
 ### Q: Why are some orders missing after import?
 

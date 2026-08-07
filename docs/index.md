@@ -67,14 +67,11 @@ title: 日耗仓 · DailyCost Vault
 <!-- 批量导入平台 -->
 <div class="import-platforms" markdown>
 
-<div class="import-platforms-title">📥 一键批量导入 · 四大平台</div>
+<div class="import-platforms-title">📥 一键批量导入 · 数据来源平台</div>
 
-<div class="hero-badges import-platform-badges">
+<div class="import-platforms-checklist" markdown>
 
-<span class="badge">🐶 京东</span>
-<span class="badge">🛒 淘宝 / 天猫</span>
-<span class="badge">🎮 Steam</span>
-<span class="badge">💬 微信账单</span>
+--8<-- "platforms.zh.md"
 
 </div>
 
@@ -116,9 +113,9 @@ title: 日耗仓 · DailyCost Vault
 
 <div class="feature-card" markdown>
 
-### 📥 四平台智能导入
+### 📥 多平台智能导入
 
-京东、淘宝、Steam 订单 CSV 与微信账单（CSV / Excel）拖入即导入。Rust 后端与 TypeScript 前端双解析器，自动识别平台、过滤无效订单、emoji 匹配、多商品合并。批量预加载去重，万条数据秒级入库。
+京东、淘宝 / 天猫、Steam 订单 CSV 与微信账单（CSV / Excel）拖入即导入。Rust 后端与 TypeScript 前端双解析器，自动识别平台、过滤无效订单、emoji 匹配、多商品合并。**微信账单自动收支分流**：支出入资产、收入入回款，双双去重，万条数据秒级入库。更多平台陆续接入中。
 
 </div>
 
@@ -196,7 +193,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="platform-card" markdown>
 
-### 🪟 Windows
+### 🪟 Windows ✅
 
 `.exe` / `.msi`
 
@@ -204,7 +201,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="platform-card" markdown>
 
-### 🍎 macOS
+### 🍎 macOS ✅
 
 `.dmg` · Apple Silicon & Intel
 
@@ -212,7 +209,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="platform-card" markdown>
 
-### 🐧 Linux
+### 🐧 Linux ✅
 
 `.deb` / `.AppImage`
 
@@ -220,7 +217,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="platform-card" markdown>
 
-### 📱 Android
+### 📱 Android ✅
 
 `.apk`
 
@@ -228,9 +225,17 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 <div class="platform-card" markdown>
 
-### 🌐 Web
+### 🌐 Web ✅
 
 浏览器即用
+
+</div>
+
+<div class="platform-card" markdown>
+
+### 📱 iOS 🚧
+
+敬请期待
 
 </div>
 
@@ -246,7 +251,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 ### 🦀 Rust 后端
 
-Tauri v2 框架，29 个 Rust 命令处理全部数据操作。SQLite WAL 模式、外键约束、自动数据库迁移。日均成本每次查询动态计算，修改公式无需重新导入。
+Tauri v2 框架，35 个 Rust 命令处理全部数据操作。SQLite WAL 模式、外键约束、自动数据库迁移。日均成本每次查询动态计算，修改公式无需重新导入。
 
 </div>
 
@@ -372,6 +377,39 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 ![橘之橙 · 首页](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
 **🍊 橘之橙** — 活力四射，热情洋溢。深色模式下的资产首页。
+
+</div>
+
+</div>
+
+
+## 🚀 快速上手 · 三步开始
+
+<div class="quickstart-section" markdown>
+
+<div class="quickstart-step" markdown>
+
+### ① 下载安装
+
+到 [GitHub Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) 选择对应平台的安装包，或直接打开[网页版](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)即点即用。Windows 推荐 `.exe`，macOS 下载 `.dmg`，Android 安装 `.apk`。
+
+</div>
+
+<div class="quickstart-step" markdown>
+
+### ② 导入数据
+
+安装[浏览器扩展](assets/dailycost-exporter-extension.zip)，一键导出京东 / 淘宝 / Steam 消费记录为 CSV；微信账单直接在微信 App 内「下载账单」。把文件拖进设置页导入区即可——自动解析、去重、分类，不用手打一条。
+
+[📥 下载浏览器扩展](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
+
+</div>
+
+<div class="quickstart-step" markdown>
+
+### ③ 开始使用
+
+主页卡片网格展示全部资产：绿色 = 用回本，红色 = 在烧钱。点击卡片查看详情，到「分析」页看月度趋势、平台占比与微信收支。重新审视你的每一笔消费吧。
 
 </div>
 

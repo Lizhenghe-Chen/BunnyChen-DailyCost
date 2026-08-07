@@ -14,7 +14,13 @@ repo_url: https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost
 # 插件配置
 # -------------------------------------------------------------------------- #
 plugins:
-  - search
+  - search:
+      lang:
+        - zh
+      # 中文分词边界：包含零宽空格 \u200b（jieba 分词符）、全角空格、中文标点
+      separator: '[\s\u200b\u3000\-、。，．？！；]+'
+      pipeline:
+        - stemmer
   - glightbox
   - minify:
       minify_html: true

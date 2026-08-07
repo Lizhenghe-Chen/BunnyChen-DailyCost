@@ -15,6 +15,9 @@ title: 日耗仓 · DailyCost Vault
   <a href="getting-started/" class="md-button md-button--primary hero-btn">
     快速开始
   </a>
+  <a href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost" class="md-button hero-btn" target="_blank" rel="noopener">
+    GitHub 仓库
+  </a>
 </div>
 
 <div class="theme-carousel hero-carousel" markdown>

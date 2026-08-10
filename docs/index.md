@@ -67,6 +67,17 @@ title: 日耗仓 · DailyCost Vault
   <span class="badge">🚀 持续更新</span>
 </div>
 
+<!-- 视频介绍 -->
+<div class="video-intro-section" markdown>
+
+<div class="video-intro-title">📺 视频介绍</div>
+
+<div class="video-container">
+  <iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=117063712639931&bvid=BV1KZu16eE3v&cid=40738687283&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+</div>
+
+</div>
+
 <!-- 批量导入平台 -->
 <div class="import-platforms" markdown>
 
@@ -84,7 +95,7 @@ title: 日耗仓 · DailyCost Vault
 
 ---
 
-## 💡 为什么做这个项目？
+## � 为什么做这个项目？
 
 市面上的记账 / 资产管理工具并不少，但总有几个让人头疼的地方：
 

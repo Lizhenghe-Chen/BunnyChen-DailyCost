@@ -65,6 +65,17 @@ title: DailyCost Vault
   <span class="badge">🌍 Multi-Language</span>
 </div>
 
+<!-- Video Introduction -->
+<div class="video-intro-section" markdown>
+
+<div class="video-intro-title">📺 Video Introduction</div>
+
+<div class="video-container">
+  <iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=117063712639931&bvid=BV1KZu16eE3v&cid=40738687283&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+</div>
+
+</div>
+
 <!-- Batch-import platforms -->
 <div class="import-platforms" markdown>
 

@@ -41,10 +41,6 @@
 ## 📺 视频介绍
 
 <p align="center">
-  <iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=117063712639931&bvid=BV1KZu16eE3v&cid=40738687283&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="450" style="max-width:100%;border-radius:12px;"></iframe>
-</p>
-
-<p align="center">
   <a href="https://www.bilibili.com/video/BV1KZu16eE3v/" target="_blank" rel="noopener">
     <img src="https://img.shields.io/badge/Bilibili-📺_观看视频介绍-00A1D6?style=for-the-badge&logo=bilibili&logoColor=white" alt="在 Bilibili 观看视频介绍" />
   </a>

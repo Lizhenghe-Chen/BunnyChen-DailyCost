@@ -157,6 +157,18 @@
 
 ---
 
+## ⭐ Star History
+
+<a href="https://www.star-history.com/?repos=Lizhenghe-Chen%2FBunnyChen-DailyCost&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&theme=dark&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
+ </picture>
+</a>
+
+---
+
 ## ☕ 支持一下 · 请喝杯咖啡
 
 一个人维护不易，喜欢的话，请喝杯咖啡吧～ 🥺

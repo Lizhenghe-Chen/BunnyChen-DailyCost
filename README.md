@@ -24,7 +24,7 @@
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20Web-blue?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/framework-Tauri%20v2-FFC131?style=flat-square" alt="Tauri" />
   <img src="https://img.shields.io/badge/status-Beta-FFD700?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/license-保留所有权利-blue?style=flat-square" alt="All Rights Reserved" />
+  <img src="https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square" alt="AGPL-3.0" />
 </p>
 
 <p align="center">
@@ -50,7 +50,7 @@
 2. 🎁 打开 App，在空状态点击「**加载示例数据**」
 3. 🎉 30 秒看到满屏装备卡片 + 数据分析图表，随时可一键清空
 
-![1786678315977](docs/assets/首页一秒例子.png)
+![首页加载示例数据效果](docs/assets/首页一秒例子.jpg)
 
 > 💡 内置「示例数据包」模拟一份个人资产账本——不用导入任何文件，先体验再导入。
 
@@ -157,7 +157,35 @@
 
 ---
 
-## 🔒 隐私安全 · 请放心
+## � 开发 · 本地运行
+
+源码已开源（[AGPL-3.0](LICENSE)），完整开发与打包指南见文档站 [🛠️ 开发专栏](https://bunnychen.top/BunnyChen-DailyCost/development/)。
+
+**环境要求**：Node.js 22+ · pnpm 11+ · Rust（stable）
+
+```bash
+# 1. 克隆仓库并进入应用目录
+git clone https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost.git
+cd BunnyChen-DailyCost/BunnyChen-Item-Bookkeeping
+
+# 2. 安装依赖
+pnpm install
+
+# 3. 浏览器端开发（无需 Rust）→ http://localhost:1420
+pnpm dev
+
+# 4. 桌面端开发（Tauri 窗口 + 热更新）
+pnpm tauri dev
+
+# 5. Rust 后端编译检查（在 src-tauri/ 下）
+cd src-tauri && cargo check
+```
+
+> 📖 构建与打包（Web / 桌面 / Android / iOS / 浏览器扩展）→ [开发专栏](https://bunnychen.top/BunnyChen-DailyCost/development-build/)
+
+---
+
+## �🔒 隐私安全 · 请放心
 
 **日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 既没有兴趣、也没有任何必要获取你的任何信息。**
 
@@ -167,13 +195,13 @@
 
 ❌ 不上传数据 · ❌ 无追踪分析 · ❌ 不读取无关文件
 
-> 🗝️ **项目目前暂不开源，但 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。
+> 🗝️ **源码已开源（AGPL-3.0），同时 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。
 
 详见 [隐私说明](https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/)。
 
 ---
 
-*源码暂不公开 · 保留所有权利（All Rights Reserved）· 你的数据永远只属于你自己*
+*开源 · GNU AGPL-3.0 · 你的数据永远只属于你自己*
 
 ---
 

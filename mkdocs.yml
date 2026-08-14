@@ -58,6 +58,9 @@ plugins:
             ⚙️ 个性化设置: ⚙️ Settings
             💾 数据管理与备份: 💾 Data & Backup
             📤 分享与报告: 📤 Share & Reports
+            开发: Development
+            🛠️ 开发指南: 🛠️ Development
+            📦 构建与打包: 📦 Build & Packaging
             常见问题: FAQ
             隐私说明: Privacy Policy
 
@@ -163,6 +166,9 @@ nav:
     - ⚙️ 个性化设置: settings.md
     - 💾 数据管理与备份: data-management.md
     - 📤 分享与报告: share.md
+  - 开发:
+    - 🛠️ 开发指南: development.md
+    - 📦 构建与打包: development-build.md
   - 常见问题: FAQ.md
   - 隐私说明: PRIVACY.md
 
@@ -175,4 +181,4 @@ extra_css:
 extra_javascript:
   - javascripts/theme-carousel.js
 
-copyright: "&copy; 2025–2026 BunnyChen · 保留所有权利（All Rights Reserved）"
+copyright: "&copy; 2025–2026 BunnyChen · 开源 · GNU AGPL-3.0"

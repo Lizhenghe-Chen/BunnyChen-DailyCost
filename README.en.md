@@ -24,7 +24,7 @@
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20Web-blue?style=flat-square" alt="Platform" />
   <img src="https://img.shields.io/badge/framework-Tauri%20v2-FFC131?style=flat-square" alt="Tauri" />
   <img src="https://img.shields.io/badge/status-Beta-FFD700?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/license-All%20Rights%20Reserved-blue?style=flat-square" alt="All Rights Reserved" />
+  <img src="https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square" alt="AGPL-3.0" />
 </p>
 
 <p align="center">
@@ -159,7 +159,35 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 ---
 
-## 🔒 Privacy & Security · Rest Assured
+## � Development · Run Locally
+
+The source is now open source ([AGPL-3.0](LICENSE)). See the [🛠️ Development column](https://bunnychen.top/BunnyChen-DailyCost/development/) for the full dev & packaging guide.
+
+**Requirements**: Node.js 22+ · pnpm 11+ · Rust (stable)
+
+```bash
+# 1. Clone the repo and enter the app directory
+git clone https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost.git
+cd BunnyChen-DailyCost/BunnyChen-Item-Bookkeeping
+
+# 2. Install dependencies
+pnpm install
+
+# 3. Browser-only dev (no Rust) → http://localhost:1420
+pnpm dev
+
+# 4. Desktop dev (Tauri window + hot-reload)
+pnpm tauri dev
+
+# 5. Rust backend compile check (inside src-tauri/)
+cd src-tauri && cargo check
+```
+
+> 📖 Build & packaging (Web / Desktop / Android / iOS / browser extension) → [Development column](https://bunnychen.top/BunnyChen-DailyCost/development-build/)
+
+---
+
+## �🔒 Privacy & Security · Rest Assured
 
 **DailyCost Vault runs fully offline, and all data stays on your device. BunnyChen has neither the interest nor any need to access any of your information.**
 
@@ -169,13 +197,13 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 ❌ No data uploads · ❌ No tracking analytics · ❌ No reading of unrelated files
 
-> 🗝️ **The source code is not open yet, but BunnyChen promises to never collect, upload, or pry into any of your data.** Your data belongs only to you — and please, **keep it safe yourself**.
+> 🗝️ **The source code is now open source (AGPL-3.0), and BunnyChen promises to never collect, upload, or pry into any of your data.** Your data belongs only to you — and please, **keep it safe yourself**.
 
 See the [Privacy Policy](https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/).
 
 ---
 
-*Source code not public yet · All Rights Reserved · Your data will always belong only to you*
+*Open source · GNU AGPL-3.0 · Your data will always belong only to you*
 
 ---
 

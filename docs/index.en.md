@@ -237,7 +237,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 ### 🌐 Web
 
-Works in browser
+[Works in browser](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)
 
 </div>
 

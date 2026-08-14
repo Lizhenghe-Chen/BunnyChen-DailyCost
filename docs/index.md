@@ -9,7 +9,7 @@ title: 日耗仓 · DailyCost Vault
 
 <div class="hero-logo">日耗仓 · DailyCost Vault</div>
 <div class="hero-tagline">批量入仓，由你掌控</div>
-<div class="hero-subtitle">每一件物品都有日均持有成本。你的数码装备库，算清每一件设备的真实成本。</div>
+<div class="hero-subtitle">每一件物品都有日均持有成本。你的资产账本，算清每件物品的真实成本。</div>
 
 <div class="hero-actions">
   <a href="getting-started/" class="md-button md-button--primary hero-btn">

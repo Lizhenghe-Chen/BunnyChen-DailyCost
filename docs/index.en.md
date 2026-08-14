@@ -9,7 +9,7 @@ title: DailyCost Vault
 
 <div class="hero-logo">DailyCost Vault</div>
 <div class="hero-tagline">Bulk import, yours to control</div>
-<div class="hero-subtitle">Every item has a daily average cost. Your digital gear library — know the real cost of every device.</div>
+<div class="hero-subtitle">Every item has a daily average cost. Your asset ledger — know the real cost of every item.</div>
 
 <div class="hero-actions">
   <a href="getting-started/" class="md-button md-button--primary hero-btn">
@@ -57,7 +57,7 @@ title: DailyCost Vault
 </div>
 
 !!! tip "🎁 30-Second Quick Experience"
-    Don't want to import? Open the app and click "**Load sample data**" on the empty state — see a full gear wall and analytics in 30 seconds. Clear it anytime.
+    Don't want to import? Open the app and click "**Load sample data**" on the empty state — see a full asset wall and analytics in 30 seconds. Clear it anytime.
 
 <!-- Feature badges -->
 <div class="hero-badges">

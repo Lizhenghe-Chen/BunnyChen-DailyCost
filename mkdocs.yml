@@ -1,6 +1,6 @@
 site_name: 日耗仓 · DailyCost Vault
 site_description: >-
-  日耗仓（DailyCost Vault）—— 你的数码装备库，算清每一件设备的日均成本。跨平台消费记录自动转化、日均持有成本计算、资产卡片管理。
+  日耗仓（DailyCost Vault）—— 你的资产账本，算清每一件物品的日均成本。跨平台消费记录自动转化、日均持有成本计算、资产卡片管理。
 site_url: https://bunnychen.top/BunnyChen-DailyCost/
 site_author: BunnyChen
 
@@ -46,7 +46,7 @@ plugins:
           build: true
           site_name: DailyCost Vault
           site_description: >-
-            DailyCost Vault — Your digital gear library, know the real daily cost of every device.
+            DailyCost Vault — Your asset ledger, know the real daily cost of every item.
             Cross-platform purchase tracking, daily average cost calculation, and asset card management.
           nav_translations:
             主页: Home

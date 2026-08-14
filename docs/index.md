@@ -8,8 +8,8 @@ title: 日耗仓 · DailyCost Vault
 <div class="hero-section" markdown>
 
 <div class="hero-logo">日耗仓 · DailyCost Vault</div>
-<div class="hero-tagline">你的数据你做主，每一分钱都花得明明白白</div>
-<div class="hero-subtitle">每一件物品都有日均持有成本。长期主义个人资产数字化管理工具。</div>
+<div class="hero-tagline">批量入仓，由你掌控</div>
+<div class="hero-subtitle">每一件物品都有日均持有成本。你的数码装备库，算清每一件设备的真实成本。</div>
 
 <div class="hero-actions">
   <a href="getting-started/" class="md-button md-button--primary hero-btn">
@@ -55,6 +55,9 @@ title: 日耗仓 · DailyCost Vault
 </div>
 
 </div>
+
+!!! tip "🎁 30 秒快速体验"
+    不想导入？打开 App，在首页空状态点击「**加载示例数据**」—— 30 秒看到满屏装备库与数据分析图表，随时可一键清空。
 
 <!-- 功能标签条 -->
 <div class="hero-badges">

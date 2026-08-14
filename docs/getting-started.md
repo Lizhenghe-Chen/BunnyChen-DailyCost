@@ -2,6 +2,13 @@
 
 日耗仓（DailyCost Vault）支持 Windows、macOS、Linux、Android 和网页版五种使用方式，选择最适合你的平台开始使用。
 
+!!! tip "🎁 想先看看效果？"
+    打开 App，在首页空状态点击「**加载示例数据**」即可体验完整功能（内置多平台示例物品），无需导入任何文件；之后可随时一键清空。
+
+    ![首页加载示例数据效果](assets/首页一秒例子.jpg){ loading=lazy }
+
+    > 💡 不想安装？直接打开[网页版](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)体验，无需下载。
+
 ---
 
 ## 📥 下载与安装

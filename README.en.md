@@ -13,11 +13,11 @@
 </h1>
 
 <p align="center">
-  <b>A long-term personal asset digital management tool</b>
+  <b>Your digital gear library — know the real daily cost of every device</b>
 </p>
 
 <p align="center">
-  <i>"Own your data — know exactly where every cent goes"</i>
+  <i>"Bulk import, yours to control"</i>
 </p>
 
 <p align="center">
@@ -35,6 +35,22 @@
   <a href="https://bunnychen.top/BunnyChen-DailyCost/FAQ/"><b>❓ FAQ</b></a> ·
   <a href="https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/"><b>🔒 Privacy</b></a>
 </p>
+
+---
+
+## 🎮 3-Second Intro
+
+Turn scattered orders from **JD.com / Taobao / Steam / WeChat** into a **visual gear library** in one click, with the **daily average cost** of every item calculated automatically:
+
+> **Pay more but use it longer = worth it · Buy cheap but let it collect dust = wasted money**
+
+## 🚀 30-Second Quick Start
+
+1. 📥 **Download & install** (or [🖥️ Try Online](https://bunnychen.top/BunnyChen-Item-Bookkeeping/))
+2. 🎁 Open the app and click "**Load sample data**" on the empty state
+3. 🎉 See a full gear wall + analytics in 30 seconds — clear it anytime
+
+> 💡 A built-in **sample data pack** simulates a digital enthusiast's gear library — try before you import.
 
 ---
 
@@ -71,6 +87,9 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 ## 📸 Preview
 
 <p align="center">
+  <img src="docs/assets/首页%20装备墙%20数码装备库.jpg" alt="Gear Wall · Sample Data" width="90%" />
+</p>
+<p align="center">
   <img src="docs/assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg" alt="Home" width="45%" />
   <img src="docs/assets/桌面端数据分析页面（深色主题）.jpg" alt="Analytics" width="45%" />
 </p>
@@ -81,17 +100,17 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 ---
 
-## ✨ Highlights
+## ✨ Core Experience
 
-- 💖 **Completely Free** — no subscriptions, no in-app purchases, no ads. Every feature, no holds barred
-- 🧮 **Daily Average Cost** — calculated per item. Paying more but using it longer = worth it
-- 🏷️ **Asset Card Grid** — platform badge + emoji + name + daily cost at a glance
-- 📥 **Rich Data Sources** — batch import from JD.com / Taobao / Steam / WeChat with auto-deduplication; more platforms rolling out
-- 🔄 **Item Lifecycle** — In Use / Sold / Retired, with archive & restore
-- 🎨 **Personalization** — 3-state theme × 5 color schemes × custom emoji × platform colors
-- 🌐 **Internationalization** — 简体中文 / 繁體中文 / English
-- 💾 **Fully Local Storage** — SQLite, data never leaves your device, zero server dependency
-- 🚀 **Continuously Maintained** — new platforms and features keep rolling out
+**🧮 Pay more but use it longer = worth it** — the daily average cost is calculated per item: a ¥300 coat worn for 300 days costs just ¥1 a day; but a device left gathering dust burns money every single day.
+
+- 📥 **One-click gear library** — batch import from JD.com / Taobao / Steam / WeChat with auto-deduplication and auto category & emoji matching; scattered orders become a gear wall
+- 🔄 **Full item lifecycle** — In Use / Sold / Retired; after selling, the real holding cost is auto-calculated as (buy price − sell price) ÷ days used
+- 🎨 **Beautiful & customizable** — 3-state theme × 5 color schemes × custom emoji × platform colors
+- 🌐 **Three languages** — 简体中文 / 繁體中文 / English
+- 💾 **Fully local storage** — SQLite, data never leaves your device, zero server dependency
+- 💖 **Completely free** — no subscriptions, no in-app purchases, no ads
+- 🚀 **Continuously maintained** — new platforms and features keep rolling out
 
 ---
 

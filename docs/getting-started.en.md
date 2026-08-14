@@ -2,6 +2,13 @@
 
 DailyCost Vault supports Windows, macOS, Linux, Android, and Web — choose the platform that works best for you.
 
+!!! tip "🎁 Want to see it first?"
+    Open the app and click "**Load sample data**" on the empty state to experience the full feature set (built-in multi-platform sample items) — no files to import, and you can clear it anytime.
+
+    ![Home after loading sample data](assets/首页一秒例子.jpg){ loading=lazy }
+
+    > 💡 Prefer not to install? Try the [Web version](https://bunnychen.top/BunnyChen-Item-Bookkeeping/) right away — no download needed.
+
 ---
 
 ## 📥 Download & Install

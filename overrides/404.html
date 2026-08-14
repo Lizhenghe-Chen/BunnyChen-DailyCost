@@ -1,0 +1,142 @@
+{#-
+  日耗仓 · DailyCost Vault — 自定义 404 页面
+  覆盖 Material 主题默认 404.html：品牌化中文优先 404，含搜索框 + 快速链接卡片
+  注意：主题级 404 模板不受 i18n 插件本地化，故中英双语同屏展示
+  布局参考 Tauri 官方文档的「快速链接 + 操作按钮」风格
+-#}
+{% extends "main.html" %}
+
+{% block content %}
+<style>
+  .dc-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 3.5rem 1rem 4rem;
+  }
+  .dc-404__code {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: .04em;
+    background: linear-gradient(135deg, var(--dc-primary, #4caf50), var(--dc-accent, #8bc34a));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .dc-404__title {
+    margin: .5rem 0 .25rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .dc-404__desc {
+    max-width: 34rem;
+    color: var(--dc-text-secondary, var(--md-default-fg-color--light));
+  }
+  .dc-404__desc--en {
+    margin-top: -.5rem;
+    font-size: .85rem;
+    color: var(--dc-text-tertiary, var(--md-default-fg-color--lightest));
+  }
+  .dc-404__search {
+    display: flex;
+    gap: .5rem;
+    width: 100%;
+    max-width: 26rem;
+    margin: 1.25rem 0;
+  }
+  .dc-404__search input {
+    flex: 1;
+    min-width: 0;
+    padding: .6rem 1rem;
+    font: inherit;
+    color: var(--md-typeset-color);
+    background: var(--md-default-bg-color);
+    border: 1px solid var(--dc-border, var(--md-default-fg-color--lightest));
+    border-radius: 10px;
+  }
+  .dc-404__search input:focus {
+    outline: none;
+    border-color: var(--dc-primary, #4caf50);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--dc-primary, #4caf50) 25%, transparent);
+  }
+  .dc-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    justify-content: center;
+    margin: .25rem 0 2rem;
+  }
+  .dc-404__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: .9rem;
+    width: 100%;
+    max-width: 44rem;
+  }
+  .dc-404__card {
+    display: block;
+    padding: 1.1rem 1rem;
+    color: var(--md-typeset-color);
+    text-decoration: none;
+    background: color-mix(in srgb, var(--md-default-bg-color) 72%, transparent);
+    border: 1px solid var(--dc-border, var(--md-default-fg-color--lightest));
+    border-radius: 12px;
+    backdrop-filter: blur(28px);
+    transition: transform .2s cubic-bezier(0.34,1.56,0.64,1), box-shadow .2s;
+  }
+  .dc-404__card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  }
+  .dc-404__card b {
+    display: block;
+    margin-bottom: .2rem;
+  }
+  .dc-404__card small {
+    color: var(--dc-text-secondary, var(--md-default-fg-color--light));
+  }
+  @media (max-width: 40rem) {
+    .dc-404 { padding: 2.5rem .5rem 3rem; }
+    .dc-404__code { font-size: 3.6rem; }
+  }
+</style>
+
+<div class="dc-404">
+  <div class="dc-404__code">404</div>
+  <h1 class="dc-404__title">页面走丢了 🧭</h1>
+  <p class="dc-404__desc">你访问的页面不存在，可能是链接有误，或内容已经搬家。回到首页，或搜索你想找的内容吧。</p>
+  <p class="dc-404__desc dc-404__desc--en">The page you're looking for doesn't exist. Try searching, or head back home.</p>
+
+  <form class="dc-404__search"
+        onsubmit="event.preventDefault(); location.href='{{ config.site_url }}?q=' + encodeURIComponent(this.q.value);">
+    <input name="q" type="search" placeholder="🔍 搜索文档…" autocomplete="off" aria-label="搜索文档" />
+    <button type="submit" class="md-button md-button--primary">搜索</button>
+  </form>
+
+  <div class="dc-404__actions">
+    <a class="md-button md-button--primary" href="{{ config.site_url }}">🏠 返回首页</a>
+    <a class="md-button" href="{{ config.site_url }}getting-started/">🚀 安装与启动</a>
+  </div>
+
+  <div class="dc-404__cards">
+    <a class="dc-404__card" href="{{ config.site_url }}import-csv/">
+      <b>📥 批量导入订单</b>
+      <small>Import CSV Orders</small>
+    </a>
+    <a class="dc-404__card" href="{{ config.site_url }}analytics/">
+      <b>📊 数据分析</b>
+      <small>Analytics</small>
+    </a>
+    <a class="dc-404__card" href="{{ config.site_url }}development/">
+      <b>🛠️ 开发指南</b>
+      <small>Development</small>
+    </a>
+    <a class="dc-404__card" href="{{ config.site_url }}FAQ/">
+      <b>❓ 常见问题</b>
+      <small>FAQ</small>
+    </a>
+  </div>
+</div>
+{% endblock %}

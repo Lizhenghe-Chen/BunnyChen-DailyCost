@@ -1,0 +1,10 @@
+{
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "http://127.0.0.1:9780/update?target={{target}}&arch={{arch}}&current_version={{current_version}}"
+      ],
+      "dangerousInsecureTransportProtocol": true
+    }
+  }
+}

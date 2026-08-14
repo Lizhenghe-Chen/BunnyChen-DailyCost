@@ -1,0 +1,242 @@
+[
+  {
+    "order_id": "WXINC-20250910-0001",
+    "platform": "wx",
+    "peer": "淘宝",
+    "income_type": "退款",
+    "amount": 89.9,
+    "order_time": "2025-09-10",
+    "status": "已退款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20250915-0002",
+    "platform": "wx",
+    "peer": "同事小王",
+    "income_type": "转账",
+    "amount": 120.0,
+    "order_time": "2025-09-15",
+    "status": "对方已收钱",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20251001-0003",
+    "platform": "wx",
+    "peer": "家人",
+    "income_type": "红包",
+    "amount": 200.0,
+    "order_time": "2025-10-01",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20251010-0004",
+    "platform": "wx",
+    "peer": "个人买家",
+    "income_type": "二维码收款",
+    "amount": 350.0,
+    "order_time": "2025-10-10",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20251120-0005",
+    "platform": "wx",
+    "peer": "部门群",
+    "income_type": "群收款",
+    "amount": 85.0,
+    "order_time": "2025-11-20",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20251225-0006",
+    "platform": "wx",
+    "peer": "京东",
+    "income_type": "退款",
+    "amount": 299.0,
+    "order_time": "2025-12-25",
+    "status": "已退款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260110-0007",
+    "platform": "wx",
+    "peer": "朋友",
+    "income_type": "转账",
+    "amount": 500.0,
+    "order_time": "2026-01-10",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260128-0008",
+    "platform": "wx",
+    "peer": "家人",
+    "income_type": "红包",
+    "amount": 666.0,
+    "order_time": "2026-01-28",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260214-0009",
+    "platform": "wx",
+    "peer": "个人买家",
+    "income_type": "二维码收款",
+    "amount": 120.0,
+    "order_time": "2026-02-14",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260301-0010",
+    "platform": "wx",
+    "peer": "拼多多",
+    "income_type": "退款",
+    "amount": 39.9,
+    "order_time": "2026-03-01",
+    "status": "已退款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260320-0011",
+    "platform": "wx",
+    "peer": "同事小张",
+    "income_type": "转账",
+    "amount": 45.0,
+    "order_time": "2026-03-20",
+    "status": "对方已收钱",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260405-0012",
+    "platform": "wx",
+    "peer": "家人",
+    "income_type": "转账",
+    "amount": 1000.0,
+    "order_time": "2026-04-05",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260418-0013",
+    "platform": "wx",
+    "peer": "个人买家",
+    "income_type": "二维码收款",
+    "amount": 280.0,
+    "order_time": "2026-04-18",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260501-0014",
+    "platform": "wx",
+    "peer": "好友群",
+    "income_type": "群收款",
+    "amount": 132.0,
+    "order_time": "2026-05-01",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260515-0015",
+    "platform": "wx",
+    "peer": "天猫",
+    "income_type": "退款",
+    "amount": 137.5,
+    "order_time": "2026-05-15",
+    "status": "已退款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260601-0016",
+    "platform": "wx",
+    "peer": "朋友",
+    "income_type": "红包",
+    "amount": 88.0,
+    "order_time": "2026-06-01",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260618-0017",
+    "platform": "wx",
+    "peer": "个人买家",
+    "income_type": "二维码收款",
+    "amount": 460.0,
+    "order_time": "2026-06-18",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260701-0018",
+    "platform": "wx",
+    "peer": "同事小王",
+    "income_type": "转账",
+    "amount": 200.0,
+    "order_time": "2026-07-01",
+    "status": "对方已收钱",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260710-0019",
+    "platform": "wx",
+    "peer": "京东",
+    "income_type": "退款",
+    "amount": 599.0,
+    "order_time": "2026-07-10",
+    "status": "已退款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260718-0020",
+    "platform": "wx",
+    "peer": "家人",
+    "income_type": "红包",
+    "amount": 520.0,
+    "order_time": "2026-07-18",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260722-0021",
+    "platform": "wx",
+    "peer": "个人买家",
+    "income_type": "二维码收款",
+    "amount": 150.0,
+    "order_time": "2026-07-22",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260728-0022",
+    "platform": "wx",
+    "peer": "部门群",
+    "income_type": "群收款",
+    "amount": 66.0,
+    "order_time": "2026-07-28",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260801-0023",
+    "platform": "wx",
+    "peer": "亲属",
+    "income_type": "亲属卡",
+    "amount": 300.0,
+    "order_time": "2026-08-01",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  },
+  {
+    "order_id": "WXINC-20260805-0024",
+    "platform": "wx",
+    "peer": "个人买家",
+    "income_type": "二维码收款",
+    "amount": 88.0,
+    "order_time": "2026-08-05",
+    "status": "已收款",
+    "import_batch": "微信 · 示例账单"
+  }
+]

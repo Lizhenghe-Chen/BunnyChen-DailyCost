@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- 在 CSS 加载前预设主题，确保 Splash 与用户偏好一致 -->
+    <script>
+      (function() {
+        var t = localStorage.getItem('bk_theme') || 'system';
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>日耗仓 — 你的资产账本，算清每一件物品的日均成本</title>
+    <meta name="description" content="日耗仓 · DailyCost Vault，你的资产账本，算清每一件物品的日均成本。批量入仓，由你掌控。" />
+    <meta property="og:title" content="日耗仓 · DailyCost Vault" />
+    <meta property="og:description" content="你的资产账本，支持京东、淘宝、Steam、微信订单导入与日均成本追踪。" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/png" href="/src/assets/logo-32.png" />
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+
+  <body>
+    <!-- Splash 开场 -->
+    <div id="splash">
+      <div class="splash-content">
+        <img class="splash-logo" src="/src/assets/logo-32.png" alt="DailyCost Vault" width="80" height="80" />
+        <h1 class="splash-title">日耗仓</h1>
+        <p class="splash-tagline">批量入仓，由你掌控</p>
+        <div class="splash-loader"></div>
+      </div>
+    </div>
+
+    <a href="#page-home" class="skip-link" data-i18n="nav.skip_to_main">跳到主要内容</a>
+    <!-- 导航栏 -->
+    <nav id="nav-bar">
+      <a class="nav-brand" href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost" target="_blank" rel="noopener" title="GitHub 仓库">
+        <img class="nav-brand-logo" src="/src/assets/logo-32.png" alt="Logo" width="24" height="24" />
+        <span data-i18n="nav.brand">日耗仓</span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="home">🏠<span class="nav-label" data-i18n="nav.home"> 主页</span></button>
+          <button class="nav-tab" data-tab="analytics">📊<span class="nav-label" data-i18n="nav.analytics"> 分析</span></button>
+          <button class="nav-tab" data-tab="settings">⚙️<span class="nav-label" data-i18n="nav.settings"> 设置</span></button>
+        </div>
+        <button id="btn-theme" class="btn-icon" data-i18n-title="nav.theme" title="切换主题">🌓</button>
+        <button id="btn-share" class="btn-icon" data-i18n-title="share.fab" title="分享资产墙" aria-label="分享资产墙">
+          <span class="btn-icon-svg" aria-hidden="true"></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- 主页 -->
+    <div id="page-home" class="page active">
+      <!-- 统计栏 -->
+      <div id="stats-bar">
+        <div class="stat-card">
+          <span class="stat-icon">📋</span>
+          <span class="stat-label" data-i18n="stats.total_items">物品总数</span>
+          <span class="stat-value" id="stat-count">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💰</span>
+          <span class="stat-label" data-i18n="stats.total_cost">总花费</span>
+          <span class="stat-value" id="stat-total">¥0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">📅</span>
+          <span class="stat-label" data-i18n="stats.daily_avg_cost">日均可变成本</span>
+          <span class="stat-value" id="stat-daily">¥0</span>
+        </div>
+      </div>
+
+      <!-- 筛选栏 -->
+      <div id="filter-bar">
+        <div class="search-wrap">
+          <input type="text" id="filter-input" data-i18n-placeholder="filter.search_placeholder" placeholder="🔍 搜索名称、店铺、型号、订单号..." />
+          <button id="btn-search-clear" class="btn-search-clear" title="清空" style="display:none">✕</button>
+        </div>
+        <div id="filter-platform" class="multi-select">
+          <button id="btn-platform-drop" class="multi-select-btn">🏷️ <span data-i18n="filter.platform">平台</span> <span id="platform-count">(0)</span></button>
+          <div class="multi-select-drop" id="platform-drop"></div>
+        </div>
+        <div id="filter-category" class="multi-select">
+          <button id="btn-category-drop" class="multi-select-btn">📂 <span data-i18n="category.label">分类</span> <span id="category-count">(0)</span></button>
+          <div class="multi-select-drop" id="category-drop"></div>
+        </div>
+        <select id="filter-sort">
+          <option value="daily" data-i18n="filter.daily_cost">日均成本</option>
+          <option value="time" data-i18n="filter.time">时间</option>
+          <option value="price" data-i18n="filter.price">价格</option>
+        </select>
+        <button id="btn-sort-dir" class="btn-icon-only" data-i18n-title="filter.sort_toggle" title="切换升序/降序" style="width:36px;height:36px;font-size:16px;">↓</button>
+        <button id="btn-select-mode" class="btn btn-sm btn-ghost">☐ <span data-i18n="home.select">选择</span></button>
+      </div>
+      <div id="active-filters" class="active-filters" aria-live="polite"></div>
+
+      <!-- 物品列表 -->
+      <div id="items-container">
+        <div id="items-empty" class="empty-state">
+          <span class="empty-icon">📦</span>
+          <p class="empty-title" data-i18n="empty.title">还没有物品，开始建立你的资产档案吧</p>
+          <p class="empty-subtitle" data-i18n="empty.subtitle">「批量入仓，由你掌控」</p>
+          <div class="empty-actions">
+            <button class="empty-card" id="empty-add-item">
+              <span class="empty-card-icon">➕</span>
+              <span class="empty-card-label" data-i18n="empty.add_manual">手动添加</span>
+              <span class="empty-card-desc" data-i18n="empty.add_manual_desc">逐条录入单个物品</span>
+            </button>
+            <button class="empty-card" id="empty-go-import">
+              <span class="empty-card-icon">📄</span>
+              <span class="empty-card-label" data-i18n="empty.import_orders">导入订单</span>
+              <span class="empty-card-desc" data-i18n="empty.import_orders_desc">批量导入京东/淘宝/Steam 订单</span>
+            </button>
+          </div>
+          <p class="empty-drag-hint" data-i18n="empty.drag_hint">也支持将 CSV / Excel 文件直接拖拽到窗口中导入</p>
+          <button class="empty-demo-btn" id="empty-load-demo" style="display:none">
+            <span class="empty-demo-icon">🎁</span>
+            <span class="empty-demo-text">
+              <span class="empty-demo-title" data-i18n="empty.load_demo">加载示例数据，快速浏览体验</span>
+              <span class="empty-demo-desc" data-i18n="empty.load_demo_desc">模拟一份个人资产账本，无需导入任何文件</span>
+            </span>
+          </button>
+        </div>
+        <div id="items-grid"></div>
+      </div>
+
+    </div>
+
+    <!-- 添加物品 FAB（全局，在页面容器外避免被动画 transform 影响） -->
+    <button id="btn-add-item" class="fab" data-i18n-title="fab.add_item" title="手动添加物品">＋</button>
+    <!-- 批量选择操作栏（全局） -->
+    <div id="select-batch-bar" class="select-batch-bar" style="display:none">
+      <span id="select-batch-count"></span>
+      <button id="btn-batch-archive" class="btn btn-primary btn-small" data-i18n="home.batch_archive">📦 批量归档</button>
+      <button id="btn-cancel-select" class="btn btn-ghost btn-small" data-i18n="home.cancel_select">取消选择</button>
+    </div>
+
+    <!-- 设置页 -->
+    <div id="page-settings" class="page">
+      <div class="settings-section">
+        <div class="section-head">
+          <h2>🎨 <span data-i18n="settings.display">显示设置</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/settings/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="settings.display_desc">自定义卡片显示、金额精度、货币符号和界面配色</p>
+        <div class="setting-row">
+          <span class="setting-label" data-i18n="settings.show_total">卡片显示总价</span>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-show-total" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" data-i18n="settings.precision">金额小数位数</span>
+          <select id="select-precision">
+            <option value="0" data-i18n="settings.precision_0">0 位</option>
+            <option value="1" data-i18n="settings.precision_1">1 位</option>
+            <option value="2" selected data-i18n="settings.precision_2">2 位</option>
+            <option value="3" data-i18n="settings.precision_3">3 位</option>
+            <option value="4" data-i18n="settings.precision_4">4 位</option>
+            <option value="5" data-i18n="settings.precision_5">5 位</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" data-i18n="settings.currency">货币符号</span>
+          <select id="select-currency">
+            <option value="¥">¥ (CNY)</option>
+            <option value="$">$ (USD)</option>
+            <option value="€">€ (EUR)</option>
+            <option value="£">£ (GBP)</option>
+            <option value="₩">₩ (KRW)</option>
+            <option value="₹">₹ (INR)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" data-i18n="settings.color_theme">配色方案</span>
+          <select id="select-color-theme">
+            <option value="matcha" data-i18n="color_theme.matcha">🍵 抹茶绿</option>
+            <option value="sky" data-i18n="color_theme.sky">☁️ 天之蓝</option>
+            <option value="berry" data-i18n="color_theme.berry">🫐 莓之紫</option>
+            <option value="peach" data-i18n="color_theme.peach">🍑 桃之粉</option>
+            <option value="tangerine" data-i18n="color_theme.tangerine">🍊 橘之橙</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" data-i18n="language.label">界面语言</span>
+          <select id="select-language">
+            <option value="zh-CN" data-i18n="language.zh-CN">简体中文</option>
+            <option value="zh-TW" data-i18n="language.zh-TW">繁體中文</option>
+            <option value="en" data-i18n="language.en">English</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-head">
+          <h2>📥 <span data-i18n="settings.data_import">数据导入</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/import-csv/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="settings.import_desc">导入浏览器扩展导出或微信账单的 CSV / Excel 文件</p>
+
+        <!-- 拖拽区域 -->
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-zone-content">
+            <span class="drop-icon">📁</span>
+            <p class="drop-title" data-i18n="settings.drag_title">拖拽 CSV / Excel 文件到此处</p>
+            <p class="drop-hint" data-i18n="settings.drag_hint">或将文件拖入应用窗口任意位置</p>
+          </div>
+          <div class="drop-divider">
+            <span data-i18n="settings.or_divider">或</span>
+          </div>
+          <button id="btn-pick-file" class="btn btn-primary">📄 <span data-i18n="settings.select_csv">选择文件</span></button>
+        </div>
+
+        <div id="import-status" class="import-status"></div>
+
+        <div id="import-batches" class="import-batches">
+          <h3>📋 <span data-i18n="settings.imported_batches">已导入批次</span></h3>
+          <div id="batches-list"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-head">
+          <h2>🗄️ <span data-i18n="settings.backup_restore">备份与恢复</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/data-management/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="settings.backup_restore_desc">导出或导入完整的 SQLite 存档文件，用于备份和恢复所有数据</p>
+        <div class="db-actions">
+          <button id="btn-export-db" class="btn btn-primary">📤 <span data-i18n="settings.export_db">导出存档</span></button>
+          <button id="btn-import-db" class="btn btn-secondary">📥 <span data-i18n="settings.import_db">导入存档</span></button>
+        </div>
+        <p class="db-path-hint"><span data-i18n="settings.db_path">存档位置：</span><code id="db-path-text">—</code></p>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-head">
+          <h2>🧭 <span data-i18n="settings.asset_maintenance">资产维护</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/manage-items/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="settings.asset_maintenance_desc">按当前规则更新已有物品的分类或 emoji，不会修改其他信息</p>
+        <div class="db-actions">
+          <select id="smart-categorize-mode" class="smart-mode-select">
+            <option value="category" data-i18n="settings.smart_mode_category">🏷️ 仅更新分类</option>
+            <option value="emoji" data-i18n="settings.smart_mode_emoji">😀 仅更新 emoji</option>
+          </select>
+          <button id="btn-recalculate-categories" class="btn btn-ghost">🤖 <span data-i18n="settings.smart_categorize">智能分类</span></button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-head">
+          <h2>📦 <span data-i18n="archive.title">归档管理</span> <span class="archive-count-badge" id="archived-count">0</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/manage-items/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="archive.desc">已归档的物品不在主页展示，也不会被重复导入。可随时恢复或永久删除。</p>        <div id="archive-batch-bar" class="archive-batch-bar" style="display:none">
+          <button id="btn-batch-restore" class="btn btn-primary btn-small" data-i18n="archive.batch_restore">📥 批量取消归档</button>
+          <button id="btn-batch-delete" class="btn btn-danger btn-small" data-i18n="archive.batch_delete">🗑️ 批量永久删除</button>
+        </div>        <div id="archived-items-list"></div>
+      </div>
+
+      <div class="settings-section danger-zone">
+        <div class="section-head">
+          <h2>⚠️🗑️ <span data-i18n="settings.data_management">数据管理</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/data-management/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="settings.clear_desc">清除所有已导入的物品数据（此操作不可撤销）</p>
+        <button id="btn-clear-data" class="btn btn-danger" data-i18n="settings.clear_all">清除所有数据</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-head">
+          <h2>📤 <span data-i18n="share.settings_title">分享与报告</span></h2>
+          <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/share/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
+        </div>
+        <p class="section-desc" data-i18n="share.settings_desc">生成资产墙长图或年度消费报告，保存后分享到社交平台</p>
+        <div class="db-actions">
+          <button id="btn-share-gear" class="btn btn-primary">📤 <span data-i18n="share.btn_gear">生成资产墙</span></button>
+          <button id="btn-share-year" class="btn btn-secondary">📊 <span data-i18n="share.btn_year">年度消费报告</span></button>
+        </div>
+      </div>
+
+      <div class="settings-section about-section">
+        <h2>ℹ️ <span data-i18n="about.title">关于日耗仓</span></h2>
+        <!-- App 信息 -->
+        <div class="about-app">
+          <a class="about-app-link" href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost" target="_blank" rel="noopener">
+            <img class="about-app-logo" src="/src-tauri/icons/64x64.png" alt="App Logo" width="48" height="48" />
+          </a>
+          <div class="about-app-info">
+            <a class="about-app-name-link" href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost" target="_blank" rel="noopener">
+              <p class="about-app-name" data-i18n="about.app_name">日耗仓 · DailyCost Vault</p>
+            </a>
+            <p class="about-app-slogan" data-i18n="about.slogan">你的资产账本 · 算清每一件物品的日均成本</p>
+            <p class="about-app-sub" data-i18n="about.subtitle">批量入仓，由你掌控</p>
+            <p class="about-version" id="app-version"></p>
+            <a class="about-link about-link-repo" href="https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost" target="_blank" rel="noopener" data-i18n="about.repo">⭐ 项目仓库</a>
+            <a class="about-link" href="https://bunnychen.top/BunnyChen-DailyCost/" target="_blank" rel="noopener" data-i18n="about.official_site">🌐 访问官网</a>
+            <a class="about-link" href="https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/" target="_blank" rel="noopener" data-i18n="about.privacy">🔒 隐私说明</a>
+            <a class="about-link" id="btn-check-update" data-i18n="about.check_update">🔄 检查更新</a>
+            <p class="about-update" id="update-status"></p>
+          </div>
+        </div>
+        <hr class="about-divider" />
+        <!-- 开发者信息 -->
+        <div class="about-dev">
+          <img class="about-dev-avatar" src="/src-tauri/icons/Avatar_crop_min.png" alt="BunnyChen" width="32" height="32" />
+          <span class="about-dev-name">BunnyChen</span>
+          <span class="about-dev-role" data-i18n="about.author">独立开发者</span>
+          <span class="about-dev-links">
+            <a class="about-link" href="https://bunnychen.top/" target="_blank" rel="noopener" data-i18n="about.website">🌐 访问作者主页</a>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分析页 -->
+    <div id="page-analytics" class="page">
+      <!-- 全局分析范围：平台 + 时间跨度，作用于整个分析页（KPI/月度/分布/对比/微信收支） -->
+      <div class="analytics-section">
+        <div class="analytics-controls" id="analytics-range">
+          <span class="analytics-range-label">📅 <span data-i18n="analytics.monthly_filter_time">时间范围</span></span>
+          <select class="analytics-select" id="range-platform" title="平台"></select>
+          <select class="analytics-select" id="range-start-month"></select>
+          <span style="color:var(--text-tertiary);font-size:12px">~</span>
+          <select class="analytics-select" id="range-end-month"></select>
+          <button class="analytics-range-reset" id="range-reset" type="button">↺ <span data-i18n="analytics.range_reset">重置</span></button>
+          <button class="analytics-range-reset" id="btn-year-report" type="button">📊 <span data-i18n="analytics.year_report">年度报告</span></button>
+          <span class="analytics-range-hint" id="range-hint"></span>
+        </div>
+      </div>
+
+      <!-- KPI 总览 -->
+      <div id="analytics-kpi" class="analytics-kpi"></div>
+      <div id="analytics-insights" class="analytics-insights" aria-live="polite"></div>
+
+      <!-- 月度消费折线图 -->
+      <div class="analytics-section">
+        <h2>📈 <span data-i18n="analytics.monthly_title">月度消费趋势</span></h2>
+        <div class="analytics-controls" id="monthly-controls">
+          <select class="analytics-select" id="monthly-metric"></select>
+          <label class="analytics-check-label" id="cumulative-label">
+            <input type="checkbox" id="monthly-cumulative"> 📈 累计
+          </label>
+        </div>
+        <div id="chart-monthly-wrap" class="chart-wrap">
+          <canvas id="chart-monthly"></canvas>
+        </div>
+        <div id="monthly-drilldown" class="monthly-drilldown" style="display:none">
+          <div class="drilldown-header">
+            <span class="drilldown-title" id="drilldown-title"></span>
+            <button class="drilldown-close" id="drilldown-close">✕</button>
+          </div>
+          <div class="drilldown-items" id="drilldown-items"></div>
+        </div>
+      </div>
+
+      <!-- 平台 + 分类双饼图 -->
+      <div class="analytics-section">
+        <h2>🍩 <span data-i18n="analytics.distribution_title">消费分布</span></h2>
+        <div class="charts-row">
+          <div class="chart-col">
+            <h3 class="chart-subtitle" data-i18n="analytics.by_platform">按平台</h3>
+            <div id="chart-platform-wrap" class="chart-wrap chart-wrap-donut">
+              <canvas id="chart-platform"></canvas>
+            </div>
+            <div class="chart-donut-legend" id="platform-legend"></div>
+          </div>
+          <div class="chart-col">
+            <h3 class="chart-subtitle" data-i18n="analytics.by_category">按分类</h3>
+            <div id="chart-category-wrap" class="chart-wrap chart-wrap-donut">
+              <canvas id="chart-category"></canvas>
+            </div>
+            <div class="chart-donut-legend" id="category-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 微信收支 -->
+      <div class="analytics-section" id="wechat-section" style="display:none">
+        <h2>💚 <span data-i18n="analytics.wechat_title">微信收支</span></h2>
+        <div id="wechat-kpi" class="wechat-kpi"></div>
+        <div class="wechat-charts">
+          <div class="chart-col wechat-monthly-col">
+            <h3 class="chart-subtitle" data-i18n="analytics.wechat_monthly_title">月度支出 vs 回款</h3>
+            <div id="chart-wechat-monthly-wrap" class="chart-wrap">
+              <canvas id="chart-wechat-monthly"></canvas>
+            </div>
+          </div>
+          <div class="chart-col">
+            <h3 class="chart-subtitle" data-i18n="analytics.wechat_type_title">回款结构</h3>
+            <div id="chart-wechat-type-wrap" class="chart-wrap chart-wrap-donut">
+              <canvas id="chart-wechat-type"></canvas>
+            </div>
+            <div class="chart-donut-legend" id="wechat-type-legend"></div>
+          </div>
+        </div>
+        <div id="wechat-peers"></div>
+      </div>
+
+      <!-- 平台价值对比 -->
+      <div class="analytics-section" id="platform-compare-section" style="display:none">
+        <h2>⚖️ <span data-i18n="analytics.compare_title">平台对比</span></h2>
+        <div id="platform-compare-grid" class="platform-compare-grid"></div>
+      </div>
+    </div>
+
+    <!-- 回到顶部（全局） -->
+    <button id="btn-back-to-top" class="back-to-top" data-i18n-title="fab.back_to_top" title="回到顶部">↑</button>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 详情浮窗 -->
+    <div id="item-modal" class="modal-overlay">
+      <div class="modal-box" id="modal-content"></div>
+    </div>
+
+    <!-- 分享/报告浮窗 -->
+    <div id="share-modal" class="modal-overlay">
+      <div class="modal-box share-box">
+        <div class="share-head">
+          <h3 id="share-title"></h3>
+          <button class="btn-icon-only share-close" id="share-close" title="关闭">✕</button>
+        </div>
+        <div class="share-title-edit">
+          <label for="share-title-input" data-i18n="share.title_label">海报标题</label>
+          <input type="text" id="share-title-input" data-i18n-placeholder="share.title_gear" maxlength="20" />
+        </div>
+        <div class="share-modules" id="share-modules">
+          <span class="share-modules-title" data-i18n="share.modules_title">选择展示模块</span>
+          <div class="share-modules-list" id="share-modules-list">
+            <label class="share-mod"><input type="checkbox" data-mod="kpi" checked><span data-i18n="share.mod_kpi">数据总览</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="insight" checked><span data-i18n="share.mod_insight">洞察</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="trend" checked><span data-i18n="share.mod_trend">月度趋势</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="dist" checked><span data-i18n="share.mod_dist">分布</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="ranking" checked><span data-i18n="share.mod_ranking">物品排行</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="recovered"><span data-i18n="share.mod_recovered">已回收</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="expensive"><span data-i18n="share.mod_expensive">最贵单品</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="plat"><span data-i18n="share.mod_plat">平台排行</span></label>
+            <label class="share-mod"><input type="checkbox" data-mod="monthcount"><span data-i18n="share.mod_monthcount">月度件数</span></label>
+          </div>
+        </div>
+        <div id="share-canvas-wrap" class="share-canvas-wrap"><p class="share-loading">—</p></div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="share-download" disabled>📥 <span data-i18n="share.download">保存图片</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 确认弹窗 -->
+    <div id="confirm-dialog" class="modal-overlay">
+      <div class="modal-box confirm-box">
+        <p id="confirm-msg"></p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="confirm-cancel" data-i18n="confirm.cancel">取消</button>
+          <button class="btn btn-danger" id="confirm-ok" data-i18n="confirm.ok">确认</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

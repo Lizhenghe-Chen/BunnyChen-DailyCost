@@ -1,0 +1,88 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DailyCost Vault",
+  "version": "1.1.0",
+  "identifier": "com.bunnychen.dailycostvault",
+  "mainBinaryName": "dailycost-vault",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "日耗仓",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "iOS": {
+      "developmentTeam": "UQ3MD8G2W3"
+    },
+    "publisher": "BunnyChen",
+    "homepage": "https://bunnychen.top/BunnyChen-DailyCost/",
+    "category": "Finance",
+    "shortDescription": "日耗仓 · DailyCost Vault — 个人资产数字化管理工具",
+    "longDescription": "日耗仓 · DailyCost Vault 是一款长期主义个人资产数字化管理工具。\n批量入仓，由你掌控。",
+    "copyright": "Copyright © 2026 BunnyChen",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "windows": {
+      "nsis": {
+        "languages": ["English", "SimpChinese", "TradChinese"]
+      }
+    },
+    "macOS": {
+      "dmg": {
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "windowPosition": {
+          "x": 200,
+          "y": 200
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 220
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 220
+        }
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases/download/updater/update.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDg4MUUzOTM1REVDNTI5QkIKUldTN0tjWGVOVGtlaUk0VFlpNW1la3QzeDdhdXQrUHN1NjVLNUpHeXgraGNkeEo5akdaMEIxQ0cK",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

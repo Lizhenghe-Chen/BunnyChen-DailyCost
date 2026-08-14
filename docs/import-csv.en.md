@@ -1,7 +1,7 @@
 # 📥 Import CSV Orders
 
 !!! tip "⭐ Recommended First Step"
-    If you have purchase history on JD.com, Taobao, or Steam, CSV batch import is the **fastest** way to add items; WeChat bills (CSV / Excel) are also supported with one-click import. The import automatically detects the platform, matches emojis, and deduplicates records, so there is no need to enter anything by hand.
+    If you have purchase history on JD.com, Taobao, or Steam, CSV batch import is the **fastest** way to add items; WeChat / Alipay bills (CSV / Excel) are also supported with one-click import. The import automatically detects the platform, matches emojis, and deduplicates records, so there is no need to enter anything by hand.
 
 ---
 
@@ -12,8 +12,8 @@ Batch import supports the following **data source platforms** (✅ checked = now
 --8<-- "platforms.en.md"
 
 - **JD.com / Taobao / Steam** → see "Import via the Browser Extension" below
-- **WeChat** → no extension needed, see "Import WeChat Bills" below
-- **Other platforms** (Alipay / Pinduoduo / Xianyu / Douyin Mall, etc.) are in the pipeline. In the meantime, use "Add Item" to enter them manually
+- **WeChat / Alipay** → no extension needed, see "Import WeChat / Alipay Bills" below
+- **Other platforms** (Pinduoduo / Xianyu / Douyin Mall, etc.) are in the pipeline. In the meantime, use "Add Item" to enter them manually
 
 ---
 
@@ -112,22 +112,52 @@ The system automatically distinguishes data during import, so you always know wh
 
 ---
 
-!!! note "About duplicates between JD / Taobao orders and WeChat bills"
-    Deduplication in DailyCost Vault is **per platform**: JD orders are deduplicated by JD order number and WeChat records by WeChat transaction ID — the two are not linked.
+## Import Alipay Bills (No Extension Needed)
 
-    If you pay for a **JD / Taobao order with WeChat Pay**, the same purchase appears in both:
-    1. The order CSV exported from the platform (recorded by order number)
-    2. Your WeChat bill (the counterparty is a JD / Taobao-related merchant, and the merchant order number is usually the platform's order number)
+Alipay transaction details can be exported directly from inside the Alipay app — **no browser extension required**. The exported file is CSV / Excel and can be imported by dragging it into DailyCost Vault:
 
-    Both will be imported, so the same expense is **counted twice**. Cross-platform deduplication is not yet implemented in the current version.
+1. Open the Alipay app → **My** → **Settings** (top-right) → **Bills** (or tap **Bills** on the home screen)
+2. On the Bills page, tap **"···" → "Get Transaction Statement"** (some versions label it under "Transaction Records")
+3. Choose **"For Personal Reconciliation"**, then select the **time range** to export
+4. **Make sure to tick all info columns**: in the export options, tick "**Show Counterparty Info**" and "**Show Product Description Info**" (plus any other available options) — only then will the exported file include the "Counterparty" and "Product Description" columns, so product names and store names import in full
+5. Enter your **email address** and submit. Alipay sends the transaction file to that email (some versions allow downloading directly in the app)
+6. Download the file from your email and drag it into DailyCost Vault (or click "Select File" in Settings to import)
 
-    **Recommendation**: treat the platform's own order export (JD / Taobao CSV) as the source of truth, and use WeChat bills mainly for daily spending that cannot be exported from a platform. If both are imported, watch for records with the same amount on the same day and delete one manually from its detail view.
+> 📖 For a detailed illustrated guide, see: [How to Export Alipay Transaction Bills (Zhihu)](https://zhuanlan.zhihu.com/p/1925479803248697933)
+
+> ⚠️ Alipay CSV files are often **GBK-encoded** (they look fine in Windows but garbled if opened as UTF-8). DailyCost Vault detects the encoding automatically and imports them correctly — no manual conversion needed.
+
+### Alipay Bill Import Rules: Kept vs Filtered
+
+**✅ Kept (imported)**
+
+- **Only "Expense" orders** are imported (Income/Expense column = 支出 / Expense)
+- **Status whitelist**: 交易成功 (Transaction Successful) / 支付成功 (Payment Successful) / empty
+- Product name is taken from the product description, falling back through **counterparty → transaction category → counterparty account** when empty; store name falls back through **counterparty → counterparty account → transaction category**
+- Amount is taken as an absolute value; payment method + remark are merged into the model/style field; records are deduplicated by transaction order ID
+
+**❌ Filtered (skipped)**
+
+- **Income / not-expense / refund** records (refunds, transfers, withdrawals, Yu'e Bao earnings, etc.)
+- **Abnormal statuses**: 退款成功 (Refund Successful), 交易关闭 (Transaction Closed), 解冻 (Unfrozen), etc.
+- Records with an empty transaction order ID, amount ≤ 0, or duplicates of existing records
+
+> 💡 **Always tick all info columns.** Alipay export lets you tick/un-tick columns. If you drop columns like "Product Description" or "Counterparty", the import still works, but product/store names degrade to the transaction category / counterparty account (less readable). Ticking them all gives the most complete product and store names.
+
+---
+
+!!! note "About duplicates between JD / Taobao orders and WeChat / Alipay bills"
+    Deduplication in DailyCost Vault is **two-fold: within-platform + cross-platform**. Within a platform, records are deduplicated by order number / transaction ID. Cross-platform, DailyCost automatically detects that **the same purchase appears in both a platform order CSV and a payment bill** (WeChat Pay can pay for JD / Taobao; Alipay can pay for Taobao). Any bill record whose merchant order number ends with a platform order number **and** whose amount matches is treated as the same purchase and skipped automatically, so nothing is counted twice.
+
+    Both import orders are safe: import **the platform CSV first then the bills**, or **the bills first then the platform CSV** — duplicates are caught either way (the import result reports "N cross-platform duplicates").
+
+    **Recommendation**: still treat the platform's own order export (JD / Taobao CSV) as the source of truth, and use WeChat / Alipay bills mainly for daily spending that cannot be exported from a platform.
 
 ---
 
 ## What the System Does Automatically
 
-- ✅ Detects the platform (JD.com / Taobao / Steam / WeChat)
+- ✅ Detects the platform (JD.com / Taobao / Steam / WeChat / Alipay)
 - ✅ Imports only completed orders and skips pending or cancelled ones
 - ✅ Matches the right emoji icon for each item
 - ✅ Extracts JD.com product detail links

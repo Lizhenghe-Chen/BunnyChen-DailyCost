@@ -26,11 +26,11 @@ The following orders are automatically filtered during import:
 
 > 💡 WeChat transfers, red packets, QR-code payments, and group collections are **kept and imported** (product name falls back to the counterparty), so you can see your full daily spending.
 
-### Q: Will JD / Taobao orders paid with WeChat be counted twice?
+### Q: Will JD / Taobao orders paid with WeChat / Alipay be counted twice?
 
-Yes, they can be. Deduplication is **per platform**: JD orders by order number, WeChat records by transaction ID — the two are not linked. If the same order appears in both a JD / Taobao order CSV and a WeChat bill (e.g., you paid for a JD order with WeChat Pay), it will be imported separately and counted twice. Cross-platform deduplication is not yet implemented in the current version.
+**No.** Besides within-platform dedup (JD by order number, WeChat / Alipay by transaction ID), DailyCost Vault now also **deduplicates across platforms**: WeChat Pay can pay for JD / Taobao and Alipay can pay for Taobao, so the same purchase can appear in both a platform order CSV and a payment bill. Any bill record whose merchant order number ends with a platform order number **and** whose amount matches is treated as the same purchase and skipped automatically (the import result reports "N cross-platform duplicates"). **Both import orders are safe** — import the platform CSV first or the bills first.
 
-**Recommendation**: treat the platform's own order export as the source of truth and use WeChat bills for daily spending that cannot be exported; if both are imported, delete the duplicate record with the same amount on the same day.
+**Recommendation**: still treat the platform's own order export as the source of truth and use WeChat / Alipay bills for daily spending that cannot be exported.
 
 ### Q: What if JD.com triggers risk control during export?
 

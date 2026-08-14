@@ -115,9 +115,9 @@ Cheap ≠ economical. Expensive ≠ wasteful. DailyCost Vault independently calc
 
 <div class="feature-card" markdown>
 
-### 📥 Smart Import from 4 Platforms
+### 📥 Smart Import from 5 Platforms
 
-Drag and drop JD.com, Taobao, and Steam order CSVs, plus WeChat bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge. Batch preload deduplication — tens of thousands of records imported in seconds.
+Drag and drop JD.com, Taobao, and Steam order CSVs, plus WeChat and Alipay bills (CSV / Excel). Dual parser (Rust backend + TypeScript frontend), auto platform detection, invalid order filtering, emoji matching, multi-item merge, auto GBK encoding detection for Alipay exports, and graceful handling when columns are filtered out. Batch preload deduplication — tens of thousands of records imported in seconds.
 
 </div>
 

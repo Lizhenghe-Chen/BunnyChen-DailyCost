@@ -13,7 +13,7 @@
 </h1>
 
 <p align="center">
-  <b>Your digital gear library — know the real daily cost of every device</b>
+  <b>Your asset ledger — know the real daily cost of every item</b>
 </p>
 
 <p align="center">
@@ -40,7 +40,7 @@
 
 ## 🎮 3-Second Intro
 
-Turn scattered orders from **JD.com / Taobao / Steam / WeChat** into a **visual gear library** in one click, with the **daily average cost** of every item calculated automatically:
+Turn scattered orders from **JD.com / Taobao / Steam / WeChat** into a **visual asset ledger** in one click, with the **daily average cost** of every item calculated automatically:
 
 > **Pay more but use it longer = worth it · Buy cheap but let it collect dust = wasted money**
 
@@ -48,9 +48,9 @@ Turn scattered orders from **JD.com / Taobao / Steam / WeChat** into a **visual 
 
 1. 📥 **Download & install** (or [🖥️ Try Online](https://bunnychen.top/BunnyChen-Item-Bookkeeping/))
 2. 🎁 Open the app and click "**Load sample data**" on the empty state
-3. 🎉 See a full gear wall + analytics in 30 seconds — clear it anytime
+3. 🎉 See a full asset wall + analytics in 30 seconds — clear it anytime
 
-> 💡 A built-in **sample data pack** simulates a digital enthusiast's gear library — try before you import.
+> 💡 A built-in **sample data pack** simulates a sample asset ledger — try before you import.
 
 ---
 
@@ -87,7 +87,7 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 ## 📸 Preview
 
 <p align="center">
-  <img src="docs/assets/首页%20装备墙%20数码装备库.jpg" alt="Gear Wall · Sample Data" width="90%" />
+  <img src="docs/assets/首页%20装备墙%20数码装备库.jpg" alt="Asset Wall · Sample Data" width="90%" />
 </p>
 <p align="center">
   <img src="docs/assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg" alt="Home" width="45%" />
@@ -104,7 +104,7 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 **🧮 Pay more but use it longer = worth it** — the daily average cost is calculated per item: a ¥300 coat worn for 300 days costs just ¥1 a day; but a device left gathering dust burns money every single day.
 
-- 📥 **One-click gear library** — batch import from JD.com / Taobao / Steam / WeChat with auto-deduplication and auto category & emoji matching; scattered orders become a gear wall
+- 📥 **One-click asset ledger** — batch import from JD.com / Taobao / Steam / WeChat with auto-deduplication and auto category & emoji matching; scattered orders become an asset wall
 - 🔄 **Full item lifecycle** — In Use / Sold / Retired; after selling, the real holding cost is auto-calculated as (buy price − sell price) ÷ days used
 - 🎨 **Beautiful & customizable** — 3-state theme × 5 color schemes × custom emoji × platform colors
 - 🌐 **Three languages** — 简体中文 / 繁體中文 / English

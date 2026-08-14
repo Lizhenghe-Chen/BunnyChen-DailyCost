@@ -252,7 +252,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 ### 🌐 Web ✅
 
-浏览器即用
+[浏览器即用](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)
 
 </div>
 

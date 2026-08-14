@@ -40,17 +40,9 @@
 
 ## 🎮 3-Second Intro
 
-Turn scattered orders from **JD.com / Taobao / Steam / WeChat** into a **visual asset ledger** in one click, with the **daily average cost** of every item calculated automatically:
+Turn scattered orders from **JD.com / Taobao / Steam / WeChat / Alipay** into a **visual asset ledger** in one click, with the **daily average cost** of every item calculated automatically:
 
 > **Pay more but use it longer = worth it · Buy cheap but let it collect dust = wasted money**
-
-## 🚀 30-Second Quick Start
-
-1. 📥 **Download & install** (or [🖥️ Try Online](https://bunnychen.top/BunnyChen-Item-Bookkeeping/))
-2. 🎁 Open the app and click "**Load sample data**" on the empty state
-3. 🎉 See a full asset wall + analytics in 30 seconds — clear it anytime
-
-> 💡 A built-in **sample data pack** simulates a sample asset ledger — try before you import.
 
 ---
 
@@ -74,21 +66,28 @@ Plenty of bookkeeping and asset-management tools already exist — yet most shar
 
 - 💸 **They charge** — the good features hide behind paywalls and only get pricier
 - ⌨️ **They're manual** — you have to type every record by hand, and you're exhausted before you even start
-- 🗂️ **They're scattered** — JD.com, Taobao, Steam, and WeChat each keep their own records, so the full picture of your spending stays fragmented
+- 🗂️ **They're scattered** — JD.com, Taobao, Steam, WeChat, and Alipay each keep their own records, so the full picture of your spending stays fragmented
 
 But think about it: **every order you place on any platform already belongs to you.** It shouldn't be locked away in your purchase history, nor should you have to re-type it over and over.
 
 That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** new app that gathers and organizes those scattered orders for you in one click, lets the data speak for itself, and helps you truly understand your own spending habits.
 
-> 🐰 [**BunnyChen**](https://github.com/Lizhenghe-Chen) doesn't expect you to use it every day or depend on it long-term. It only hopes that, in some unexpected moment — maybe while reviewing your past, maybe while finally calculating what something really costs — you'll have an "aha!" moment, revisit your own history, and gain a little insight worth keeping. That alone makes it all worthwhile.
+> It only hopes that, in some unexpected moment — maybe while reviewing your past, maybe while finally calculating what something really costs — you'll have an "aha!" moment, revisit your own history, and gain a little insight worth keeping. That alone makes it all worthwhile.
+
+---
+
+## 🚀 Quick Start
+
+1. 📥 **Download & install** — [GitHub Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) (or [🖥️ Try Online](https://bunnychen.top/BunnyChen-Item-Bookkeeping/))
+2. Open the app and click "**Load sample data**" on the empty state
+3. The page fills with sample items and analytics — you can clear them anytime
+
+> 💡 A built-in **sample data pack** simulates a sample asset ledger — try it before you import any files.
 
 ---
 
 ## 📸 Preview
 
-<p align="center">
-  <img src="docs/assets/首页%20装备墙%20数码装备库.jpg" alt="Asset Wall · Sample Data" width="90%" />
-</p>
 <p align="center">
   <img src="docs/assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg" alt="Home" width="45%" />
   <img src="docs/assets/桌面端数据分析页面（深色主题）.jpg" alt="Analytics" width="45%" />
@@ -104,7 +103,7 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 **🧮 Pay more but use it longer = worth it** — the daily average cost is calculated per item: a ¥300 coat worn for 300 days costs just ¥1 a day; but a device left gathering dust burns money every single day.
 
-- 📥 **One-click asset ledger** — batch import from JD.com / Taobao / Steam / WeChat with auto-deduplication and auto category & emoji matching; scattered orders become an asset wall
+- 📥 **One-click asset ledger** — batch import from JD.com / Taobao / Steam / WeChat / Alipay with auto-deduplication and auto category & emoji matching; scattered orders become an asset wall
 - 🔄 **Full item lifecycle** — In Use / Sold / Retired; after selling, the real holding cost is auto-calculated as (buy price − sell price) ÷ days used
 - 🎨 **Beautiful & customizable** — 3-state theme × 5 color schemes × custom emoji × platform colors
 - 🌐 **Three languages** — 简体中文 / 繁體中文 / English
@@ -120,42 +119,44 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 **✅ Now Supported**
 
-- [x] 🐶 **JD.com** — one-click CSV export via the browser extension
-- [x] 🛒 **Taobao / Tmall** — one-click CSV export via the browser extension
-- [x] 🎮 **Steam** — one-click CSV export via the browser extension
-- [x] 💬 **WeChat Bills** — "Download Bill" inside the WeChat app (CSV / Excel)
+- [X]  🐶 **JD.com** — one-click CSV export via the browser extension
+- [X]  🛒 **Taobao / Tmall** — one-click CSV export via the browser extension
+- [X]  🎮 **Steam** — one-click CSV export via the browser extension
+- [X]  💬 **WeChat Bills** — "Download Bill" inside the WeChat app (CSV / Excel)
+- [X]  💳 **Alipay** — "Transaction Details" export inside the Alipay app (CSV / Excel)
 
 **⏳ Coming Soon (in the pipeline)**
 
-- [ ] 💳 **Alipay**
-- [ ] 🛍️ **Pinduoduo**
-- [ ] 🐟 **Xianyu**
-- [ ] 📱 **Douyin Mall**
+- [ ]  🛍️ **Pinduoduo**
+- [ ]  🐟 **Xianyu**
+- [ ]  📱 **Douyin Mall**
 
 > 💡 "Add Item" supports any platform (Tmall, Pinduoduo, Xianyu, Dewu, etc.) — not limited by the batch-import list above.
 
 ### Supported Devices
 
-| Platform    | Status | Download                                                                                                  |
-| :---------- | :----: | :-------------------------------------------------------------------------------------------------------- |
-| 🖥️ Windows |  ✅  | [`.exe` / `.msi`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                         |
-| 🍎 macOS     |  ✅  | [`.dmg` (Apple Silicon + Intel)](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)         |
-| 🐧 Linux     |  ✅  | [`.deb` / `.AppImage`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                   |
-| 🤖 Android   |  ✅  | [`.apk`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                                 |
-| 🌐 Web       |  ✅  | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)                                       |
-| 📱 iOS       |  🚧  | Coming soon                                                                                              |
+
+| Platform     | Status | Download                                                                                         |
+| :------------- | :------: | :------------------------------------------------------------------------------------------------- |
+| 🖥️ Windows |   ✅   | [`.exe` / `.msi`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                |
+| 🍎 macOS     |   ✅   | [`.dmg` (Apple Silicon + Intel)](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) |
+| 🐧 Linux     |   ✅   | [`.deb` / `.AppImage`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)           |
+| 🤖 Android   |   ✅   | [`.apk`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                         |
+| 🌐 Web       |   ✅   | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)                               |
+| 📱 iOS       |   🚧   | Coming soon                                                                                      |
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer      | Technology                      |
-| :--------- | :------------------------------ |
-| Desktop    | **Tauri v2**                    |
-| Frontend   | **TypeScript** + Vite           |
-| Backend    | **Rust**                        |
-| Database   | **SQLite** (rusqlite, bundled)  |
-| UI         | Vanilla HTML/CSS                |
+
+| Layer    | Technology                     |
+| :--------- | :------------------------------- |
+| Desktop  | **Tauri v2**                   |
+| Frontend | **TypeScript** + Vite          |
+| Backend  | **Rust**                       |
+| Database | **SQLite** (rusqlite, bundled) |
+| UI       | Vanilla HTML/CSS               |
 
 ---
 

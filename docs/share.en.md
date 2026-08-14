@@ -14,8 +14,6 @@ The asset wall poster includes:
 - 🏷️ Your **top category**
 - 🧩 Top 12 items by daily cost (emoji + name + daily cost)
 
-![Asset Wall Example](assets/首页%20装备墙%20数码装备库.jpg){ loading=lazy }
-
 !!! tip "Tip"
     The popup first previews the poster as **web components** (crisp and scrollable); only when you click "Save Image" is a **1080×2240 PNG (3:4 vertical)** generated — perfect for Xiaohongshu, Jike, and WeChat Moments.
 

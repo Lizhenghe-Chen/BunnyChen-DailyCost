@@ -17,6 +17,33 @@ const storage = typeof localStorage !== "undefined" ? localStorage : sessionStor
 // 有效订单完成态（京东: 已完成；淘宝: 交易成功/已签收/交易完成）
 const VALID_ORDER_STATUSES = new Set(["已完成", "交易成功", "已签收", "交易完成"]);
 
+// ── 跨平台去重（微信/支付宝账单 ↔ 京东/淘宝订单）──────────────────
+// 同一笔消费可能同时出现在「平台订单 CSV」与「支付账单」中：微信可支付淘宝/京东、
+// 支付宝可支付淘宝。账单「商户单号/商家订单号」常以平台订单号为后缀
+// （如支付宝商家订单号 `T200P<淘宝订单号>`、微信商户单号即平台订单号）。
+// 规则：账单商家单号以订单平台订单号为后缀 且 金额一致（±0.01）→ 跨平台重复。
+// 双方向生效：无论先导平台订单还是先导账单，都能拦截重复记账。语义同 Rust 端。
+
+/** 账单记录（微信/支付宝）是否与订单平台（京东/淘宝）已有记录重复 */
+function isBillDupWithOrder(productId: string, amount: number, orderPlatform: Map<string, number>): boolean {
+  if (!productId || amount <= 0) return false;
+  for (const [oid, oamt] of orderPlatform) {
+    if (productId.endsWith(oid) && Math.abs((oamt || 0) - amount) < 0.011) return true;
+  }
+  return false;
+}
+
+/** 订单平台记录（京东/淘宝）是否与账单（微信/支付宝）已有记录重复 */
+function isOrderDupWithBill(orderId: string, amount: number, bills: Array<[string, number]>): boolean {
+  if (!orderId || amount <= 0) return false;
+  return bills.some(([pid, amt]) => pid.endsWith(orderId) && Math.abs((amt || 0) - amount) < 0.011);
+}
+
+/** 跨平台去重提示文案（n>0 时返回说明，否则空） */
+function crossDupNote(n: number): string {
+  return n > 0 ? t("csv.cross_platform_dup", { count: n }) : "";
+}
+
 class BrowserDb {
   private items: OrderItem[] = [];
   private nextId = 1;
@@ -44,7 +71,7 @@ class BrowserDb {
         }
         // 迁移：平台值归一化（旧版样例数据用中文 京东/淘宝/Steam，CSV 导入用缩写 jd/tb/steam，
         // 合并同一平台的不同写法，避免平台筛选下拉重复与统计拆分）
-        const PLATFORM_NORM: Record<string, string> = { "京东": "jd", "淘宝": "tb", "Steam": "steam" };
+        const PLATFORM_NORM: Record<string, string> = { "京东": "jd", "淘宝": "tb", "Steam": "steam", "支付宝": "alipay" };
         for (const item of this.items) {
           const norm = PLATFORM_NORM[item.platform];
           if (norm) { item.platform = norm; normalized = true; }
@@ -86,6 +113,7 @@ class BrowserDb {
 
     if (platform === "steam") return this.importSteamCsv(rows, fileName);
     if (platform === "wx") return this.importWechatRows(rows, fileName);
+    if (platform === "alipay") return this.importAlipayRows(rows, fileName);
     return this.importJdTbCsv(rows, fileName, platform);
   }
 
@@ -114,7 +142,12 @@ class BrowserDb {
     const splitLines = (raw: string): string[] =>
       raw.split("\n").map(s => s.trim()).filter(s => s.length > 0);
 
-    let imported = 0, skipped = 0;
+    // 跨平台去重索引：淘宝/京东可被微信/支付宝支付，检查是否已在账单入库
+    const billProducts: Array<[string, number]> = this.items
+      .filter(i => (i.platform === "wx" || i.platform === "alipay") && i.product_id && i.total_price > 0)
+      .map(i => [i.product_id, i.total_price]);
+
+    let imported = 0, skipped = 0, crossDup = 0;
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
       if (row.length < 2) { skipped++; continue; }
@@ -151,6 +184,9 @@ class BrowserDb {
         const price = parseFloat(paidAmount) || priceStrs.reduce((s, v) => s + (parseFloat(v) || 0), 0);
         const pid = pids[0] || "";
         const productUrl = platform === "tb" ? (urls[0] || "") : extractJdUrl(row[col["商品明细JSON"]] || "", pn);
+
+        // 跨平台去重：该订单已以微信/支付宝账单入库 → 跳过
+        if (isOrderDupWithBill(orderId, price, billProducts)) { crossDup++; skipped++; continue; }
 
         if (!multiDedup.has(orderId)) {
           const [cat, emoji] = matchProductCategory(pn, storeName, platform);
@@ -207,6 +243,9 @@ class BrowserDb {
         const dedupKey = `${orderId}::${pn}::${ms}`;
         if (singleDedup.has(dedupKey)) { skipped++; continue; }
 
+        // 跨平台去重：该订单已以微信/支付宝账单入库 → 跳过
+        if (isOrderDupWithBill(orderId, price, billProducts)) { crossDup++; skipped++; continue; }
+
         const [catSingle, emojiSingle] = matchProductCategory(pn, storeName, platform);
         this.items.push({
           id: this.nextId++,
@@ -238,7 +277,7 @@ class BrowserDb {
 
     this.recalcDailyCost();
     this.save();
-    return { success: imported > 0, imported, skipped, message: t("csv.import_success", { imported, skipped }) };
+    return { success: imported > 0, imported, skipped, message: t("csv.import_success", { imported, skipped }) + crossDupNote(crossDup) };
   }
 
   private async importSteamCsv(rows: string[][], fileName: string): Promise<ImportResult> {
@@ -335,25 +374,21 @@ class BrowserDb {
     return this.importWechatRows(parseCsv(text), fileName);
   }
 
-  /** 从微信账单 xlsx（ArrayBuffer）导入：浏览器端用 SheetJS 读为二维数组 */
-  async importWechatXlsx(buffer: ArrayBuffer, fileName: string): Promise<ImportResult> {
+  /** 从账单 xlsx（ArrayBuffer）导入：浏览器端用 SheetJS 读为二维数组；自动识别微信/支付宝表头 */
+  async importBillXlsx(buffer: ArrayBuffer, fileName: string): Promise<ImportResult> {
     const { default: XLSX } = await import("@e965/xlsx");
     const wb = XLSX.read(buffer, { type: "array" });
-    // 选第一个含微信表头的 sheet
-    let rows: string[][] = [];
-    let found = false;
     for (const sheetName of wb.SheetNames) {
       const sheetData = XLSX.utils.sheet_to_json<string[]>(wb.Sheets[sheetName], { header: 1, raw: false, defval: "" });
-      if (sheetData.some(r => r[0] && r.includes("交易单号") && r.includes("金额(元)"))) {
-        rows = sheetData;
-        found = true;
-        break;
+      // 支付宝表头（交易订单号）优先判断，与微信（交易单号）互不包含
+      if (sheetData.some(r => r.includes("交易订单号") && r.includes("金额"))) {
+        return this.importAlipayRows(sheetData, fileName);
+      }
+      if (sheetData.some(r => r.includes("交易单号") && r.includes("金额(元)"))) {
+        return this.importWechatRows(sheetData, fileName);
       }
     }
-    if (!found) {
-      return { success: false, imported: 0, skipped: 0, message: `xlsx 中未找到微信账单表头（需含「交易单号」「金额(元)」列）` };
-    }
-    return this.importWechatRows(rows, fileName);
+    return { success: false, imported: 0, skipped: 0, message: `xlsx 中未找到微信/支付宝账单表头（需含「交易单号」或「交易订单号」列）` };
   }
 
   /** 微信账单核心解析（CSV/xlsx 共用二维数组）——语义同 Rust 端 parse_wechat_rows */
@@ -391,7 +426,13 @@ class BrowserDb {
     const incomeDedup = new Set(this.incomes.map(i => i.order_id));
     const { matchProductCategory } = await import("./utils");
 
-    let imported = 0, incomeImported = 0, skipped = 0;
+    // 跨平台去重索引：微信可支付淘宝/京东，检查是否已在京东/淘宝订单入库
+    const orderPlatform = new Map<string, number>(
+      this.items.filter(i => (i.platform === "jd" || i.platform === "tb") && i.order_id && i.total_price > 0)
+        .map(i => [i.order_id, i.total_price]),
+    );
+
+    let imported = 0, incomeImported = 0, skipped = 0, crossDup = 0;
     for (let r = headerIdx + 1; r < rows.length; r++) {
       const row = rows[r];
       if (!row || row.length === 0) { skipped++; continue; }
@@ -437,6 +478,10 @@ class BrowserDb {
       if (amount <= 0) { skipped++; continue; }
       if (wxDedup.has(orderId)) { skipped++; continue; }
 
+      // 跨平台去重：同一笔消费已以京东/淘宝订单入库（商户单号=平台单号后缀+金额一致）→ 跳过
+      const productId = cell(row, "商户单号");
+      if (isBillDupWithOrder(productId, amount, orderPlatform)) { crossDup++; skipped++; continue; }
+
       // 支付方式 + 备注合并到型号区
       let remark = cell(row, "备注");
       if (remark === "/") remark = "";
@@ -453,7 +498,7 @@ class BrowserDb {
         id: this.nextId++,
         order_id: orderId,
         parent_order_id: "",
-        product_id: cell(row, "商户单号"),
+        product_id: productId,
         platform: "wx",
         store_name: storeName,
         product_name: productName,
@@ -481,8 +526,135 @@ class BrowserDb {
       success: imported > 0 || incomeImported > 0,
       imported,
       skipped,
-      message: t("csv.import_success_wx", { imported, income: incomeImported, skipped }),
+      message: t("csv.import_success_wx", { imported, income: incomeImported, skipped }) + crossDupNote(crossDup),
     };
+  }
+
+  /** 支付宝账单核心解析（CSV/xlsx 共用二维数组）——语义同 Rust 端 parse_alipay_rows。
+   *  仅导入「支出」订单进物品表；「收入」「不计收支」（退款/转账/提现/余额宝等）跳过。 */
+  private async importAlipayRows(rows: string[][], fileName: string): Promise<ImportResult> {
+    // 定位表头行（跳过前 ~20 行元数据/提示/分隔线，至多扫描前 200 行）
+    let headerIdx = -1;
+    const col: Record<string, number> = {};
+    const findCol = (r: string[]) => {
+      col["交易时间"] = r.indexOf("交易时间");
+      col["交易分类"] = r.indexOf("交易分类");
+      col["交易对方"] = r.indexOf("交易对方");
+      col["对方账号"] = r.indexOf("对方账号");
+      // 商品说明列名在不同版本/区域可能为「商品说明」或「产品说明」，统一到 product
+      col["商品说明"] = r.indexOf("商品说明");
+      col["产品说明"] = r.indexOf("产品说明");
+      col["product"] = Math.max(col["商品说明"], col["产品说明"]);
+      col["收/支"] = r.indexOf("收/支");
+      col["金额"] = r.indexOf("金额");
+      col["收/付款方式"] = r.indexOf("收/付款方式");
+      col["交易状态"] = r.indexOf("交易状态");
+      col["交易订单号"] = r.indexOf("交易订单号");
+      col["商家订单号"] = r.indexOf("商家订单号");
+      col["备注"] = r.indexOf("备注");
+    };
+    for (let i = 0; i < Math.min(rows.length, 200); i++) {
+      const r = rows[i];
+      if (r.includes("交易订单号") && r.includes("金额")) { headerIdx = i; findCol(r); break; }
+    }
+    const cell = (row: string[], key: string): string => {
+      const idx = col[key];
+      return idx !== undefined && idx >= 0 ? (row[idx] || "").trim() : "";
+    };
+    if (headerIdx === -1) {
+      return { success: false, imported: 0, skipped: 0, message: `未找到支付宝账单表头（需含「交易订单号」「金额」列），请确认文件为支付宝交易明细导出` };
+    }
+
+    // 预构建支付宝去重缓存（仅支出订单，交易订单号全局唯一）
+    const aliDedup = new Set(this.items.filter(i => i.platform === "alipay").map(i => i.order_id));
+    const { matchProductCategory } = await import("./utils");
+
+    // 跨平台去重索引：支付宝可支付淘宝，检查是否已在京东/淘宝订单入库
+    const orderPlatform = new Map<string, number>(
+      this.items.filter(i => (i.platform === "jd" || i.platform === "tb") && i.order_id && i.total_price > 0)
+        .map(i => [i.order_id, i.total_price]),
+    );
+
+    // 用户可能滤掉「收/支」列：缺列时无法区分收支，按「支出」处理
+    // （应用定位为订单/支出账本），并靠状态白名单兜底过滤退款/交易关闭等
+    const incomeExpenseMissing = col["收/支"] < 0;
+
+    let imported = 0, skipped = 0, crossDup = 0;
+    for (let r = headerIdx + 1; r < rows.length; r++) {
+      const row = rows[r];
+      if (!row || row.length === 0) { skipped++; continue; }
+      const orderId = cell(row, "交易订单号");
+      if (!orderId) { skipped++; continue; }
+      // 仅导入支出流水；收入/不计收支/退款（退款、转账、提现、余额宝等）跳过
+      const incomeExpense = incomeExpenseMissing ? "支出" : cell(row, "收/支");
+      if (incomeExpense !== "支出") { skipped++; continue; }
+      // 状态白名单（退款成功/交易关闭/解冻等跳过）
+      const status = cell(row, "交易状态");
+      if (status && !["", "/", "交易成功", "支付成功"].includes(status)) { skipped++; continue; }
+      // 交易分类=退款 的退款行（即使收/支被滤掉按支出处理）不入库
+      if (cell(row, "交易分类") === "退款") { skipped++; continue; }
+
+      // 商品名逐级回退：商品说明 → 交易对方 → 交易分类 → 对方账号（列被滤掉时逐级回退）
+      let productName = cell(row, "product");
+      if (!productName || productName === "/" || productName === "null") productName = cell(row, "交易对方");
+      if (!productName || productName === "/" || productName === "null") productName = cell(row, "交易分类");
+      if (!productName || productName === "/" || productName === "null") productName = cell(row, "对方账号");
+      if (!productName || productName === "/" || productName === "null") { skipped++; continue; }
+
+      // 金额取绝对值（兼容 ¥/千分位格式；与 Rust 端 parse_wechat_amount 一致）
+      const amount = Math.abs(parseFloat(cell(row, "金额").replace(/[^\d.\-]/g, "")) || 0);
+      if (amount <= 0) { skipped++; continue; }
+      if (aliDedup.has(orderId)) { skipped++; continue; }
+
+      // 跨平台去重：同一笔消费已以京东/淘宝订单入库（商家订单号=平台单号后缀+金额一致）→ 跳过
+      const productId = cell(row, "商家订单号");
+      if (isBillDupWithOrder(productId, amount, orderPlatform)) { crossDup++; skipped++; continue; }
+
+      // 店铺名回退：交易对方 → 对方账号 → 交易分类
+      let storeName = cell(row, "交易对方");
+      if (!storeName || storeName === "/" || storeName === "null") storeName = cell(row, "对方账号");
+      if (!storeName || storeName === "/" || storeName === "null") storeName = cell(row, "交易分类");
+
+      // 收/付款方式 + 备注合并到型号区
+      let remark = cell(row, "备注");
+      if (remark === "/") remark = "";
+      const payMethod = cell(row, "收/付款方式");
+      const modelStyle = !remark ? payMethod
+        : (!payMethod || payMethod === "/") ? remark
+        : `${payMethod}\n${remark}`;
+
+      const [cat, emoji] = matchProductCategory(productName, storeName, "alipay");
+      const importBatch = `支付宝 · ${fileName}`;
+
+      this.items.push({
+        id: this.nextId++,
+        order_id: orderId,
+        parent_order_id: "",
+        product_id: productId,
+        platform: "alipay",
+        store_name: storeName,
+        product_name: productName,
+        model_style: modelStyle,
+        quantity: 1,
+        total_price: amount,
+        order_time: normalizeDate(excelSerialToDate(cell(row, "交易时间"))),
+        daily_avg_cost: 0,
+        emoji,
+        import_batch: importBatch,
+        product_url: "",
+        end_date: "",
+        end_reason: "",
+        sell_price: 0,
+        archived: false,
+        category: cat,
+      });
+      aliDedup.add(orderId);
+      imported++;
+    }
+
+    this.recalcDailyCost();
+    this.save();
+    return { success: imported > 0, imported, skipped, message: t("csv.import_success_alipay", { imported, skipped }) + crossDupNote(crossDup) };
   }
 
   /** 重新计算所有物品的日均成本（每个物品基于自身价格和日期独立计算） */

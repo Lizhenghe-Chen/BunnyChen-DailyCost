@@ -8,7 +8,7 @@ import type { ImportResult } from "./types";
 import { browserDb } from "./db";
 import {
   isTauri, isAndroid, showToast, showConfirm,
-  readFileAsText, readFileAsArrayBuffer,
+  readFileAsText, readFileAsArrayBuffer, decodeTextBytes,
   setPrecision, platformLabel, formatPrice, escapeHtml,
 } from "./utils";
 import { platformColor } from "./theme";
@@ -37,7 +37,7 @@ export async function initSettings() {
           // Android: content:// URI 需要前端读取文件内容后传给后端
           const isAndroid = paths[0]?.startsWith("content://");
           if (isAndroid) {
-            const { readTextFile, readFile } = await import("@tauri-apps/plugin-fs");
+            const { readFile } = await import("@tauri-apps/plugin-fs");
             const { basename } = await import("@tauri-apps/api/path");
             const csvContents: string[] = [];
             const csvNames: string[] = [];
@@ -51,7 +51,8 @@ export async function initSettings() {
                   xlsxBuffers.push(await readFile(p));
                   xlsxNames.push(name);
                 } else {
-                  csvContents.push(await readTextFile(p));
+                  // 支付宝等 Windows 导出常为 GBK 编码：读原始字节后按编码解码（readTextFile 仅支持 UTF-8）
+                  csvContents.push(decodeTextBytes(await readFile(p)));
                   csvNames.push(name);
                 }
               } catch (e) {
@@ -217,7 +218,7 @@ export async function initSettings() {
       try {
         // 双通道检查：桌面端通道 A（updater）权威，A 不可用才回退通道 B（GitHub API）
         const { checkForUpdates, renderAutoUpdateStatus } = await import("./utils");
-        const { update, info, updaterUsable } = await checkForUpdates(__APP_VERSION__);
+        const { update, info, updaterUsable, updaterFailed } = await checkForUpdates(__APP_VERSION__);
         if (update) {
           renderAutoUpdateStatus(update);
           btnUpdate.textContent = t("about.check_update");
@@ -228,6 +229,12 @@ export async function initSettings() {
           statusEl.textContent = t("about.up_to_date");
           statusEl.className = "about-update";
           statusEl.style.color = "var(--primary)";
+          return;
+        }
+        // 桌面端通道 A 检查失败（网络/临时问题）→ 提示重试，不降级到「前往下载」
+        if (updaterFailed) {
+          statusEl.textContent = t("about.network_error");
+          statusEl.className = "about-update update-error";
           return;
         }
         // 通道 B：GitHub API（Android/浏览器 → 引导手动下载）
@@ -266,7 +273,7 @@ async function importBrowserFiles(files: Iterable<File>, emptyMessage: string): 
     try {
       if (low.endsWith(".xlsx")) {
         const buf = await readFileAsArrayBuffer(file);
-        const r = await browserDb.importWechatXlsx(buf, file.name);
+        const r = await browserDb.importBillXlsx(buf, file.name);
         result.imported += r.imported; result.skipped += r.skipped;
         result.success = result.success || r.success;
         result.message += (result.message ? "\n" : "") + r.message;

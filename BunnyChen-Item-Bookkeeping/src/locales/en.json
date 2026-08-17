@@ -3,7 +3,7 @@
     "title": "DailyCost Vault — Your asset ledger, know the real daily cost of every item",
     "description": "DailyCost Vault, your asset ledger that shows the real daily cost of every item. Bulk import, yours to control.",
     "og_title": "DailyCost Vault",
-    "og_description": "Your asset ledger supporting JD.com, Taobao, Steam, and WeChat order imports with daily cost tracking."
+    "og_description": "Your asset ledger supporting JD.com, Taobao, Steam, WeChat, and Alipay order imports with daily cost tracking."
   },
   "nav": {
     "skip_to_main": "Skip to main content",
@@ -44,7 +44,7 @@
     "add_manual": "Add Manually",
     "add_manual_desc": "Enter items one by one",
     "import_orders": "Import Orders",
-    "import_orders_desc": "Batch import JD/Taobao/Steam/WeChat orders",
+    "import_orders_desc": "Batch import JD/Taobao/Steam/WeChat/Alipay orders",
     "drag_hint": "You can also drag & drop CSV / Excel files into the window",
     "load_demo": "Load demo data to explore",
     "load_demo_desc": "A sample asset ledger — no files to import",
@@ -113,6 +113,7 @@
     "pdd": "Pinduoduo",
     "tmall": "Tmall",
     "wx": "WeChat",
+    "alipay": "Alipay",
     "manual": "Custom"
   },
   "toast": {
@@ -160,7 +161,8 @@
   },
   "settings": {
     "data_import": "Data Import",
-    "import_desc": "Import CSV / Excel files from browser extensions or WeChat bills",
+    "import_desc": "Import CSV / Excel files from browser extensions or WeChat/Alipay bills",
+    "cross_platform_hint": "💡 Recommended: import JD/Taobao order CSVs first, then WeChat/Alipay bills — online-shopping records carry richer info (product links), and bill duplicates are auto-deduped across platforms",
     "view_tutorial": "📖 View Tutorial →",
     "import_guide": "📖 View Usage Guide →",
     "drag_title": "Drag & drop CSV / Excel files here",
@@ -213,6 +215,8 @@
     "import_success": "Successfully imported {{imported}} items, skipped {{skipped}}",
     "import_success_steam": "Successfully imported {{imported}} items, skipped {{skipped}} (refund/duplicate/invalid)",
     "import_success_wx": "Imported {{imported}} expenses, {{income}} incomes (refunds/transfers), skipped {{skipped}}",
+    "import_success_alipay": "Imported {{imported}} expenses, skipped {{skipped}} (income/non-expense/refund/duplicate/invalid)",
+    "cross_platform_dup": "; of which {{count}} are cross-platform duplicates (the same purchase is already recorded on another platform)",
     "file_read_error": "File read error",
     "csv_file": "CSV / Excel Files",
     "sqlite": "SQLite"

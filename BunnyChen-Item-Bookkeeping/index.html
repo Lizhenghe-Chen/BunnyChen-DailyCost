@@ -19,6 +19,21 @@
     <meta property="og:description" content="你的资产账本，支持京东、淘宝、Steam、微信订单导入与日均成本追踪。" />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/png" href="/src/assets/logo-32.png" />
+    <!-- Google Analytics（仅网页版；桌面端/Android 端 Tauri 环境不加载，保持离线） -->
+    <script>
+      if (!window.__TAURI_INTERNALS__) {
+        (function () {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-GEHKCCX0YB';
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-GEHKCCX0YB');
+        })();
+      }
+    </script>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
 
@@ -202,6 +217,7 @@
           <a class="section-guide-link" href="https://bunnychen.top/BunnyChen-DailyCost/import-csv/" target="_blank" rel="noopener" data-i18n="settings.view_tutorial">📖 查看教程 →</a>
         </div>
         <p class="section-desc" data-i18n="settings.import_desc">导入浏览器扩展导出或微信账单的 CSV / Excel 文件</p>
+        <p class="section-hint" data-i18n="settings.cross_platform_hint">💡 推荐先导入京东/淘宝订单 CSV、再导入微信/支付宝账单：网购记录信息更全（含商品链接），账单重复会自动跨平台去重</p>
 
         <!-- 拖拽区域 -->
         <div id="drop-zone" class="drop-zone">

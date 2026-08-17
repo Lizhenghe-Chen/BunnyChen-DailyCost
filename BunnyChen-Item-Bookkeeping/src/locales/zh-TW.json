@@ -3,7 +3,7 @@
     "title": "日耗倉 · DailyCost Vault — 你的資產帳本，算清每一件物品的日均成本",
     "description": "日耗倉，你的資產帳本，算清每一件物品的日均成本。批量入倉，由你掌控。",
     "og_title": "日耗倉 · DailyCost Vault",
-    "og_description": "你的資產帳本，支援京東、淘寶、Steam、微信訂單匯入與日均成本追蹤。"
+    "og_description": "你的資產帳本，支援京東、淘寶、Steam、微信、支付寶訂單匯入與日均成本追蹤。"
   },
   "nav": {
     "skip_to_main": "跳到主要內容",
@@ -44,7 +44,7 @@
     "add_manual": "手動新增",
     "add_manual_desc": "逐條錄入單個物品",
     "import_orders": "匯入訂單",
-    "import_orders_desc": "批量匯入京東/淘寶/Steam/微信訂單",
+    "import_orders_desc": "批量匯入京東/淘寶/Steam/微信/支付寶訂單",
     "drag_hint": "也支援將 CSV / Excel 檔案直接拖曳到視窗中匯入",
     "load_demo": "載入示範資料，快速瀏覽體驗",
     "load_demo_desc": "模擬一份個人資產帳本，無需匯入任何檔案",
@@ -113,6 +113,7 @@
     "pdd": "拼多多",
     "tmall": "天貓",
     "wx": "微信",
+    "alipay": "支付寶",
     "manual": "自訂"
   },
   "toast": {
@@ -160,7 +161,8 @@
   },
   "settings": {
     "data_import": "資料匯入",
-    "import_desc": "匯入瀏覽器擴充功能匯出或微信帳單的 CSV / Excel 檔案",
+    "import_desc": "匯入瀏覽器擴充功能匯出或微信/支付寶帳單的 CSV / Excel 檔案",
+    "cross_platform_hint": "💡 建議先匯入京東/淘寶訂單 CSV、再匯入微信/支付寶帳單：網購記錄資訊更全（含商品連結），帳單重複會自動跨平台去重",
     "view_tutorial": "📖 檢視教學 →",
     "import_guide": "📖 檢視使用說明 →",
     "drag_title": "拖曳 CSV / Excel 檔案到此處",
@@ -213,6 +215,8 @@
     "import_success": "成功匯入 {{imported}} 條，跳過 {{skipped}} 條",
     "import_success_steam": "成功匯入 {{imported}} 條，跳過 {{skipped}} 條（退款/重複/無效）",
     "import_success_wx": "成功匯入 {{imported}} 條支出、{{income}} 條收入（回款），跳過 {{skipped}} 條",
+    "import_success_alipay": "成功匯入 {{imported}} 條支出，跳過 {{skipped}} 條（收入/不計收支/退款/重複/無效）",
+    "cross_platform_dup": "；其中 {{count}} 條為跨平台重複（同一筆消費已在其它平台記錄）",
     "file_read_error": "檔案讀取失敗",
     "csv_file": "CSV / Excel 檔案",
     "sqlite": "SQLite"

@@ -36,14 +36,19 @@ cd BunnyChen-Item-Bookkeeping
 pnpm install
 ```
 
-### 2. 浏览器端开发（无需 Rust）
+### 2. 浏览器端开发（无需 Rust）——启动开发网页
 
 ```bash
 pnpm dev
-# → http://localhost:1420
+# → 浏览器打开 http://localhost:1420
 ```
 
-纯前端热更新，适合快速调试界面与交互逻辑。
+纯前端热更新（HMR），适合快速调试界面与交互逻辑。此模式**只有 Web 前端，没有 Rust 后端**：
+
+- 数据保存在浏览器 `localStorage`（模拟 `BrowserDb`），与桌面端 SQLite 相互独立
+- 只需 Node.js + pnpm，不依赖 Rust / 桌面端系统依赖，任意机器可跑
+- 前端修改即时热更新；检查更新等走 GitHub API 通道（无 Tauri updater）
+- 停止：终端按 `Ctrl+C` 结束 Vite 进程
 
 ### 3. 桌面端开发（Tauri 窗口 + 热更新）
 

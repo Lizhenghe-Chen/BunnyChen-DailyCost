@@ -155,6 +155,27 @@ Edit the item → expand "Optional Info" → set status to "Sold" → set end da
 
 ¥0 items (price = 0) have a daily cost of exactly 0 and are excluded from sorting and comparison. These items are mainly for asset recording rather than cost tracking.
 
+### Q: The app crashes or errors — how do I view the log files?
+
+DailyCost Vault saves runtime logs locally (enabled since the 2026-08 release), which are very useful for troubleshooting crashes, errors, or unexpected behavior.
+
+**Log file locations & how to open them**:
+
+| Platform | Log directory | How to open |
+|------|----------|----------|
+| Windows | `%LocalAppData%\com.bunnychen.dailycostvault\logs\` (e.g. `C:\Users\<your username>\AppData\Local\com.bunnychen.dailycostvault\logs\`) | Press `Win + R`, paste `%LocalAppData%\com.bunnychen.dailycostvault\logs`, press Enter |
+| macOS | `~/Library/Logs/com.bunnychen.dailycostvault/` (e.g. `/Users/<your username>/Library/Logs/com.bunnychen.dailycostvault/`) | In Finder press `Cmd + Shift + G`, paste `~/Library/Logs/com.bunnychen.dailycostvault`, press Enter |
+| Linux | `~/.local/share/com.bunnychen.dailycostvault/logs/` | Paste `~/.local/share/com.bunnychen.dailycostvault/logs` in the file manager address bar and press Enter |
+| Android | Use `adb logcat` (startup / crash info appears in logcat) | For developers |
+
+**Notes**:
+
+- Logs rotate daily, with files named like `dailycost-vault.2026-08-17.log` (date = that day); you can open them after quitting the app
+- They include both backend errors (e.g., CSV parse failures) and frontend runtime errors (e.g., UI exceptions)
+- Recommended workflow: reproduce the issue → quit the app → send the **current day's** log file to the developer for fast diagnosis
+
+> 💡 Logs are stored only on your device and are never uploaded to any server — your privacy is safe.
+
 ---
 
 ## Platform

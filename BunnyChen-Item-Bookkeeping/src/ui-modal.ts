@@ -17,7 +17,7 @@ import { notifyDataChanged } from "./data-events";
 // ── 平台输入辅助：收集已有平台构建 datalist ─────────────
 /** 构建平台输入字段 HTML（input + datalist），支持自由输入自定义平台 */
 async function buildPlatformInput(currentValue: string): Promise<string> {
-  const knownSet = new Set<string>(["jd", "tb", "steam"]);
+  const knownSet = new Set<string>(["jd", "tb", "steam", "alipay"]);
   // 从现有数据中收集已知平台（统一数据访问层，桌面/浏览器一致）
   try {
     const items = await fetchItems();

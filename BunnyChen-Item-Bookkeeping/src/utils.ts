@@ -36,6 +36,13 @@ interface UpdaterInfo {
   downloadAndInstall(): Promise<void>;
 }
 
+/** 通道 A 检查超时（毫秒）：国内网络对 github.com 偶发不通，插件默认无超时可能长时间挂起 */
+const UPDATER_CHECK_TIMEOUT_MS = 15_000;
+/** 通道 A 失败后的额外重试次数（应对临时网络抖动） */
+const UPDATER_RETRY_COUNT = 1;
+/** 通道 A 重试间隔（毫秒） */
+const UPDATER_RETRY_DELAY_MS = 1_000;
+
 /**
  * 通道 B：GitHub API 查询最新 Release（全平台回退）
  * 返回 null 表示当前已是最新版本；网络/API 错误时抛出异常。
@@ -79,46 +86,65 @@ export async function checkForUpdate(): Promise<UpdaterInfo | null> {
   const { invoke } = await import("@tauri-apps/api/core");
   if (!await invoke<boolean>("updater_is_supported")) return null;
   const { check } = await import("@tauri-apps/plugin-updater");
-  return await check() ?? null;
+  return await check({ timeout: UPDATER_CHECK_TIMEOUT_MS }) ?? null;
 }
 
 /**
  * 双通道检查编排（main.ts 后台检查与 ui-settings.ts 手动检查共用）：
  * 桌面端通道 A（updater，读 update.json 不走 GitHub API）权威；
- * 仅当通道 A 不可用/出错时才回退通道 B（GitHub API）。
+ * 仅当通道 A 不可用/不支持时才回退通道 B（GitHub API）。
  * 返回：
  *  - update:        通道 A 找到的更新对象（自动安装用）
  *  - info:          通道 B 找到的版本信息（手动下载链接用）
  *  - updaterUsable: 通道 A 可用且已成功判断 ⇒ 无 update 即「已是最新」，无需再查 GitHub API
+ *  - updaterFailed: 桌面端通道 A 检查失败（网络/临时问题）⇒ 不再降级到手动下载，由 UI 提示稍后重试
  */
 export async function checkForUpdates(currentVersion?: string): Promise<{
   update: UpdaterInfo | null;
   info: LatestReleaseInfo | null;
   updaterUsable: boolean;
+  updaterFailed: boolean;
 }> {
   // ── 通道 A：Tauri updater ──
   let updaterUsable = false;
   let update: UpdaterInfo | null = null;
-  try {
-    if (isTauri()) {
-      const { invoke } = await import("@tauri-apps/api/core");
+  let updaterFailed = false;
+  if (isTauri()) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    try {
       updaterUsable = await invoke<boolean>("updater_is_supported");
-      if (updaterUsable) {
-        const { check } = await import("@tauri-apps/plugin-updater");
-        update = (await check()) ?? null;
+    } catch (e) {
+      // invoke 异常按「不支持」处理 → 走通道 B（记录日志便于排查）
+      console.warn("[Updater] updater_is_supported failed:", e);
+    }
+    if (updaterUsable) {
+      const { check } = await import("@tauri-apps/plugin-updater");
+      // 带超时检查 + 失败重试：国内网络对 github.com 偶发不通，
+      // 插件默认无超时会长时间挂起，先快速失败再重试，尽量让自动安装走通
+      for (let attempt = 0; attempt <= UPDATER_RETRY_COUNT; attempt++) {
+        try {
+          update = (await check({ timeout: UPDATER_CHECK_TIMEOUT_MS })) ?? null;
+          break;
+        } catch (e) {
+          console.warn(`[Updater] check attempt ${attempt + 1}/${UPDATER_RETRY_COUNT + 1} failed:`, e);
+          if (attempt < UPDATER_RETRY_COUNT) {
+            await new Promise((r) => setTimeout(r, UPDATER_RETRY_DELAY_MS));
+          } else {
+            updaterFailed = true;
+          }
+        }
       }
     }
-  } catch (e) {
-    // 通道 A 异常 → 标记不可用，回退通道 B（记录日志便于排查）
-    console.warn("[Updater] Automatic check failed; falling back to GitHub Release:", e);
-    updaterUsable = false;
   }
-  if (update) return { update, info: null, updaterUsable: true };
+  if (update) return { update, info: null, updaterUsable: true, updaterFailed: false };
   // 通道 A 可用且无更新 → 已是最新，跳过通道 B（避免 api.github.com 未认证限流 403）
-  if (updaterUsable) return { update: null, info: null, updaterUsable: true };
-  // ── 通道 B：GitHub API（浏览器/Android，或通道 A 不可用/出错）──
+  if (updaterUsable) return { update: null, info: null, updaterUsable: true, updaterFailed: false };
+  // 桌面端通道 A 检查失败（网络/临时问题）→ 不再降级到「前往 Release 手动下载」：
+  // 该链接同样是 github.com（正是失败根源），国内不可达且体验更差；改由 UI 提示稍后重试
+  if (updaterFailed) return { update: null, info: null, updaterUsable: false, updaterFailed: true };
+  // ── 通道 B：GitHub API（浏览器/Android，或通道 A 不可用/不支持）──
   const info = await fetchLatestVersion(currentVersion);
-  return { update: null, info, updaterUsable: false };
+  return { update: null, info, updaterUsable: false, updaterFailed: false };
 }
 
 /**
@@ -203,17 +229,21 @@ export function platformLabel(platform: string): string {
   return translated === key ? platform : translated;
 }
 
-/** 平台检测：文件名前缀优先（jd-/jd_/tb-/tb_/steam-/steam_/wx-/wx_/微信），失败时按 CSV 内容头回退（与 Rust 端规则一致） */
+/** 平台检测：文件名前缀优先（jd-/jd_/tb-/tb_/steam-/steam_/wx-/wx_/微信/alipay-/zfb-/支付宝），失败时按 CSV 内容头回退（与 Rust 端规则一致） */
 export function detectPlatform(fileName: string, content?: string): string {
   const lower = fileName.toLowerCase();
   if (lower.startsWith("jd-") || lower.startsWith("jd_")) return "jd";
   if (lower.startsWith("tb-") || lower.startsWith("tb_")) return "tb";
   if (lower.startsWith("steam-") || lower.startsWith("steam_")) return "steam";
   if (lower.startsWith("wx-") || lower.startsWith("wx_") || lower.startsWith("微信")) return "wx";
+  if (lower.startsWith("alipay-") || lower.startsWith("alipay_")
+      || lower.startsWith("zfb-") || lower.startsWith("zfb_")
+      || lower.startsWith("支付宝")) return "alipay";
   // 内容头回退（文件名不可靠时，如浏览器文件选择/重命名）
   if (content) {
-    // 微信账单表头不在首行（前 5 行是元数据），需扫描前 8 行
-    const head = content.split("\n").slice(0, 8).join("\n");
+    // 微信/支付宝账单表头不在首行（微信前 5 行、支付宝前 ~20 行是元数据），需扫描前 200 行
+    const head = content.split("\n").slice(0, 200).join("\n");
+    if (head.includes("交易订单号")) return "alipay";
     if (head.includes("交易单号") && head.includes("金额(元)") && head.includes("交易时间")) return "wx";
     const header = content.split("\n")[0] || "";
     if (header.includes("交易ID") && header.includes("日期")) return "steam";
@@ -369,12 +399,35 @@ export function extractJdUrl(jsonStr: string, targetName: string): string {
   return "";
 }
 
+/** 按字节解码文本：优先 UTF-8（严格校验），失败时按 GBK 解码。
+ *  支付宝等 Windows 端导出的交易明细常为 GBK 编码，按 UTF-8 读取会乱码导致表头匹配失败 */
+export function decodeTextBytes(bytes: Uint8Array): string {
+  try {
+    // 严格 UTF-8：遇无效字节即抛错
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    // 回退 GB18030/GBK（GB18030 是 GBK 超集，浏览器普遍支持）
+    try {
+      return new TextDecoder("gb18030").decode(bytes);
+    } catch {
+      // 极少数不支持 GBK 的环境退化为非严格 UTF-8（不崩溃，仅个别字符异常）
+      return new TextDecoder("utf-8").decode(bytes);
+    }
+  }
+}
+
 export function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = () => {
+      try {
+        resolve(decodeTextBytes(new Uint8Array(reader.result as ArrayBuffer)));
+      } catch {
+        reject(new Error(t("csv.file_read_error")));
+      }
+    };
     reader.onerror = () => reject(new Error(t("csv.file_read_error")));
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
   });
 }
 

@@ -117,7 +117,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   setTimeout(async () => {
     try {
       // 双通道检查：桌面端通道 A（updater）权威，A 不可用才回退通道 B（GitHub API）
-      const { update, info, updaterUsable } = await checkForUpdates(__APP_VERSION__);
+      const { update, info, updaterUsable, updaterFailed } = await checkForUpdates(__APP_VERSION__);
       if (update) {
         renderAutoUpdateStatus(update);
         showToast(`🆕 发现新版本 ${update.version}，点击「关于」区域自动更新`, 'info');
@@ -125,6 +125,15 @@ window.addEventListener('DOMContentLoaded', async () => {
       }
       // 通道 A 可用且无更新 → 已是最新，无需再查 GitHub API（避免 api.github.com 限流 403）
       if (updaterUsable) return;
+      // 桌面端通道 A 检查失败（网络/临时问题）→ 提示稍后重试，不降级到「前往下载」
+      if (updaterFailed) {
+        const statusEl = document.getElementById('update-status');
+        if (statusEl) {
+          statusEl.textContent = '⚠️ 网络不稳定，自动更新检查失败，可稍后在「设置 → 检查更新」重试';
+          statusEl.className = 'about-update update-error';
+        }
+        return;
+      }
       // 通道 B：GitHub API（Android/浏览器 → 引导手动下载）
       if (info) {
         const statusEl = document.getElementById('update-status');

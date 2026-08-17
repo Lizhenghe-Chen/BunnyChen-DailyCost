@@ -3,7 +3,7 @@
     "title": "日耗仓 · DailyCost Vault — 你的资产账本，算清每一件物品的日均成本",
     "description": "日耗仓，你的资产账本，算清每一件物品的日均成本。批量入仓，由你掌控。",
     "og_title": "日耗仓 · DailyCost Vault",
-    "og_description": "你的资产账本，支持京东、淘宝、Steam、微信订单导入与日均成本追踪。"
+    "og_description": "你的资产账本，支持京东、淘宝、Steam、微信、支付宝订单导入与日均成本追踪。"
   },
   "nav": {
     "skip_to_main": "跳到主要内容",
@@ -44,7 +44,7 @@
     "add_manual": "手动添加",
     "add_manual_desc": "逐条录入单个物品",
     "import_orders": "导入订单",
-    "import_orders_desc": "批量导入京东/淘宝/Steam/微信订单",
+    "import_orders_desc": "批量导入京东/淘宝/Steam/微信/支付宝订单",
     "drag_hint": "也支持将 CSV / Excel 文件直接拖拽到窗口中导入",
     "load_demo": "加载示例数据，快速浏览体验",
     "load_demo_desc": "模拟一份个人资产账本，无需导入任何文件",
@@ -113,6 +113,7 @@
     "pdd": "拼多多",
     "tmall": "天猫",
     "wx": "微信",
+    "alipay": "支付宝",
     "manual": "自定义"
   },
   "toast": {
@@ -159,7 +160,8 @@
   },
   "settings": {
     "data_import": "数据导入",
-    "import_desc": "导入浏览器扩展导出或微信账单的 CSV / Excel 文件",
+    "import_desc": "导入浏览器扩展导出或微信/支付宝账单的 CSV / Excel 文件",
+    "cross_platform_hint": "💡 推荐先导入京东/淘宝订单 CSV、再导入微信/支付宝账单：网购记录信息更全（含商品链接），账单重复会自动跨平台去重",
     "view_tutorial": "📖 查看教程 →",
     "import_guide": "📖 查看使用说明 →",
     "drag_title": "拖拽 CSV / Excel 文件到此处",
@@ -212,6 +214,8 @@
     "import_success": "成功导入 {{imported}} 条，跳过 {{skipped}} 条",
     "import_success_steam": "成功导入 {{imported}} 条，跳过 {{skipped}} 条（退款/重复/无效）",
     "import_success_wx": "成功导入 {{imported}} 条支出、{{income}} 条收入（回款），跳过 {{skipped}} 条",
+    "import_success_alipay": "成功导入 {{imported}} 条支出，跳过 {{skipped}} 条（收入/不计收支/退款/重复/无效）",
+    "cross_platform_dup": "；其中 {{count}} 条为跨平台重复（同一笔消费已在其它平台记录）",
     "file_read_error": "文件读取失败",
     "csv_file": "CSV / Excel 文件",
     "sqlite": "SQLite"

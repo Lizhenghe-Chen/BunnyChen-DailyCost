@@ -164,6 +164,7 @@ fn init_db(conn: &Connection) -> rusqlite::Result<()> {
     let _ = conn.execute("UPDATE orders SET platform='jd' WHERE platform='京东'", []);
     let _ = conn.execute("UPDATE orders SET platform='tb' WHERE platform='淘宝'", []);
     let _ = conn.execute("UPDATE orders SET platform='steam' WHERE platform='Steam'", []);
+    let _ = conn.execute("UPDATE orders SET platform='alipay' WHERE platform='支付宝'", []);
 
     // 索引：archived 列依赖上面的迁移（旧库经 ALTER 补齐），必须在迁移之后创建
     // 加速 archived 过滤 + order_time 排序的主查询
@@ -794,12 +795,16 @@ fn parse_wechat_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
         for row in r { if let Ok(oid) = row { income_dedup.insert(oid); } }
     }
 
+    // ── 预加载订单平台（京东/淘宝）索引：微信可支付淘宝/京东，拦截跨平台重复 ──
+    let order_platform = build_order_platform_index(conn)?;
+
     // ── 事务包裹：整文件原子导入，失败自动回滚 ──
     let tx = conn.unchecked_transaction().map_err(|e| format!("开启事务失败: {}", e))?;
 
     let mut imported: usize = 0;
     let mut income_imported: usize = 0;
     let mut skipped: usize = 0;
+    let mut cross_dup: usize = 0;
 
     for row in rows.iter().skip(header_idx + 1) {
         if row.is_empty() {
@@ -868,6 +873,14 @@ fn parse_wechat_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
         if amount <= 0.0 { skipped += 1; continue; }
         if wx_dedup.contains(order_id) { skipped += 1; continue; }
 
+        // 跨平台去重：同一笔消费已以京东/淘宝订单入库（商户单号=平台单号后缀+金额一致）→ 跳过
+        let product_id = cols.cell(row, cols.merchant_id).to_string();
+        if is_bill_dup_with_order(&product_id, amount, &order_platform) {
+            cross_dup += 1;
+            skipped += 1;
+            continue;
+        }
+
         // 支付方式 + 备注合并到型号区
         let mut remark = cols.cell(row, cols.remark).to_string();
         if remark == "/" { remark.clear(); }
@@ -888,7 +901,7 @@ fn parse_wechat_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
              VALUES (?1, '', ?2, 'wx', ?3, ?4, ?5, 1, ?6, ?7, ?8, '', ?9, '', '', 0, ?10)",
             params![
                 order_id,
-                cols.cell(row, cols.merchant_id),
+                product_id,
                 cols.cell(row, cols.peer),
                 product_name,
                 model_style,
@@ -911,8 +924,9 @@ fn parse_wechat_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
         imported,
         skipped,
         message: format!(
-            "成功导入 {} 条支出、{} 条收入（回款），跳过 {} 条（重复/无效/不计收支）\n平台: 微信 | 文件名: {}",
-            imported, income_imported, skipped, file_name
+            "成功导入 {} 条支出、{} 条收入（回款），跳过 {} 条（重复/无效/不计收支）\n平台: 微信 | 文件名: {}{}",
+            imported, income_imported, skipped, file_name,
+            cross_dup_note(cross_dup)
         ),
     })
 }
@@ -932,43 +946,327 @@ fn parse_wechat_csv_content(content: &str, file_name: &str, conn: &Connection) -
     parse_wechat_rows(&rows, file_name, conn)
 }
 
-/// 从微信 xlsx 字节导入（桌面端 .xlsx 与 Android content:// URI 场景）
-fn parse_wechat_xlsx_content(data: &[u8], file_name: &str, conn: &Connection) -> Result<ImportResult, String> {
+/// 从账单 xlsx 字节导入（桌面端 .xlsx 与 Android content:// URI 场景）。
+/// 自动识别微信/支付宝表头并分发到对应解析器（文件名不可靠时同样可用）。
+fn parse_bill_xlsx_content(data: &[u8], file_name: &str, conn: &Connection) -> Result<ImportResult, String> {
     use calamine::{Reader, Xlsx};
     let mut workbook = Xlsx::new(std::io::Cursor::new(data))
         .map_err(|e| format!("无法解析 xlsx 文件: {}", e))?;
-    // 选第一个含微信表头的 sheet
-    let mut rows: Vec<Vec<String>> = Vec::new();
-    let mut found_header = false;
+    let mut wx_rows: Vec<Vec<String>> = Vec::new();
     for sheet_name in workbook.sheet_names().to_vec() {
         if let Ok(range) = workbook.worksheet_range(&sheet_name) {
             let mut candidate: Vec<Vec<String>> = Vec::new();
-            let mut header_found = false;
+            let mut kind = "";
             // 边转换边判断表头（前 200 行内命中即保留全部行）
             for r in range.rows() {
                 let line: Vec<String> = r.iter().map(|c| c.to_string()).collect();
-                if !header_found && candidate.len() < 200 {
-                    let (_, ok) = WechatCols::from_row(&line);
-                    if ok { header_found = true; }
+                if kind.is_empty() && candidate.len() < 200 {
+                    let (_, wx_ok) = WechatCols::from_row(&line);
+                    let (_, ali_ok) = AlipayCols::from_row(&line);
+                    if ali_ok { kind = "alipay"; }
+                    else if wx_ok { kind = "wx"; }
                 }
                 candidate.push(line);
             }
-            if header_found {
-                rows = candidate;
-                found_header = true;
-                break;
-            }
+            if kind == "alipay" { return parse_alipay_rows(&candidate, file_name, conn); }
+            if kind == "wx" { wx_rows = candidate; }
         }
     }
-    if !found_header {
-        return Err("xlsx 中未找到微信账单表头（需含「交易单号」「金额(元)」列）".to_string());
+    if !wx_rows.is_empty() {
+        return parse_wechat_rows(&wx_rows, file_name, conn);
     }
-    parse_wechat_rows(&rows, file_name, conn)
+    Err("xlsx 中未找到微信/支付宝账单表头（需含「交易单号」或「交易订单号」列）".to_string())
+}
+
+// ── 支付宝账单 ────────────────────────────────────────────
+// 支付宝交易明细（CSV/xlsx）前 ~20 行是元数据（支付宝交易明细/账号/起止时间/统计/特别提示），
+// 表头出现在「----...支付宝（中国）网络技术有限公司 电子客户回单----」分隔线之后。
+// 列：交易时间, 交易分类, 交易对方, 对方账号, 产品说明, 收/支, 金额, 收/付款方式, 交易状态,
+//     交易订单号, 商家订单号, 备注。
+// ⚠️ 用户导出时可勾选/取消列，可能滤掉「交易对方」「产品说明」等列 → 必需列只要求
+//    「交易订单号」「金额」，其余列缺失时逐级回退（产品名：产品说明→交易对方→交易分类→对方账号）。
+
+/// 支付宝账单必需/可选的列定位（xlsx 与 csv 共用；支持用户滤列后的缺列容错）
+#[derive(Default)]
+struct AlipayCols {
+    time: Option<usize>,          // 交易时间
+    tx_type: Option<usize>,       // 交易分类
+    peer: Option<usize>,          // 交易对方
+    peer_account: Option<usize>,  // 对方账号
+    product: Option<usize>,       // 产品说明
+    income_expense: Option<usize>,// 收/支
+    amount: Option<usize>,        // 金额
+    pay_method: Option<usize>,    // 收/付款方式
+    status: Option<usize>,        // 交易状态
+    order_id: Option<usize>,      // 交易订单号
+    merchant_id: Option<usize>,   // 商家订单号
+    remark: Option<usize>,        // 备注
+}
+
+impl AlipayCols {
+    /// 从表头行定位各支付宝列；返回是否定位到必需列（交易订单号 + 金额）。
+    /// 商品说明列名在不同版本/区域可能为「商品说明」或「产品说明」，两者均兼容
+    fn from_row(header: &[String]) -> (Self, bool) {
+        let mut cols = AlipayCols::default();
+        for (i, h) in header.iter().enumerate() {
+            let h = h.trim();
+            let _ = match h {
+                "交易时间" => cols.time = Some(i),
+                "交易分类" => cols.tx_type = Some(i),
+                "交易对方" => cols.peer = Some(i),
+                "对方账号" => cols.peer_account = Some(i),
+                "商品说明" | "产品说明" => cols.product = Some(i),
+                "收/支" => cols.income_expense = Some(i),
+                "金额" => cols.amount = Some(i),
+                "收/付款方式" => cols.pay_method = Some(i),
+                "交易状态" => cols.status = Some(i),
+                "交易订单号" => cols.order_id = Some(i),
+                "商家订单号" => cols.merchant_id = Some(i),
+                "备注" => cols.remark = Some(i),
+                _ => {}
+            };
+        }
+        let ok = cols.order_id.is_some() && cols.amount.is_some();
+        (cols, ok)
+    }
+
+    fn cell<'a>(&self, row: &'a [String], idx: Option<usize>) -> &'a str {
+        idx.and_then(|i| row.get(i)).map(|s| s.trim()).unwrap_or("")
+    }
+}
+
+/// 支付宝支出状态白名单（`/`=未知状态；退款成功/交易关闭/解冻等不导入）。
+/// 用户滤掉「交易状态」列时视为未知（空）放行，靠「收/支」列筛掉收入/退款/转账等
+fn is_valid_alipay_status(status: &str) -> bool {
+    matches!(status, "" | "/" | "交易成功" | "支付成功")
+}
+
+/// 支付宝店铺/对方名回退：交易对方 → 对方账号 → 交易分类（列被滤掉时逐级回退）
+fn alipay_peer(cols: &AlipayCols, row: &[String]) -> String {
+    for key in [cols.peer, cols.peer_account, cols.tx_type] {
+        let v = cols.cell(row, key);
+        if !v.is_empty() && v != "/" && v != "null" {
+            return v.to_string();
+        }
+    }
+    String::new()
+}
+
+/// 支付宝账单核心解析：输入任意来源的二维数组（CSV 或 xlsx），统一映射入库。
+/// 仅导入「支出」订单进物品表；「收入」「不计收支」（退款/转账/提现/余额宝等）跳过。
+/// 金额/日期解析复用微信的通用函数（parse_wechat_amount / wechat_date_to_iso）。
+fn parse_alipay_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -> Result<ImportResult, String> {
+    // 定位表头行（跳过前 ~20 行元数据/提示/分隔线，至多扫描前 200 行）
+    let mut header_idx: Option<usize> = None;
+    let mut cols = AlipayCols::default();
+    for (i, row) in rows.iter().enumerate().take(200) {
+        let (c, ok) = AlipayCols::from_row(row);
+        if ok { header_idx = Some(i); cols = c; break; }
+    }
+    let Some(header_idx) = header_idx else {
+        return Err(format!("未找到支付宝账单表头（需含「交易订单号」「金额」列），请确认文件为支付宝交易明细导出"));
+    };
+
+    // ── 批量预加载已有支付宝订单号（一次 SQL 替代逐行 COUNT(*)）──
+    let mut ali_dedup: HashSet<String> = HashSet::new();
+    {
+        let mut stmt = conn.prepare("SELECT order_id FROM orders WHERE platform='alipay'")
+            .map_err(|e| format!("预加载支付宝去重键失败: {}", e))?;
+        let r = stmt.query_map([], |row| row.get::<_, String>(0)).map_err(|e| e.to_string())?;
+        for row in r { if let Ok(oid) = row { ali_dedup.insert(oid); } }
+    }
+
+    // ── 预加载订单平台（京东/淘宝）索引：支付宝可支付淘宝，拦截跨平台重复 ──
+    let order_platform = build_order_platform_index(conn)?;
+
+    // ── 事务包裹：整文件原子导入，失败自动回滚 ──
+    let tx = conn.unchecked_transaction().map_err(|e| format!("开启事务失败: {}", e))?;
+
+    let mut imported: usize = 0;
+    let mut skipped: usize = 0;
+    let mut cross_dup: usize = 0;
+
+    // 用户可能滤掉「收/支」列：缺列时无法区分收支，按「支出」处理
+    // （应用定位为订单/支出账本），并靠状态白名单兜底过滤退款/交易关闭等
+    let income_expense_missing = cols.income_expense.is_none();
+
+    for row in rows.iter().skip(header_idx + 1) {
+        if row.is_empty() {
+            skipped += 1; continue;
+        }
+        let order_id = cols.cell(row, cols.order_id);
+        if order_id.is_empty() {
+            skipped += 1; continue;
+        }
+        // 仅导入支出流水；收入/不计收支/退款（退款、转账、提现、余额宝等）跳过
+        let income_expense = if income_expense_missing { "支出" } else { cols.cell(row, cols.income_expense) };
+        if income_expense != "支出" {
+            skipped += 1; continue;
+        }
+        // 状态白名单（退款成功/交易关闭/解冻等跳过）
+        let status = cols.cell(row, cols.status);
+        if !is_valid_alipay_status(status) {
+            skipped += 1; continue;
+        }
+        // 交易分类=退款 的退款行（即使收/支被滤掉按支出处理）不入库
+        if cols.cell(row, cols.tx_type) == "退款" {
+            skipped += 1; continue;
+        }
+
+        // 商品名逐级回退：产品说明 → 交易对方 → 交易分类 → 对方账号（列被滤掉时逐级回退）
+        let mut product_name = cols.cell(row, cols.product).to_string();
+        if product_name.is_empty() || product_name == "/" || product_name == "null" {
+            product_name = cols.cell(row, cols.peer).to_string();
+        }
+        if product_name.is_empty() || product_name == "/" || product_name == "null" {
+            product_name = cols.cell(row, cols.tx_type).to_string();
+        }
+        if product_name.is_empty() || product_name == "/" || product_name == "null" {
+            product_name = cols.cell(row, cols.peer_account).to_string();
+        }
+        if product_name.is_empty() || product_name == "/" || product_name == "null" {
+            skipped += 1; continue;
+        }
+
+        // 金额取绝对值（兼容 ¥/千分位格式，同 parse_wechat_amount）
+        let amount = parse_wechat_amount(cols.cell(row, cols.amount)).abs();
+        if amount <= 0.0 { skipped += 1; continue; }
+        if ali_dedup.contains(order_id) { skipped += 1; continue; }
+
+        // 跨平台去重：同一笔消费已以京东/淘宝订单入库（商家订单号=平台单号后缀+金额一致）→ 跳过
+        let product_id = cols.cell(row, cols.merchant_id).to_string();
+        if is_bill_dup_with_order(&product_id, amount, &order_platform) {
+            cross_dup += 1;
+            skipped += 1;
+            continue;
+        }
+
+        let store_name = alipay_peer(&cols, row);
+
+        // 收/付款方式 + 备注合并到型号区
+        let mut remark = cols.cell(row, cols.remark).to_string();
+        if remark == "/" { remark.clear(); }
+        let pay_method = cols.cell(row, cols.pay_method);
+        let model_style = if remark.is_empty() { pay_method.to_string() }
+            else if pay_method.is_empty() || pay_method == "/" { remark }
+            else { format!("{}\n{}", pay_method, remark) };
+
+        let (category, emoji) = match_product_category(&product_name, &store_name, "alipay");
+        let import_batch = format!("支付宝 · {}", file_name);
+        let order_time = normalize_date(&wechat_date_to_iso(cols.cell(row, cols.time)));
+
+        tx.execute(
+            "INSERT INTO orders (order_id, parent_order_id, product_id, platform, store_name, product_name, model_style, quantity, total_price, order_time, import_batch, product_url, emoji, end_date, end_reason, sell_price, category)
+             VALUES (?1, '', ?2, 'alipay', ?3, ?4, ?5, 1, ?6, ?7, ?8, '', ?9, '', '', 0, ?10)",
+            params![
+                order_id,
+                product_id,
+                store_name,
+                product_name,
+                model_style,
+                amount,
+                order_time,
+                import_batch,
+                emoji,
+                category,
+            ],
+        ).map_err(|e| format!("数据库插入失败: {}", e))?;
+
+        ali_dedup.insert(order_id.to_string());
+        imported += 1;
+    }
+
+    tx.commit().map_err(|e| format!("提交事务失败: {}", e))?;
+
+    Ok(ImportResult {
+        success: true,
+        imported,
+        skipped,
+        message: format!(
+            "成功导入 {} 条支出，跳过 {} 条（收入/不计收支/退款/重复/无效）\n平台: 支付宝 | 文件名: {}{}",
+            imported, skipped, file_name,
+            cross_dup_note(cross_dup)
+        ),
+    })
+}
+
+/// 从支付宝 CSV 文本导入（复用统一的二维数组解析）
+fn parse_alipay_csv_content(content: &str, file_name: &str, conn: &Connection) -> Result<ImportResult, String> {
+    let mut rows: Vec<Vec<String>> = Vec::new();
+    let mut reader = csv::ReaderBuilder::new()
+        .flexible(true)   // 支付宝账单列数不固定（用户滤列后列数更少）
+        .from_reader(content.as_bytes());
+    for result in reader.records() {
+        if let Ok(rec) = result {
+            rows.push(rec.iter().map(|s| s.to_string()).collect());
+        }
+    }
+    parse_alipay_rows(&rows, file_name, conn)
 }
 
 /// 判断订单状态是否为有效完成态（京东: 已完成；淘宝: 交易成功/已签收/交易完成）
 fn is_valid_order_status(status: &str) -> bool {
     matches!(status, "" | "已完成" | "交易成功" | "已签收" | "交易完成")
+}
+
+// ── 跨平台去重（微信/支付宝账单 ↔ 京东/淘宝订单）──────────────────
+// 同一笔消费可能同时出现在「平台订单 CSV」与「支付账单」中：微信可支付淘宝/京东、
+// 支付宝可支付淘宝。账单记录的「商户单号/商家订单号」常以平台订单号为后缀
+// （如支付宝商家订单号 `T200P<淘宝订单号>`、微信商户单号即平台订单号）。
+// 规则：账单商家单号以某订单平台订单号为后缀 且 金额一致（±0.01）→ 跨平台重复，跳过。
+// 双方向生效：无论先导平台订单还是先导账单，都能拦截重复记账。
+
+/// 跨平台重复判定：短串(平台订单号)是否为长串(账单商家单号)的后缀，且金额一致
+fn is_cross_platform_dup(long: &str, short: &str, long_amount: f64, short_amount: f64) -> bool {
+    !long.is_empty() && !short.is_empty()
+        && long_amount > 0.0 && short_amount > 0.0
+        && long.ends_with(short)
+        && (long_amount - short_amount).abs() < 0.011
+}
+
+/// 账单记录（微信/支付宝）是否与订单平台（京东/淘宝）已有订单重复
+fn is_bill_dup_with_order(product_id: &str, amount: f64, order_platform: &HashMap<String, f64>) -> bool {
+    order_platform.iter().any(|(oid, oamt)| is_cross_platform_dup(product_id, oid, amount, *oamt))
+}
+
+/// 订单平台记录（京东/淘宝）是否与账单（微信/支付宝）已有记录重复
+fn is_order_dup_with_bill(order_id: &str, amount: f64, bills: &[(String, f64)]) -> bool {
+    bills.iter().any(|(pid, amt)| is_cross_platform_dup(pid, order_id, *amt, amount))
+}
+
+/// 跨平台去重提示文案（n>0 时返回说明行，否则空）
+fn cross_dup_note(n: usize) -> String {
+    if n > 0 { format!("\n其中 {} 条为跨平台重复（同一笔消费已在其它平台记录）", n) } else { String::new() }
+}
+
+/// 预加载订单平台（京东/淘宝）的 订单号→金额 索引，供账单导入时做跨平台去重
+fn build_order_platform_index(conn: &Connection) -> Result<HashMap<String, f64>, String> {
+    let mut index: HashMap<String, f64> = HashMap::new();
+    let mut stmt = conn
+        .prepare("SELECT order_id, total_price FROM orders WHERE platform IN ('jd','tb') AND order_id <> '' AND total_price > 0")
+        .map_err(|e| format!("预加载订单平台索引失败: {}", e))?;
+    let rows = stmt
+        .query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, f64>(1)?)))
+        .map_err(|e| e.to_string())?;
+    for row in rows {
+        if let Ok((oid, amt)) = row { index.insert(oid, amt); }
+    }
+    Ok(index)
+}
+
+/// 预加载账单（微信/支付宝）的 商家单号+金额 列表，供订单平台导入时做跨平台去重
+fn build_bill_product_index(conn: &Connection) -> Result<Vec<(String, f64)>, String> {
+    let mut list: Vec<(String, f64)> = Vec::new();
+    let mut stmt = conn
+        .prepare("SELECT product_id, total_price FROM orders WHERE platform IN ('wx','alipay') AND product_id <> '' AND total_price > 0")
+        .map_err(|e| format!("预加载账单商家单号索引失败: {}", e))?;
+    let rows = stmt
+        .query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, f64>(1)?)))
+        .map_err(|e| e.to_string())?;
+    for row in rows {
+        if let Ok((pid, amt)) = row { list.push((pid, amt)); }
+    }
+    Ok(list)
 }
 
 /// 校验 CSV 列头是否包含必需列，返回缺失列列表（空表示全部存在）
@@ -986,13 +1284,19 @@ fn detect_platform(file_name: &str) -> &str {
     if file_name.starts_with("tb-") || file_name.starts_with("tb_") { return "tb"; }
     if file_name.starts_with("steam-") || file_name.starts_with("steam_") { return "steam"; }
     if file_name.starts_with("wx-") || file_name.starts_with("wx_") || file_name.starts_with("微信") { return "wx"; }
+    if file_name.starts_with("alipay-") || file_name.starts_with("alipay_")
+        || file_name.starts_with("zfb-") || file_name.starts_with("zfb_")
+        || file_name.starts_with("支付宝") { return "alipay"; }
     "unknown"
 }
 
 /// 从 CSV 内容头回退检测平台（文件名不可靠时使用，如 Android content:// URI）
 fn detect_platform_from_content(content: &str) -> &str {
-    // 微信账单表头不在首行（前 5 行是元数据），需扫描前 8 行查找表头
-    for line in content.lines().take(8) {
+    // 微信/支付宝账单表头不在首行：微信前 5 行是元数据，支付宝前 ~20 行是元数据+特别提示+分隔线，
+    // 需扫描前 200 行查找表头（与各自解析器的表头定位范围一致）
+    for line in content.lines().take(200) {
+        // 支付宝以「交易订单号」列区分（与微信「交易单号」不互相包含）
+        if line.contains("交易订单号") { return "alipay"; }
         if line.contains("交易单号") && line.contains("金额(元)") && line.contains("交易时间") {
             return "wx";
         }
@@ -1014,11 +1318,23 @@ fn parse_csv_file(path: &PathBuf, conn: &Connection) -> Result<ImportResult, Str
     let is_xlsx = path.extension().map(|e| e == "xlsx").unwrap_or(false);
     if is_xlsx {
         let data = fs::read(path).map_err(|e| format!("无法读取文件: {}", e))?;
-        return parse_wechat_xlsx_content(&data, &file_name, conn);
+        return parse_bill_xlsx_content(&data, &file_name, conn);
     }
-    // 非 xlsx 一律按文本处理；微信 CSV 表头不在首行，由 parse_csv_content 内容头回退检测
-    let content = fs::read_to_string(path).map_err(|e| format!("无法读取文件: {}", e))?;
+    // 非 xlsx 一律按文本处理；微信/支付宝 CSV 表头不在首行，由 parse_csv_content 内容头回退检测
+    let data = fs::read(path).map_err(|e| format!("无法读取文件: {}", e))?;
+    let content = decode_csv_text(&data);
     parse_csv_content(&content, &file_name, conn)
+}
+
+/// 解码账单文本：优先 UTF-8（严格校验），失败时按 GBK 解码。
+/// 支付宝等 Windows 端导出的交易明细常为 GBK 编码，直接按 UTF-8 读取会乱码导致表头匹配失败
+fn decode_csv_text(data: &[u8]) -> String {
+    if let Ok(s) = std::str::from_utf8(data) {
+        return s.to_string();
+    }
+    // GBK 解码（encoding_rs 不会失败，仅替换无效字节）
+    let (cow, _, _) = encoding_rs::GBK.decode(data);
+    cow.into_owned()
 }
 
 /// 从字符串内容解析 CSV（Android 端 content:// URI 使用）
@@ -1035,7 +1351,7 @@ fn parse_csv_content(content: &str, file_name: &str, conn: &Connection) -> Resul
     log::info!("[DailyCost] 导入文件 '{}'，平台检测: {}", file_name, platform);
 
     if platform == "unknown" {
-        return Err(format!("无法识别 '{}' 的平台类型，请确保文件名以 jd-/tb-/steam-/wx- 开头", file_name));
+        return Err(format!("无法识别 '{}' 的平台类型，请确保文件名以 jd-/tb-/steam-/wx-/alipay- 开头", file_name));
     }
 
     if platform == "steam" {
@@ -1044,6 +1360,10 @@ fn parse_csv_content(content: &str, file_name: &str, conn: &Connection) -> Resul
 
     if platform == "wx" {
         return parse_wechat_csv_content(content, file_name, conn);
+    }
+
+    if platform == "alipay" {
+        return parse_alipay_csv_content(content, file_name, conn);
     }
 
     let mut reader = csv::Reader::from_reader(content.as_bytes());
@@ -1079,11 +1399,15 @@ fn parse_csv_content(content: &str, file_name: &str, conn: &Connection) -> Resul
         }
     }
 
+    // ── 预加载账单（微信/支付宝）索引：淘宝/京东可被微信/支付宝支付，拦截跨平台重复 ──
+    let bill_products = build_bill_product_index(conn)?;
+
     // ── 事务包裹：整文件原子导入，失败自动回滚，避免逐行提交拖慢性能 ──
     let tx = conn.unchecked_transaction().map_err(|e| format!("开启事务失败: {}", e))?;
 
     let mut imported: usize = 0;
     let mut skipped: usize = 0;
+    let mut cross_dup: usize = 0;
 
     for result in reader.deserialize() {
         let record: CsvRecord = match result {
@@ -1147,6 +1471,13 @@ fn parse_csv_content(content: &str, file_name: &str, conn: &Connection) -> Resul
             let url = if platform == "tb" { urls[0].to_string() } else { extract_jd_product_url(&raw_detail, &pn) };
             let (category, emoji) = match_product_category(&pn, &store_name, &platform);
 
+            // 跨平台去重：该订单已以微信/支付宝账单入库（账单商家单号以本订单号为后缀+金额一致）→ 跳过
+            if is_order_dup_with_bill(&order_id, price, &bill_products) {
+                cross_dup += 1;
+                skipped += 1;
+                continue;
+            }
+
             let exists = multi_dedup.contains(&order_id);
 
             if !exists {
@@ -1193,6 +1524,13 @@ fn parse_csv_content(content: &str, file_name: &str, conn: &Connection) -> Resul
 
             if exists { skipped += 1; continue; }
 
+            // 跨平台去重：该订单已以微信/支付宝账单入库 → 跳过
+            if is_order_dup_with_bill(&order_id, price, &bill_products) {
+                cross_dup += 1;
+                skipped += 1;
+                continue;
+            }
+
             tx.execute(
                 "INSERT INTO orders (order_id, parent_order_id, product_id, platform, store_name, product_name, model_style, quantity, total_price, order_time, import_batch, product_url, emoji, end_date, end_reason, sell_price, category)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, '', '', 0, ?14)",
@@ -1213,10 +1551,11 @@ fn parse_csv_content(content: &str, file_name: &str, conn: &Connection) -> Resul
         imported,
         skipped,
         message: format!(
-            "成功导入 {} 条，跳过 {} 条（重复或无效）\n平台: {} | 文件名: {}",
+            "成功导入 {} 条，跳过 {} 条（重复或无效）\n平台: {} | 文件名: {}{}",
             imported, skipped,
             if platform == "jd" { "京东" } else { "淘宝" },
-            file_name
+            file_name,
+            cross_dup_note(cross_dup)
         ),
     })
 }
@@ -1340,12 +1679,12 @@ fn import_csv_content(contents: Vec<String>, file_names: Vec<String>, state: Sta
 }
 
 /// 从 xlsx 字节内容导入（Android content:// URI 场景：xlsx 为二进制，readTextFile 读不了）
-/// 微信账单为单文件导出，此处按单文件处理（data 为一个 xlsx 的字节，file_names 取首个作批次名）
+/// 账单为单文件导出，此处按单文件处理（data 为一个 xlsx 的字节，file_names 取首个作批次名）
 #[tauri::command]
 fn import_xlsx_content(data: Vec<u8>, file_names: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
-    let file_name = file_names.get(0).map(|s| s.as_str()).unwrap_or("微信账单");
-    match parse_wechat_xlsx_content(&data, file_name.trim_end_matches(".xlsx"), &conn) {
+    let file_name = file_names.get(0).map(|s| s.as_str()).unwrap_or("账单");
+    match parse_bill_xlsx_content(&data, file_name.trim_end_matches(".xlsx"), &conn) {
         Ok(r) => Ok(r),
         Err(e) => Err(format!("{}: {}", file_name, e)),
     }
@@ -2293,6 +2632,25 @@ pub fn run() {
     let _ = rustls::crypto::ring::default_provider().install_default();
 
     tauri::Builder::default()
+        // ── 日志：写文件 + 终端(dev) + 转发 WebView 前端 console ──
+        // 桌面端日志目录（tauri-plugin-log 的 LogDir 基于 app_log_dir）：
+        //   Windows %LocalAppData%\com.bunnychen.dailycostvault\logs\、
+        //   macOS ~/Library/Logs/com.bunnychen.dailycostvault/、Linux ~/.local/share/com.bunnychen.dailycostvault/logs/（按天轮转）
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Info)
+                .targets([
+                    // 终端输出（pnpm tauri dev 可见）
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+                    // 写入应用日志目录（桌面端 + 移动端内部目录）
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
+                        file_name: Some("logs".to_string()),
+                    }),
+                    // 前端 console.log/error 转发进日志（需 capabilities 含 log:default）
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
+                ])
+                .build(),
+        )
         .plugin(
             tauri::plugin::Builder::<tauri::Wry, ()>::new("backup")
                 .setup(|app, api| {

@@ -1384,6 +1384,7 @@ h2, h3, .modal-name, .empty-title, .nav-brand, .stat-value, .cost-value {
 .drop-icon { font-size: 40px; display: block; margin-bottom: 8px; opacity: 0.5; }
 .drop-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .drop-hint { font-size: 12px; color: var(--text-tertiary); margin-bottom: 14px; }
+.section-hint { font-size: 12px; color: var(--text-tertiary); margin: -8px 0 14px; line-height: 1.5; }
 .drop-divider {
   display: flex; align-items: center; gap: 12px;
   margin: 14px 0; color: var(--text-tertiary); font-size: 12px;

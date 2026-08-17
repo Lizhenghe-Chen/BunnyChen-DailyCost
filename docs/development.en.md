@@ -36,14 +36,19 @@ cd BunnyChen-Item-Bookkeeping
 pnpm install
 ```
 
-### 2. Browser-only development (no Rust needed)
+### 2. Browser-only development (no Rust needed) — start the dev web app
 
 ```bash
 pnpm dev
-# → http://localhost:1420
+# → open http://localhost:1420 in your browser
 ```
 
-Pure frontend hot-reload — great for iterating on UI and interaction logic.
+Pure frontend hot-reload (HMR) — great for iterating on UI and interaction logic. In this mode there is **only the web frontend, no Rust backend**:
+
+- Data is stored in browser `localStorage` (a simulated `BrowserDb`), independent from the desktop SQLite database
+- Only needs Node.js + pnpm — no Rust or desktop system dependencies, runs on any machine
+- Frontend changes hot-reload instantly; update checks go through the GitHub API channel (no Tauri updater)
+- Stop: press `Ctrl+C` in the terminal to end the Vite process
 
 ### 3. Desktop development (Tauri window + hot-reload)
 

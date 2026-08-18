@@ -901,7 +901,8 @@ async function openWechatPeerDrilldown(row: HTMLElement, peer: IncomePeer): Prom
     records = isTauri()
       ? await invoke<IncomeRecord[]>('get_income_records_by_peer', { peer: peer.peer })
       : browserDb.getIncomeRecordsByPeer(peer.peer);
-  } catch {
+  } catch (e) {
+    console.error("[DailyCost][UI] 回款下钻查询失败:", e);
     records = [];
   }
 

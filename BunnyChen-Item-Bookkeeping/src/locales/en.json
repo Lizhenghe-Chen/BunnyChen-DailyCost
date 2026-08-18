@@ -130,6 +130,7 @@
     "export_only_desktop": "Database export is only available on Tauri desktop",
     "export_failed": "Export failed",
     "db_path_android": "Database is in app-private storage and can't be opened directly. Use 'Export Archive' to back it up",
+    "log_path_android": "Logs are in app-private storage and can't be opened directly; developers can use adb logcat",
     "import_only_desktop": "Database import is only available on Tauri desktop",
     "import_failed": "Import failed",
     "csv_only": "Please drop CSV / Excel order files",
@@ -204,6 +205,10 @@
     "db_path_browser": "Browser sessionStorage (data persists across page refreshes, cleared on tab close)",
     "db_path_click": "Click to open containing folder",
     "db_path_android": "Tap to back up the database via 'Export Archive'",
+    "log_path": "Log location: ",
+    "log_path_browser": "No local log in browser mode (see DevTools Console)",
+    "log_path_click": "Click to open log folder",
+    "log_path_android": "Logs are in app-private storage; developers can use adb logcat",
     "data_management": "Data Management",
     "clear_desc": "Clear all imported item data (this cannot be undone)",
     "clear_all": "Clear All Data"

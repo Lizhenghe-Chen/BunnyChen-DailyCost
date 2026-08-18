@@ -159,20 +159,21 @@ Edit the item → expand "Optional Info" → set status to "Sold" → set end da
 
 DailyCost Vault saves runtime logs locally (enabled since the 2026-08 release), which are very useful for troubleshooting crashes, errors, or unexpected behavior.
 
-**Log file locations & how to open them**:
+**Log file locations & how to open them** (on desktop you can also open the folder in one click via **Settings → Backup & Restore → Log location**):
 
-| Platform | Log directory | How to open |
+| Platform | Log file | How to open |
 |------|----------|----------|
-| Windows | `%LocalAppData%\com.bunnychen.dailycostvault\logs\` (e.g. `C:\Users\<your username>\AppData\Local\com.bunnychen.dailycostvault\logs\`) | Press `Win + R`, paste `%LocalAppData%\com.bunnychen.dailycostvault\logs`, press Enter |
-| macOS | `~/Library/Logs/com.bunnychen.dailycostvault/` (e.g. `/Users/<your username>/Library/Logs/com.bunnychen.dailycostvault/`) | In Finder press `Cmd + Shift + G`, paste `~/Library/Logs/com.bunnychen.dailycostvault`, press Enter |
-| Linux | `~/.local/share/com.bunnychen.dailycostvault/logs/` | Paste `~/.local/share/com.bunnychen.dailycostvault/logs` in the file manager address bar and press Enter |
+| Windows | `%LocalAppData%\com.bunnychen.dailycostvault\logs\logs.log` (e.g. `C:\Users\<your username>\AppData\Local\com.bunnychen.dailycostvault\logs\logs.log`) | Press `Win + R`, paste `%LocalAppData%\com.bunnychen.dailycostvault\logs`, press Enter |
+| macOS | `~/Library/Logs/com.bunnychen.dailycostvault/logs.log` (e.g. `/Users/<your username>/Library/Logs/com.bunnychen.dailycostvault/logs.log`) | In Finder press `Cmd + Shift + G`, paste `~/Library/Logs/com.bunnychen.dailycostvault`, press Enter |
+| Linux | `~/.local/share/com.bunnychen.dailycostvault/logs/logs.log` | Paste `~/.local/share/com.bunnychen.dailycostvault/logs` in the file manager address bar and press Enter |
 | Android | Use `adb logcat` (startup / crash info appears in logcat) | For developers |
 
 **Notes**:
 
-- Logs rotate daily, with files named like `dailycost-vault.2026-08-17.log` (date = that day); you can open them after quitting the app
+- The log file has a fixed name `logs.log` (not rotated daily). When it grows beyond ~500KB, the old content is overwritten, so reproduce the issue first before reporting
+- Logs are only written when there is output: CSV imports, runtime errors, uncaught JS exceptions, Rust panics, etc. The file may stay empty during normal browsing / bookkeeping
 - They include both backend errors (e.g., CSV parse failures) and frontend runtime errors (e.g., UI exceptions)
-- Recommended workflow: reproduce the issue → quit the app → send the **current day's** log file to the developer for fast diagnosis
+- Recommended workflow: reproduce the issue → quit the app → send the `logs.log` file to the developer for fast diagnosis
 
 > 💡 Logs are stored only on your device and are never uploaded to any server — your privacy is safe.
 

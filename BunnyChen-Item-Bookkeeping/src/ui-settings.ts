@@ -56,6 +56,7 @@ export async function initSettings() {
                   csvNames.push(name);
                 }
               } catch (e) {
+                console.error("[DailyCost][UI] 读取导入文件失败:", e, p);
                 showToast(`${t("toast.operation_failed")}: ${p}`, "error");
               }
             }
@@ -75,7 +76,7 @@ export async function initSettings() {
 
           btn.textContent = `📄 ${t("settings.select_csv")}`; (btn as HTMLButtonElement).disabled = false;
         }
-      } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); resetPickBtn(); }
+      } catch (e) { console.error("[DailyCost][UI] 选择文件导入失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); resetPickBtn(); }
     });
   } else {
     const fileInput = document.createElement("input");
@@ -97,13 +98,17 @@ export async function initSettings() {
   initDropZone();
   await initDragDropListener();
 
+  // ── 日志位置（本地文件路径，点击可打开所在文件夹）──
+  loadLogPath();
+
   // ── 清除数据 ──
   document.getElementById("btn-clear-data")!.addEventListener("click", async () => {
     const ok = await showConfirm(t("confirm.clear_all"));
     if (!ok) return;
     if (isTauri()) {
-      try { await invoke("clear_all_data"); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+      try { await invoke("clear_all_data"); } catch (e) { console.error("[DailyCost][UI] 清空所有数据失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
     } else { browserDb.clearAll(); }
+    console.warn("[DailyCost][UI] 清空所有数据");
     showToast(t("toast.all_cleared"), "success");
     notifyDataChanged();
   });
@@ -144,7 +149,8 @@ export async function initSettings() {
       } else {
         showToast(await invoke<string>("export_database", { path: savePath }), "success");
       }
-    } catch (e) { showToast(`${t("toast.export_failed")}: ${e}`, "error"); }
+      console.log("[DailyCost][UI] 导出存档 →", savePath);
+    } catch (e) { console.error("[DailyCost][UI] 导出存档失败:", e); showToast(`${t("toast.export_failed")}: ${e}`, "error"); }
   });
 
   document.getElementById("btn-import-db")!.addEventListener("click", async () => {
@@ -167,9 +173,10 @@ export async function initSettings() {
         result = await invoke<string>("import_database", { path: selected });
       }
       showToast(result, "success");
+      console.log("[DailyCost][UI] 导入存档 →", selected);
       notifyDataChanged();
       btn.textContent = `📥 ${t("settings.import_db")}`; (btn as HTMLButtonElement).disabled = false;
-    } catch (e) { showToast(`${t("toast.import_failed")}: ${e}`, "error"); resetImportBtn(); }
+    } catch (e) { console.error("[DailyCost][UI] 导入存档失败:", e); showToast(`${t("toast.import_failed")}: ${e}`, "error"); resetImportBtn(); }
   });
 
   // ── 智能分类：用户可选择仅覆盖 category 或仅覆盖 emoji ──
@@ -182,6 +189,7 @@ export async function initSettings() {
     try {
       if (isTauri()) {
         const [total, updated] = await invoke<[number, number]>("recalculate_categories", { mode });
+        console.log(`[DailyCost][UI] 智能分类 mode=${mode} total=${total} updated=${updated}`);
         showToast(t("settings.smart_categorize_done", { total, updated }), "success");
       } else {
         // 浏览器端：根据 mode 仅更新对应字段
@@ -201,7 +209,7 @@ export async function initSettings() {
         showToast(t("settings.smart_categorize_done", { total: totalItems, updated }), updated > 0 ? "success" : "info");
       }
       notifyDataChanged();
-    } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); }
+    } catch (e) { console.error("[DailyCost][UI] 智能分类失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); }
     btn.textContent = `🤖 ${t("settings.smart_categorize")}`; (btn as HTMLButtonElement).disabled = false;
   });
 
@@ -247,6 +255,7 @@ export async function initSettings() {
           statusEl.style.color = "var(--primary)";
         }
       } catch (e) {
+        console.error("[DailyCost][UI] 检查更新失败:", e);
         const msg = e instanceof TypeError ? t("about.network_error") : `${t("about.update_failed")}: ${e}`;
         statusEl.textContent = msg;
         statusEl.className = "about-update update-error";
@@ -313,7 +322,7 @@ function initDropZone() {
       if (paths.length === 0) { showToast(t("toast.csv_only"), "error"); return; }
       try {
         showImportResult(await invoke<ImportResult>("import_multiple_csv", { paths }));
-      } catch (e) { showToast(`${t("toast.import_failed")}: ${e}`, "error"); }
+      } catch (e) { console.error("[DailyCost][UI] 拖拽导入失败:", e); showToast(`${t("toast.import_failed")}: ${e}`, "error"); }
     } else {
       // 仅保留 CSV/Excel（保持原有拖拽过滤行为，非目标文件静默跳过）
       const csvFiles: File[] = [];
@@ -346,6 +355,35 @@ export function showImportResult(result: ImportResult) {
   notifyDataChanged();
 }
 
+// ── 日志位置 ──────────────────────────────────────────
+async function loadLogPath() {
+  const logPathEl = document.getElementById("log-path-text");
+  if (!logPathEl) return;
+  if (!isTauri()) {
+    // 浏览器模式无本地日志，提示查看开发者工具
+    logPathEl.textContent = t("settings.log_path_browser");
+    return;
+  }
+  try {
+    const logPath = await invoke<string>("get_log_path");
+    logPathEl.textContent = logPath;
+    logPathEl.classList.add("clickable-path");
+    if (isAndroid()) {
+      // Android 日志在应用私有目录，文件管理器不可访问
+      logPathEl.title = t("settings.log_path_android");
+      logPathEl.addEventListener("click", () => showToast(t("toast.log_path_android"), "info"));
+    } else {
+      logPathEl.title = t("settings.log_path_click");
+      logPathEl.addEventListener("click", () => {
+        revealItemInDir(logPath).catch(() => showToast(t("toast.open_folder_failed"), "error"));
+      });
+    }
+  } catch (e) {
+    logPathEl.textContent = "—";
+    console.warn("[Settings] load log path failed:", e);
+  }
+}
+
 // ── 批次 ──────────────────────────────────────────────
 export async function loadBatches() {
   const list = document.getElementById("batches-list")!;
@@ -376,7 +414,7 @@ export async function loadBatches() {
           });
         }
       }
-    } catch (e) { list.innerHTML = `<div class="empty-inline">${t("empty.load_error")}: ${e}</div>`; }
+    } catch (e) { console.error("[DailyCost][UI] 加载导入批次失败:", e); list.innerHTML = `<div class="empty-inline">${t("empty.load_error")}: ${e}</div>`; }
   } else {
     const batches = browserDb.getBatches();
     list.innerHTML = batches.length === 0
@@ -478,6 +516,7 @@ export async function loadArchivedCount() {
       barEl.querySelector("#btn-batch-delete")?.addEventListener("click", batchDelete);
     }
   } catch (e) {
+    console.error("[DailyCost][UI] 加载归档列表失败:", e);
     countEl.textContent = "0";
     listEl.innerHTML = `<div class="empty-inline">${t("empty.load_error")}: ${e}</div>`;
   }
@@ -498,7 +537,7 @@ async function batchRestore() {
   if (!ok) return;
   const ids = [...selectedArchived];
   if (isTauri()) {
-    try { await invoke("batch_restore_items", { ids }); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+    try { await invoke("batch_restore_items", { ids }); } catch (e) { console.error("[DailyCost][UI] 批量恢复失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
   } else {
     browserDb.batchRestoreItems(ids);
   }
@@ -512,7 +551,7 @@ async function batchDelete() {
   if (!ok) return;
   const ids = [...selectedArchived];
   if (isTauri()) {
-    try { await invoke("batch_delete_items", { ids }); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+    try { await invoke("batch_delete_items", { ids }); } catch (e) { console.error("[DailyCost][UI] 批量永久删除失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
   } else {
     browserDb.batchPermanentDeleteItems(ids);
   }

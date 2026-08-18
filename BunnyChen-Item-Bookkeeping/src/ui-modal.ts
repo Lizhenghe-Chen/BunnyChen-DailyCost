@@ -119,10 +119,11 @@ function bindViewEvents(overlay: HTMLElement, item: OrderItem) {
     const ok = await showConfirm(t("confirm.archive_item", { name: item.product_name.slice(0, 30) }));
     if (!ok) return;
     if (isTauri()) {
-      try { await invoke("archive_item", { id: item.id }); } catch (e) { showToast(`${t("toast.archive_failed")}: ${e}`, "error"); return; }
+      try { await invoke("archive_item", { id: item.id }); } catch (e) { console.error(`[DailyCost][UI] 归档物品失败 id=${item.id}:`, e); showToast(`${t("toast.archive_failed")}: ${e}`, "error"); return; }
     } else {
       browserDb.archiveItem(item.id);
     }
+    console.log(`[DailyCost][UI] 归档物品 id=${item.id} name=${item.product_name}`);
     showToast(t("toast.archived"), "success");
     refreshAfterAction();
   });
@@ -130,10 +131,11 @@ function bindViewEvents(overlay: HTMLElement, item: OrderItem) {
   // 取消归档按钮
   overlay.querySelector(".modal-restore-btn")?.addEventListener("click", async () => {
     if (isTauri()) {
-      try { await invoke("restore_item", { id: item.id }); } catch (e) { showToast(`${t("toast.restore_failed")}: ${e}`, "error"); return; }
+      try { await invoke("restore_item", { id: item.id }); } catch (e) { console.error(`[DailyCost][UI] 恢复物品失败 id=${item.id}:`, e); showToast(`${t("toast.restore_failed")}: ${e}`, "error"); return; }
     } else {
       browserDb.restoreItem(item.id);
     }
+    console.log(`[DailyCost][UI] 恢复物品 id=${item.id} name=${item.product_name}`);
     showToast(t("toast.restored"), "success");
     refreshAfterAction();
   });
@@ -143,10 +145,11 @@ function bindViewEvents(overlay: HTMLElement, item: OrderItem) {
     const ok = await showConfirm(t("confirm.permanent_delete_item", { name: item.product_name.slice(0, 30) }));
     if (!ok) return;
     if (isTauri()) {
-      try { await invoke("delete_item", { id: item.id }); } catch (e) { showToast(`${t("toast.delete_failed")}: ${e}`, "error"); return; }
+      try { await invoke("delete_item", { id: item.id }); } catch (e) { console.error(`[DailyCost][UI] 永久删除物品失败 id=${item.id}:`, e); showToast(`${t("toast.delete_failed")}: ${e}`, "error"); return; }
     } else {
       browserDb.permanentDeleteItem(item.id);
     }
+    console.warn(`[DailyCost][UI] 永久删除物品 id=${item.id} name=${item.product_name}`);
     showToast(t("toast.permanent_deleted"), "success");
     refreshAfterAction();
   });
@@ -354,10 +357,11 @@ async function saveItemEdit(item: OrderItem) {
   if (dateErr) { showToast(dateErr, "error"); return; }
 
   if (isTauri()) {
-    try { await invoke("update_item", { id: item.id, ...updates }); } catch (e) { showToast(`${t("toast.save_failed")}: ${e}`, "error"); return; }
+    try { await invoke("update_item", { id: item.id, ...updates }); } catch (e) { console.error(`[DailyCost][UI] 更新物品失败 id=${item.id}:`, e); showToast(`${t("toast.save_failed")}: ${e}`, "error"); return; }
   } else {
     browserDb.updateItem(item.id, updates);
   }
+  console.log(`[DailyCost][UI] 更新物品 id=${item.id} name=${updates.product_name}`);
 
   Object.assign(item, updates);
   item.daily_avg_cost = calcDailyAvg(updates.total_price, updates.order_time, updates.end_date || undefined, updates.end_reason === "sold" ? updates.sell_price : undefined);
@@ -421,11 +425,12 @@ async function saveNewItem(close: () => void) {
         sell_price: data.sell_price,
         category: data.category,
       });
-    } catch (e) { showToast(`${t("toast.add_failed")}: ${e}`, "error"); return; }
+    } catch (e) { console.error("[DailyCost][UI] 添加物品失败:", e); showToast(`${t("toast.add_failed")}: ${e}`, "error"); return; }
   } else {
     await browserDb.addItem(data);
   }
 
+  console.log(`[DailyCost][UI] 添加物品 name=${data.product_name} platform=${data.platform} price=${data.total_price}`);
   showToast(t("toast.added"), "success");
   close();
   notifyDataChanged();

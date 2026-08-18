@@ -175,7 +175,7 @@ export function renderAutoUpdateStatus(update: UpdaterInfo): void {
     statusEl.textContent = t("about.downloading");
     statusEl.className = "about-update update-downloading";
     try { await downloadAndInstallUpdate(update); }
-    catch (e) { statusEl.textContent = `${t("about.update_failed")}: ${e}`; statusEl.className = "about-update update-error"; }
+    catch (e) { console.error("[DailyCost][UI] 自动更新下载安装失败:", e); statusEl.textContent = `${t("about.update_failed")}: ${e}`; statusEl.className = "about-update update-error"; }
   };
 }
 

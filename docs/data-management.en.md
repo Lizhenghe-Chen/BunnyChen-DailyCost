@@ -26,8 +26,9 @@ The desktop version shows the full SQLite database file path at the bottom of th
 
 | Action | Button | Description |
 |--------|--------|-------------|
-| 📤 Export Database | "Export Database" | Package all data as `.db` file for download |
-| 📥 Import Database | "Import Database" | Select `.db` backup file to restore data |
+| 📤 Export Database | "Export Archive" | Package all data as `.db` file for download |
+| 📥 Import Database | "Import Archive" | Select `.db` backup file to restore data |
+| 📃 Export Log | "Export Log" | Export the `.log` log file for troubleshooting or reporting |
 | 🗑️ Clear All Data | "Clear All Data" | Wipe database; requires confirmation |
 
 !!! warning "Important Notes"

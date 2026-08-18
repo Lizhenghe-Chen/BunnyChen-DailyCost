@@ -7,7 +7,7 @@
 | 命令 | 用途 | 产物 |
 | --- | --- | --- |
 | `pnpm build` | Web 构建 | `dist/` |
-| `pnpm tauri build` | 桌面端构建 | Windows `.exe` / `.msi`、macOS `.dmg`、Linux `.deb` / `.AppImage` |
+| `pnpm tauri build` | 桌面端构建 | Windows `.exe`、macOS `.dmg`、Linux `.deb` / `.AppImage` |
 | `pnpm tauri android build` | Android 构建 | `.apk` / `.aab` |
 | `pnpm tauri ios build` | iOS 构建 | `.ipa` |
 | `pnpm tauri icon <源图>` | 图标生成 | 各平台图标 |

@@ -125,7 +125,7 @@ Drag and drop JD.com, Taobao, and Steam order CSVs, plus WeChat and Alipay bills
 
 ### 🔒 Fully Local Data
 
-SQLite database with local persistence, zero server dependency. Your spending data never leaves your device. No user accounts, no cloud sync, no telemetry. Export backups anytime.
+SQLite database with local persistence, zero server dependency. Your spending data never leaves your device. No user accounts, no cloud sync, no spending-data tracking. Export backups anytime.
 
 </div>
 
@@ -205,7 +205,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 ### 🪟 Windows
 
-`.exe` / `.msi`
+`.exe`
 
 </div>
 
@@ -320,7 +320,7 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 <div class="hero-badges privacy-badges">
 
 <span class="badge">🚫 No data upload</span>
-<span class="badge">🚫 No tracking analytics</span>
+<span class="badge">🚫 No spending-data tracking</span>
 <span class="badge">🚫 No reading unrelated files</span>
 <span class="badge">🚫 No user accounts</span>
 <span class="badge">🚫 No cloud sync</span>

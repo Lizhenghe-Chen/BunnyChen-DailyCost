@@ -7,7 +7,7 @@ Build commands, artifacts, and notes for each DailyCost Vault platform.
 | Command | Purpose | Artifacts |
 | --- | --- | --- |
 | `pnpm build` | Web build | `dist/` |
-| `pnpm tauri build` | Desktop build | Windows `.exe` / `.msi`, macOS `.dmg`, Linux `.deb` / `.AppImage` |
+| `pnpm tauri build` | Desktop build | Windows `.exe`, macOS `.dmg`, Linux `.deb` / `.AppImage` |
 | `pnpm tauri android build` | Android build | `.apk` / `.aab` |
 | `pnpm tauri ios build` | iOS build | `.ipa` |
 | `pnpm tauri icon <source>` | Icon generation | Platform icons |

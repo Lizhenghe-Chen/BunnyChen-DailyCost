@@ -144,10 +144,13 @@ BunnyChen-Item-Bookkeeping/
 ├── src/                    # Frontend source (TypeScript + vanilla DOM, no framework)
 │   ├── main.ts             # Entry point
 │   ├── ui-home.ts          # Home (asset wall / filters / cards)
+│   ├── ui-modal.ts         # Generic modal
 │   ├── ui-settings.ts      # Settings page
 │   ├── ui-analytics.ts     # Analytics page
 │   ├── ui-share.ts         # Share & reports
 │   ├── db.ts               # Database access
+│   ├── data.ts             # Unified data-access layer (desktop / browser)
+│   ├── data-events.ts      # Data change events
 │   ├── prefs.ts            # Preferences
 │   ├── theme.ts / themes.ts          # Theme system
 │   ├── emoji.ts / custom-emoji.ts    # Emoji system

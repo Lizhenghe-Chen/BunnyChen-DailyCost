@@ -98,7 +98,7 @@ title: 日耗仓 · DailyCost Vault
 
 ---
 
-## � 为什么做这个项目？
+## 💡 为什么做这个项目？
 
 市面上的记账 / 资产管理工具并不少，但总有几个让人头疼的地方：
 
@@ -140,7 +140,7 @@ title: 日耗仓 · DailyCost Vault
 
 ### 🔒 数据完全本地
 
-SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远不会离开你的设备。无用户系统、无云同步、无遥测追踪。数据随时可导出备份。
+SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远不会离开你的设备。无用户系统、无云同步、无消费数据追踪。数据随时可导出备份。
 
 </div>
 
@@ -220,7 +220,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 ### 🪟 Windows ✅
 
-`.exe` / `.msi`
+`.exe`
 
 </div>
 
@@ -343,7 +343,7 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 <div class="hero-badges privacy-badges">
 
 <span class="badge">🚫 不上传数据</span>
-<span class="badge">🚫 无追踪分析</span>
+<span class="badge">🚫 无消费数据追踪</span>
 <span class="badge">🚫 不读取无关文件</span>
 <span class="badge">🚫 无用户系统</span>
 <span class="badge">🚫 无云同步</span>

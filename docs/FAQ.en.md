@@ -10,7 +10,7 @@ The system automatically deduplicates: records with the same order ID from the s
 
 ### Q: Which platforms are supported for order import?
 
-Currently supports **four platforms** for batch import — **JD.com, Taobao/Tmall, Steam, and WeChat** — with more platforms on the way:
+Currently supports **five platforms** for batch import — **JD.com, Taobao/Tmall, Steam, WeChat, and Alipay** — with more platforms on the way:
 
 --8<-- "platforms.en.md"
 

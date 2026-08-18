@@ -29,6 +29,7 @@ The desktop version shows the full SQLite database file path at the bottom of th
 | 📤 Export Database | "Export Archive" | Package all data as `.db` file for download |
 | 📥 Import Database | "Import Archive" | Select `.db` backup file to restore data |
 | 📃 Export Log | "Export Log" | Export the `.log` log file for troubleshooting or reporting |
+| 📁 Log Location | "Log Location" | One-click open the log folder on desktop for quick access to runtime logs |
 | 🗑️ Clear All Data | "Clear All Data" | Wipe database; requires confirmation |
 
 !!! warning "Important Notes"
@@ -64,6 +65,8 @@ The desktop version shows the full SQLite database file path at the bottom of th
 ## App Updates
 
 DailyCost Vault uses a **dual-channel update mechanism** to ensure all platforms get the latest version promptly.
+
+> 💡 **CN update acceleration**: Desktop auto-update has built-in domestic mirror acceleration (v4.gh-proxy.org, gh-proxy.com and other proxies first, with the GitHub official source as fallback), so users in mainland China get updates quickly without any manual configuration.
 
 ### Windows Desktop
 

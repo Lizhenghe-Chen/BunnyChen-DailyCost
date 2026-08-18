@@ -1,6 +1,6 @@
 # 🔒 Privacy Policy
 
-> Last updated: July 2026 · Current phase: Public Beta
+> Last updated: August 2026 · Current phase: Public Beta
 
 DailyCost Vault is a **completely offline** personal asset digital management tool, currently in public beta. We take your privacy and data security very seriously.
 
@@ -22,7 +22,7 @@ DailyCost Vault does **NOT** collect, upload, or share any of the following:
 
 - ❌ User account system
 - ❌ Cloud sync service
-- ❌ Analytics or tracking tools (e.g., Google Analytics)
+- ❌ Spending-data tracking (the web version only uses Google Analytics for anonymous visit statistics — it does **not** collect order or spending data; desktop and Android run fully offline and load no analytics scripts)
 - ❌ Third-party SDKs
 - ❌ Advertising system
 - ❌ Automatic crash reporting
@@ -95,8 +95,9 @@ DailyCost Vault only makes network requests in the following scenarios:
 |----------|-------------|
 | Check for Updates | Access GitHub API to query for new version releases |
 | Download Updates | Desktop auto-update downloads new version packages |
+| Web visit statistics | The web version loads Google Analytics to count page visits (anonymous — no order or spending data involved); desktop and Android do not load it |
 
-All these requests only access the GitHub official API (`api.github.com`) and GitHub Releases download links. **Order data is never sent in any network request**.
+Order and spending data are **never** sent in any network request. Web statistics only include anonymous information such as page views.
 
 ### Web Version
 

@@ -159,20 +159,21 @@
 
 日耗仓会在本地保存运行日志（自 2026-08 版本起启用），排查闪退、报错或异常行为时非常有用。
 
-**日志文件位置与快速打开方式**：
+**日志文件位置与快速打开方式**（桌面端也可在 **设置 → 备份与恢复 → 日志位置** 一键打开所在文件夹）：
 
-| 平台 | 日志目录 | 快速打开 |
+| 平台 | 日志文件 | 快速打开 |
 |------|----------|----------|
-| Windows | `%LocalAppData%\com.bunnychen.dailycostvault\logs\`（例如 `C:\Users\你的用户名\AppData\Local\com.bunnychen.dailycostvault\logs\`） | 按 `Win + R`，粘贴 `%LocalAppData%\com.bunnychen.dailycostvault\logs` 后回车 |
-| macOS | `~/Library/Logs/com.bunnychen.dailycostvault/`（例如 `/Users/你的用户名/Library/Logs/com.bunnychen.dailycostvault/`） | Finder → 按 `Cmd + Shift + G` → 粘贴 `~/Library/Logs/com.bunnychen.dailycostvault` 后回车 |
-| Linux | `~/.local/share/com.bunnychen.dailycostvault/logs/` | 文件管理器地址栏粘贴 `~/.local/share/com.bunnychen.dailycostvault/logs` 后回车 |
+| Windows | `%LocalAppData%\com.bunnychen.dailycostvault\logs\logs.log`（例如 `C:\Users\你的用户名\AppData\Local\com.bunnychen.dailycostvault\logs\logs.log`） | 按 `Win + R`，粘贴 `%LocalAppData%\com.bunnychen.dailycostvault\logs` 后回车 |
+| macOS | `~/Library/Logs/com.bunnychen.dailycostvault/logs.log`（例如 `/Users/你的用户名/Library/Logs/com.bunnychen.dailycostvault/logs.log`） | Finder → 按 `Cmd + Shift + G` → 粘贴 `~/Library/Logs/com.bunnychen.dailycostvault` 后回车 |
+| Linux | `~/.local/share/com.bunnychen.dailycostvault/logs/logs.log` | 文件管理器地址栏粘贴 `~/.local/share/com.bunnychen.dailycostvault/logs` 后回车 |
 | Android | 使用 `adb logcat` 查看（启动 / 闪退信息在 logcat 中） | 供开发者使用 |
 
 **说明**：
 
-- 日志按天轮转，文件名形如 `dailycost-vault.2026-08-17.log`（日期为当天），应用退出后即可打开
+- 日志文件名为固定的 `logs.log`（不是按天轮转）。当日志超过约 500KB 时旧内容会被覆盖重写，因此排查前请先复现问题
+- 日志只在**有输出时写入**：如 CSV 导入、运行时错误、未捕获的 JS 异常、Rust 崩溃（panic）等；日常浏览 / 记账不产生日志时文件可能为空
 - 同时包含后端错误（如 CSV 解析失败）与界面运行错误（如加载异常）
-- 排查建议：复现问题 → 退出应用 → 将**当天**的日志文件反馈给开发者，可快速定位原因
+- 排查建议：复现问题 → 退出应用 → 将 `logs.log` 反馈给开发者，可快速定位原因
 
 > 💡 日志仅保存在本机，不会上传到任何服务器，隐私安全。
 

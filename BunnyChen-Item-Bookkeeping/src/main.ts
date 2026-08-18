@@ -29,6 +29,15 @@ function patchIOSSafeArea(): void {
   window.addEventListener('orientationchange', () => setTimeout(forceReflow, 150));
 }
 
+// ── 全局错误捕获：未捕获 JS 异常 / 未处理 Promise 拒绝 → 转发进日志 ──
+// 桌面端由 tauri-plugin-log 的 Webview target 将 console.error 写入日志文件
+window.addEventListener('error', (e) => {
+  console.error('[GlobalError]', e.message, '\n', e.filename, e.lineno, e.colno);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[GlobalError] unhandled rejection:', e.reason);
+});
+
 window.addEventListener('DOMContentLoaded', async () => {
   patchIOSSafeArea();          // iOS 安全区首次计算兜底
   const t0 = performance.now();  // Splash 起始时间
@@ -144,6 +153,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         showToast(`🆕 发现新版本 ${info.version}，前往 Release 页面下载`, 'info');
       }
     } catch (e) {
+      console.error("[DailyCost][UI] 后台检查更新失败:", e);
       // 后台检查失败时在关于区域显示错误，方便用户排查
       const statusEl = document.getElementById('update-status');
       if (statusEl) {

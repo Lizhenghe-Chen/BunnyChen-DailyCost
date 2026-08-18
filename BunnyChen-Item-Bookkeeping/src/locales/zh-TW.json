@@ -130,6 +130,7 @@
     "export_only_desktop": "資料庫匯出僅支援 Tauri 桌面端",
     "export_failed": "匯出失敗",
     "db_path_android": "資料庫位於應用程式私有目錄，無法直接開啟；請使用「匯出存檔」備份",
+    "log_path_android": "日誌位於應用程式私有目錄，無法直接開啟；開發者可使用 adb logcat 檢視",
     "import_only_desktop": "資料庫匯入僅支援 Tauri 桌面端",
     "import_failed": "匯入失敗",
     "csv_only": "請拖入 CSV / Excel 格式的訂單檔案",
@@ -204,6 +205,10 @@
     "db_path_browser": "瀏覽器 sessionStorage（重新整理頁面後資料保留，關閉分頁後清除）",
     "db_path_click": "點擊開啟所在文件夾",
     "db_path_android": "點擊使用「匯出存檔」備份資料庫",
+    "log_path": "日誌位置：",
+    "log_path_browser": "瀏覽器模式無本機日誌（可在開發者工具 Console 檢視）",
+    "log_path_click": "點擊開啟日誌所在文件夾",
+    "log_path_android": "日誌位於應用程式私有目錄，開發者可使用 adb logcat 檢視",
     "data_management": "資料管理",
     "clear_desc": "清除所有已匯入的物品資料（此操作不可復原）",
     "clear_all": "清除所有資料"

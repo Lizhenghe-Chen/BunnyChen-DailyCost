@@ -1632,23 +1632,38 @@ fn calc_daily_avg(price: f64, order_time: &str, end_date: &str, sell_price: f64)
 
 #[tauri::command]
 fn import_csv(path: String, state: State<DbState>) -> Result<ImportResult, String> {
+    let result = (|| -> Result<ImportResult, String> {
     let file_path = PathBuf::from(&path);
     if !file_path.exists() {
         return Err(format!("文件不存在: {}", path));
     }
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     parse_csv_file(&file_path, &conn)
+    })();
+    match &result {
+        Ok(r) => log::info!("[DailyCost] 导入 CSV 完成 '{}' 导入{} 跳过{}", path, r.imported, r.skipped),
+        Err(e) => log::error!("[DailyCost] 导入 CSV 失败 '{}': {}", path, e),
+    }
+    result
 }
 
 #[tauri::command]
 fn import_multiple_csv(paths: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
+    let result = (|| -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_import_csv(&paths, &conn)
+    })();
+    match &result {
+        Ok(r) => log::info!("[DailyCost] 批量导入完成 文件{} 导入{} 跳过{}", paths.len(), r.imported, r.skipped),
+        Err(e) => log::error!("[DailyCost] 批量导入失败: {}", e),
+    }
+    result
 }
 
 /// 从文本内容导入 CSV（Android content:// URI 场景）
 #[tauri::command]
 fn import_csv_content(contents: Vec<String>, file_names: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
+    let result = (|| -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let mut total_imported = 0usize;
     let mut total_skipped = 0usize;
@@ -1676,18 +1691,29 @@ fn import_csv_content(contents: Vec<String>, file_names: Vec<String>, state: Sta
         skipped: total_skipped,
         message: format!("成功导入 {} 条，跳过 {} 条\n{}", total_imported, total_skipped, messages.join("\n")),
     })
+    })();
+    match &result {
+        Ok(r) => log::info!("[DailyCost] 文本导入完成 导入{} 跳过{}", r.imported, r.skipped),
+        Err(e) => log::error!("[DailyCost] 文本导入失败: {}", e),
+    }
+    result
 }
 
 /// 从 xlsx 字节内容导入（Android content:// URI 场景：xlsx 为二进制，readTextFile 读不了）
 /// 账单为单文件导出，此处按单文件处理（data 为一个 xlsx 的字节，file_names 取首个作批次名）
 #[tauri::command]
 fn import_xlsx_content(data: Vec<u8>, file_names: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
+    let result = (|| -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let file_name = file_names.get(0).map(|s| s.as_str()).unwrap_or("账单");
-    match parse_bill_xlsx_content(&data, file_name.trim_end_matches(".xlsx"), &conn) {
-        Ok(r) => Ok(r),
-        Err(e) => Err(format!("{}: {}", file_name, e)),
+    parse_bill_xlsx_content(&data, file_name.trim_end_matches(".xlsx"), &conn)
+        .map_err(|e| format!("{}: {}", file_name, e))
+    })();
+    match &result {
+        Ok(r) => log::info!("[DailyCost] xlsx 导入完成 导入{} 跳过{}", r.imported, r.skipped),
+        Err(e) => log::error!("[DailyCost] xlsx 导入失败: {}", e),
     }
+    result
 }
 
 /// 批量导入 CSV/Excel 的共享逻辑（命令和拖拽共用）
@@ -1731,6 +1757,7 @@ fn batch_import_csv(paths: &[String], conn: &Connection) -> Result<ImportResult,
 
 #[tauri::command]
 fn get_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
+    let result = (|| -> Result<Vec<OrderItem>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     let mut stmt = conn
@@ -1769,6 +1796,11 @@ fn get_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
         .collect();
 
     Ok(items)
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 查询物品失败: {}", e);
+    }
+    result
 }
 
 /// 从查询结果映射为 OrderItem 列表（get_items / get_archived_items 共用）
@@ -1804,6 +1836,7 @@ fn map_order_rows(stmt: &mut rusqlite::Statement) -> Result<Vec<OrderItem>, Stri
 
 #[tauri::command]
 fn clear_all_data(state: State<DbState>) -> Result<String, String> {
+    let result = (|| -> Result<String, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("DELETE FROM orders", [])
         .map_err(|e| e.to_string())?;
@@ -1811,6 +1844,12 @@ fn clear_all_data(state: State<DbState>) -> Result<String, String> {
     conn.execute("DELETE FROM income_records", [])
         .map_err(|e| e.to_string())?;
     Ok("所有数据已清除".to_string())
+    })();
+    match &result {
+        Ok(_) => log::warn!("[DailyCost] 清空所有数据（orders + income_records）"),
+        Err(e) => log::error!("[DailyCost] 清空所有数据失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -1831,6 +1870,7 @@ fn update_item(
     category: String,
     state: State<DbState>,
 ) -> Result<(), String> {
+    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let order_time = normalize_date(&order_time);
     let end_date_clean = if end_date.is_empty() { String::new() } else { normalize_date(&end_date) };
@@ -1842,6 +1882,12 @@ fn update_item(
         params![product_name, product_url, order_time, total_price, quantity, emoji, platform, store_name, model_style, end_date_clean, end_reason, sell_price, category, id],
     ).map_err(|e| e.to_string())?;
     Ok(())
+    })();
+    match &result {
+        Ok(()) => log::info!("[DailyCost] 更新物品 id={} name='{}' platform={} price={}", id, product_name, platform, total_price),
+        Err(e) => log::error!("[DailyCost] 更新物品失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -1862,6 +1908,7 @@ fn add_item(
     category: String,
     state: State<DbState>,
 ) -> Result<i64, String> {
+    let result = (|| -> Result<i64, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let import_batch = "自定义";
     let order_time = normalize_date(&order_time);
@@ -1871,27 +1918,48 @@ fn add_item(
         params![order_id, platform, store_name, product_name, model_style, quantity, total_price, order_time, import_batch, product_url, emoji, end_date, end_reason, sell_price, category],
     ).map_err(|e| e.to_string())?;
     Ok(conn.last_insert_rowid())
+    })();
+    match &result {
+        Ok(id) => log::info!("[DailyCost] 添加物品 id={} name='{}' platform={} price={}", id, product_name, platform, total_price),
+        Err(e) => log::error!("[DailyCost] 添加物品失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command]
 fn delete_item(id: i64, state: State<DbState>) -> Result<(), String> {
+    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("DELETE FROM orders WHERE id=?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
+    })();
+    match &result {
+        Ok(()) => log::info!("[DailyCost] 永久删除物品 id={}", id),
+        Err(e) => log::error!("[DailyCost] 永久删除物品失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command]
 fn archive_item(id: i64, state: State<DbState>) -> Result<(), String> {
+    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("UPDATE orders SET archived = 1 WHERE id=?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
+    })();
+    match &result {
+        Ok(()) => log::info!("[DailyCost] 归档物品 id={}", id),
+        Err(e) => log::error!("[DailyCost] 归档物品失败: {}", e),
+    }
+    result
 }
 
 /// 智能分类：根据 mode 参数仅覆盖 category 或 emoji（"category" | "emoji"）
 #[tauri::command]
 fn recalculate_categories(state: State<DbState>, mode: String) -> Result<(usize, usize), String> {
+    let result = (|| -> Result<(usize, usize), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     let column = if mode == "emoji" { "emoji" } else { "category" };
@@ -1933,18 +2001,32 @@ fn recalculate_categories(state: State<DbState>, mode: String) -> Result<(usize,
     }
 
     Ok((total, updated))
+    })();
+    match &result {
+        Ok((total, updated)) => log::info!("[DailyCost] 智能分类 mode={} total={} updated={}", mode, total, updated),
+        Err(e) => log::error!("[DailyCost] 智能分类失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command]
 fn restore_item(id: i64, state: State<DbState>) -> Result<(), String> {
+    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("UPDATE orders SET archived = 0 WHERE id=?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
+    })();
+    match &result {
+        Ok(()) => log::info!("[DailyCost] 恢复物品 id={}", id),
+        Err(e) => log::error!("[DailyCost] 恢复物品失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command]
 fn get_archived_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
+    let result = (|| -> Result<Vec<OrderItem>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     let mut stmt = conn
@@ -1959,31 +2041,63 @@ fn get_archived_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
         .map_err(|e| e.to_string())?;
 
     map_order_rows(&mut stmt)
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 查询归档物品失败: {}", e);
+    }
+    result
 }
 
 #[tauri::command]
 fn get_archived_count(state: State<DbState>) -> Result<i64, String> {
+    let result = (|| -> Result<i64, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.query_row("SELECT COUNT(*) FROM orders WHERE archived = 1", [], |row| row.get(0))
         .map_err(|e| e.to_string())
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 查询归档数量失败: {}", e);
+    }
+    result
 }
 
 #[tauri::command]
 fn batch_restore_items(ids: Vec<i64>, state: State<DbState>) -> Result<usize, String> {
+    let result = (|| -> Result<usize, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_execute(&conn, "UPDATE orders SET archived = 0", &ids)
+    })();
+    match &result {
+        Ok(n) => log::info!("[DailyCost] 批量恢复 {} 条", n),
+        Err(e) => log::error!("[DailyCost] 批量恢复失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command]
 fn batch_delete_items(ids: Vec<i64>, state: State<DbState>) -> Result<usize, String> {
+    let result = (|| -> Result<usize, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_execute(&conn, "DELETE FROM orders", &ids)
+    })();
+    match &result {
+        Ok(n) => log::warn!("[DailyCost] 批量永久删除 {} 条", n),
+        Err(e) => log::error!("[DailyCost] 批量永久删除失败: {}", e),
+    }
+    result
 }
 
 #[tauri::command]
 fn batch_archive_items(ids: Vec<i64>, state: State<DbState>) -> Result<usize, String> {
+    let result = (|| -> Result<usize, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_execute(&conn, "UPDATE orders SET archived = 1", &ids)
+    })();
+    match &result {
+        Ok(n) => log::info!("[DailyCost] 批量归档 {} 条", n),
+        Err(e) => log::error!("[DailyCost] 批量归档失败: {}", e),
+    }
+    result
 }
 
 /// 批量 SQL 执行（构建 IN (?) 占位符）
@@ -1997,6 +2111,7 @@ fn batch_execute(conn: &Connection, sql: &str, ids: &[i64]) -> Result<usize, Str
 
 #[tauri::command]
 fn export_database(path: String, state: State<DbState>) -> Result<String, String> {
+    let result = (|| -> Result<String, String> {
     let source = state.db.lock().map_err(|e| e.to_string())?;
     let mut destination = Connection::open(&path)
         .map_err(|e| format!("无法创建备份文件: {}", e))?;
@@ -2004,6 +2119,12 @@ fn export_database(path: String, state: State<DbState>) -> Result<String, String
         .map_err(|e| format!("创建备份失败: {}", e))?;
     backup.step(-1).map_err(|e| format!("导出失败: {}", e))?;
     Ok(format!("数据库已导出到: {}", path))
+    })();
+    match &result {
+        Ok(_) => log::info!("[DailyCost] 导出数据库 → {}", path),
+        Err(e) => log::error!("[DailyCost] 导出数据库失败: {}", e),
+    }
+    result
 }
 
 // ── Android 导出：ContentResolver 原生复制 ─────────────────
@@ -2052,8 +2173,12 @@ fn export_database_to_uri(
                     dest_uri,
                 },
             )
-            .map_err(|e| format!("复制到所选位置失败: {}", e))?;
+            .map_err(|e| {
+                log::error!("[DailyCost] Android 导出数据库失败: {}", e);
+                format!("复制到所选位置失败: {}", e)
+            })?;
         let _ = fs::remove_file(&tmp_path);
+        log::info!("[DailyCost] Android 导出数据库 → {}", dest_uri);
         Ok("数据库已导出".to_string())
     }
 
@@ -2067,8 +2192,10 @@ fn export_database_to_uri(
 
 #[tauri::command(rename_all = "snake_case")]
 fn import_database(path: String, state: State<DbState>) -> Result<String, String> {
+    let result = (|| -> Result<String, String> {
     let src = PathBuf::from(&path);
     if !src.exists() {
+        log::error!("[DailyCost] 导入数据库失败: 文件不存在 ({})", path);
         return Err("文件不存在".to_string());
     }
 
@@ -2081,12 +2208,19 @@ fn import_database(path: String, state: State<DbState>) -> Result<String, String
     restore_result?;
 
     Ok("数据库导入成功，数据已恢复".to_string())
+    })();
+    match &result {
+        Ok(_) => log::info!("[DailyCost] 导入数据库 → {}", path),
+        Err(e) => log::error!("[DailyCost] 导入数据库失败: {}", e),
+    }
+    result
 }
 
 /// Android 端导入：open() 返回 content:// URI，Rust 无法直接读取
 /// 前端用 fs 插件 readFile 读字节 → 本命令写入临时文件后走同一恢复逻辑
 #[tauri::command(rename_all = "snake_case")]
 fn import_database_bytes(data: Vec<u8>, state: State<DbState>) -> Result<String, String> {
+    let result = (|| -> Result<String, String> {
     let temp_path = state.db_path.with_extension("import.tmp");
     let _ = fs::remove_file(&temp_path);
     fs::write(&temp_path, &data).map_err(|e| format!("无法准备导入文件: {}", e))?;
@@ -2096,6 +2230,12 @@ fn import_database_bytes(data: Vec<u8>, state: State<DbState>) -> Result<String,
     restore_result?;
 
     Ok("数据库导入成功，数据已恢复".to_string())
+    })();
+    match &result {
+        Ok(_) => log::info!("[DailyCost] Android 导入数据库（{} 字节）", data.len()),
+        Err(e) => log::error!("[DailyCost] Android 导入数据库失败: {}", e),
+    }
+    result
 }
 
 /// 校验并恢复导入的数据库（从临时文件导入到主库），import_database / import_database_bytes 共用
@@ -2341,17 +2481,27 @@ fn import_example_data(state: State<DbState>) -> Result<String, String> {
     // 清理临时文件
     let _ = fs::remove_file(&tmp_path);
 
+    match &result {
+        Ok(msg) => log::info!("[DailyCost] 导入示例数据: {}", msg),
+        Err(e) => log::error!("[DailyCost] 导入示例数据失败: {}", e),
+    }
     result
 }
 
 #[tauri::command]
 fn save_setting(key: String, value: String, state: State<DbState>) -> Result<(), String> {
+    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute(
         "INSERT INTO settings (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = ?2",
         params![key, value],
     ).map_err(|e| e.to_string())?;
     Ok(())
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 保存设置 '{}' 失败: {}", key, e);
+    }
+    result
 }
 
 #[tauri::command]
@@ -2382,7 +2532,16 @@ fn get_database_path(state: State<DbState>) -> String {
 }
 
 #[tauri::command]
+fn get_log_path(app: tauri::AppHandle) -> Result<String, String> {
+    // tauri-plugin-log 的 LogDir target 使用 file_name = "logs" → app_log_dir/logs.log
+    // macOS: ~/Library/Logs/{identifier}/logs.log；Windows/Linux: {localData}/{identifier}/logs/logs.log
+    let log_dir = app.path().app_log_dir().map_err(|e| e.to_string())?;
+    Ok(log_dir.join("logs.log").to_string_lossy().to_string())
+}
+
+#[tauri::command]
 fn get_import_batches(state: State<DbState>) -> Result<Vec<String>, String> {
+    let result = (|| -> Result<Vec<String>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare("SELECT DISTINCT import_batch FROM orders WHERE import_batch != '' ORDER BY import_batch")
@@ -2393,6 +2552,11 @@ fn get_import_batches(state: State<DbState>) -> Result<Vec<String>, String> {
         .collect::<Result<Vec<String>, _>>()
         .map_err(|e| e.to_string())?;
     Ok(batches)
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 查询导入批次失败: {}", e);
+    }
+    result
 }
 
 /// Tauri Updater 仅支持桌面系统；移动端必须回退到手动下载。
@@ -2432,6 +2596,7 @@ fn get_wechat_analytics(
     start: Option<String>,
     end: Option<String>,
 ) -> Result<WechatAnalytics, String> {
+    let result = (|| -> Result<WechatAnalytics, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     // 时间范围条件（orders 与 income_records 均按 order_time 前缀匹配）
@@ -2564,6 +2729,11 @@ fn get_wechat_analytics(
     monthly.sort_by(|a, b| a.month.cmp(&b.month));
 
     Ok(WechatAnalytics { overview, by_type, peers, monthly })
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 微信分析查询失败: {}", e);
+    }
+    result
 }
 
 /// 微信收入/回款记录（单条流水，供回款来源下钻查看）
@@ -2582,6 +2752,7 @@ pub struct IncomeRecord {
 /// 查询某个回款来源（交易对方）的全部收入流水，按时间倒序（回款来源 Top 榜点击下钻）
 #[tauri::command]
 fn get_income_records_by_peer(peer: String, state: State<DbState>) -> Result<Vec<IncomeRecord>, String> {
+    let result = (|| -> Result<Vec<IncomeRecord>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     // 展示层将空 peer 回退为「未知」，此处还原为空值以精确匹配
     let is_unknown = peer == "未知";
@@ -2619,6 +2790,11 @@ fn get_income_records_by_peer(peer: String, state: State<DbState>) -> Result<Vec
     .collect::<Result<Vec<_>, _>>()
     .map_err(|e| e.to_string())?;
     Ok(rows)
+    })();
+    if let Err(e) = &result {
+        log::error!("[DailyCost] 回款下钻查询失败: {}", e);
+    }
+    result
 }
 
 // ── 应用入口 ──────────────────────────────────────────────
@@ -2631,11 +2807,23 @@ pub fn run() {
     // 参见：https://docs.rs/rustls/latest/rustls/#cryptography-providers
     let _ = rustls::crypto::ring::default_provider().install_default();
 
+    // ── panic hook：未捕获的 Rust panic 也写入日志，便于排查崩溃 ──
+    // tauri-plugin-log 初始化后，log::error! 会同步写入日志文件（logs.log）
+    std::panic::set_hook(Box::new(|info| {
+        let msg = info.to_string();
+        let loc = info
+            .location()
+            .map(|l| format!("{}:{}", l.file(), l.line()))
+            .unwrap_or_default();
+        log::error!("[PANIC] {} (at {})", msg, loc);
+    }));
+
     tauri::Builder::default()
         // ── 日志：写文件 + 终端(dev) + 转发 WebView 前端 console ──
-        // 桌面端日志目录（tauri-plugin-log 的 LogDir 基于 app_log_dir）：
-        //   Windows %LocalAppData%\com.bunnychen.dailycostvault\logs\、
-        //   macOS ~/Library/Logs/com.bunnychen.dailycostvault/、Linux ~/.local/share/com.bunnychen.dailycostvault/logs/（按天轮转）
+        // 桌面端日志目录（tauri-plugin-log 的 LogDir 基于 app_log_dir），固定文件名 logs.log：
+        //   Windows %LocalAppData%\com.bunnychen.dailycostvault\logs\logs.log、
+        //   macOS ~/Library/Logs/com.bunnychen.dailycostvault/logs.log、
+        //   Linux ~/.local/share/com.bunnychen.dailycostvault/logs/logs.log
         .plugin(
             tauri_plugin_log::Builder::new()
                 .level(log::LevelFilter::Info)
@@ -2685,7 +2873,7 @@ pub fn run() {
             fs::create_dir_all(&app_data_dir).expect("Failed to create app data dir");
 
             let db_path = get_db_path(app_data_dir);
-            println!("Database path: {:?}", db_path);
+            log::info!("[DailyCost] Database path: {}", db_path.display());
 
             let conn = Connection::open(&db_path).expect("Failed to open database");
             conn.execute_batch("PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;")
@@ -2697,6 +2885,14 @@ pub fn run() {
                 db: Mutex::new(conn),
                 db_path: db_path.clone(),
             });
+
+            // 启动日志：确认日志通路与版本/平台信息（写入 logs.log，终端 Stdout 同步可见）
+            log::info!(
+                "[DailyCost] 应用启动 v{} · platform {} · db {}",
+                env!("CARGO_PKG_VERSION"),
+                std::env::consts::OS,
+                db_path.display()
+            );
 
             // ── 拖拽导入监听 ──
             let window = app.get_webview_window("main").expect("no main window");
@@ -2754,6 +2950,7 @@ pub fn run() {
             import_database_bytes,
             import_example_data,
             get_database_path,
+            get_log_path,
             save_setting,
             get_setting,
             get_all_settings,

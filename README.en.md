@@ -249,8 +249,6 @@ DailyCost Vault is currently developed and maintained independently. If you appr
 - 🧧 **Sponsorship** — help cover development and other costs
 - 🤝 **Business Collaboration** — enterprise customization, platform integration, co-operation, etc.
 
-> 📧 Contact: [bunnychen1024@gmail.com](mailto:bunnychen1024@gmail.com)
-
 ---
 
 <p align="center">

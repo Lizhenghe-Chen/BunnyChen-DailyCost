@@ -244,8 +244,6 @@ cd src-tauri && cargo check
 - 🧧 **赞助支持** — 帮助覆盖开发与其它成本
 - 🤝 **商业合作** — 企业定制、平台接入、联合运营等合作洽谈
 
-> 📧 联系方式：[bunnychen1024@gmail.com](mailto:bunnychen1024@gmail.com)
-
 ---
 
 <p align="center">

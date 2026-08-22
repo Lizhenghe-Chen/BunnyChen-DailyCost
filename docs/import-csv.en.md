@@ -33,7 +33,7 @@ Check this section before importing to make sure the file you have is in the **r
 | 🛒 **Taobao / Tmall** | `.csv` text | `tb-orders-20260803-204317-complete.csv` | One-click export from the extension | Orders (with product links / model style) |
 | 🎮 **Steam** | `.csv` text | `steam-orders-20260803-203151-complete.csv` | One-click export from the extension | Game purchases (refunds / wallet top-ups auto-filtered) |
 | 💬 **WeChat bill** | `.csv` or `.xlsx` | `微信支付账单流水文件(20250101-20260101)_20260804233920.xlsx` | WeChat app "Download Bill" → unzip from email | Expense records (income / refunds auto-filtered) |
-| 💳 **Alipay** | `.csv` or `.xlsx` | Filename contains "交易明细" or starts with `alipay-` / `zfb-` | Alipay app "Transaction Details" → download from email | Expense orders (income / refunds auto-filtered) |
+| 💳 **Alipay** | `.csv` or `.xlsx` | Filename starts with `alipay-` / `zfb-` or "支付宝"; otherwise detected from the 交易订单号 column in the content | Alipay app "Transaction Details" → download from email | Expense orders (income / refunds auto-filtered) |
 
 > ✅ **Detection rules**: the `jd-`, `tb-`, `steam-`, `wx-`, `alipay-`/`zfb-` filename prefixes, as well as each platform's unique header columns (such as WeChat's 交易单号 / transaction ID and Alipay's 交易订单号 / transaction order ID), are all recognized automatically. Just drag in the **unmodified original export file** and you are good to go.
 

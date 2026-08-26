@@ -38,6 +38,12 @@
 
 ---
 
+## ⭐ Star History
+
+[![RepoStars](https://repostars.dev/api/embed?repo=Lizhenghe-Chen%2FBunnyChen-DailyCost&theme=forest)](https://repostars.dev/?repos=Lizhenghe-Chen%2FBunnyChen-DailyCost&theme=forest)
+
+---
+
 ## 🎮 3 秒看懂
 
 把散落在 **京东 / 淘宝 / Steam / 微信 / 支付宝** 的订单，一键变成一张**可视化的资产账本**，并自动算清每件物品的**日均持有成本**：
@@ -56,7 +62,7 @@
 
 ---
 
-## � 为什么做这个项目？
+## 💡 为什么做这个项目？
 
 市面上的记账 / 资产管理工具并不少，但总有几个让人头疼的地方：
 
@@ -82,7 +88,7 @@
 
 ---
 
-## �📸 预览
+## 📸 预览
 
 <p align="center">  <img src="docs/assets/桌面端%20首页截图%20深色模式%20橘之橙.jpg" alt="主页" width="45%" />
   <img src="docs/assets/桌面端数据分析页面（深色主题）.jpg" alt="数据分析" width="45%" />
@@ -155,7 +161,7 @@
 
 ---
 
-## � 开发 · 本地运行
+## 🛠 开发 · 本地运行
 
 源码已开源（[AGPL-3.0](LICENSE)），完整开发与打包指南见文档站 [🛠️ 开发专栏](https://bunnychen.top/BunnyChen-DailyCost/development/)。
 
@@ -183,7 +189,7 @@ cd src-tauri && cargo check
 
 ---
 
-## �🔒 隐私安全 · 请放心
+## 🔒 隐私安全 · 请放心
 
 **日耗仓完全离线运行，所有数据仅存储在本地。BunnyChen 既没有兴趣、也没有任何必要获取你的任何信息。**
 
@@ -200,12 +206,6 @@ cd src-tauri && cargo check
 ---
 
 *开源 · GNU AGPL-3.0 · 你的数据永远只属于你自己*
-
----
-
-## ⭐ Star History
-
-[![RepoStars](https://repostars.dev/api/embed?repo=Lizhenghe-Chen%2FBunnyChen-DailyCost&theme=forest)](https://repostars.dev/?repos=Lizhenghe-Chen%2FBunnyChen-DailyCost&theme=forest)
 
 ---
 

@@ -38,6 +38,18 @@
 
 ---
 
+## ⭐ Star History
+
+<a href="https://www.star-history.com/?repos=Lizhenghe-Chen%2FBunnyChen-DailyCost&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&theme=dark&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
+ </picture>
+</a>
+
+---
+
 ## 🎮 3-Second Intro
 
 Turn scattered orders from **JD.com / Taobao / Steam / WeChat / Alipay** into a **visual asset ledger** in one click, with the **daily average cost** of every item calculated automatically:
@@ -46,11 +58,7 @@ Turn scattered orders from **JD.com / Taobao / Steam / WeChat / Alipay** into a 
 
 ---
 
-## � Video Introduction
-
-<p align="center">
-  <iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=117063712639931&bvid=BV1KZu16eE3v&cid=40738687283&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="450" style="max-width:100%;border-radius:12px;"></iframe>
-</p>
+## 📺 Video Introduction
 
 <p align="center">
   <a href="https://www.bilibili.com/video/BV1KZu16eE3v/" target="_blank" rel="noopener">
@@ -60,7 +68,7 @@ Turn scattered orders from **JD.com / Taobao / Steam / WeChat / Alipay** into a 
 
 ---
 
-## �💡 Why This Project?
+## 💡 Why This Project?
 
 Plenty of bookkeeping and asset-management tools already exist — yet most share the same frustrating flaws:
 
@@ -160,7 +168,7 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 
 ---
 
-## � Development · Run Locally
+## 🛠 Development · Run Locally
 
 The source is now open source ([AGPL-3.0](LICENSE)). See the [🛠️ Development column](https://bunnychen.top/BunnyChen-DailyCost/development/) for the full dev & packaging guide.
 
@@ -188,7 +196,7 @@ cd src-tauri && cargo check
 
 ---
 
-## �🔒 Privacy & Security · Rest Assured
+## 🔒 Privacy & Security · Rest Assured
 
 **DailyCost Vault runs fully offline, and all data stays on your device. BunnyChen has neither the interest nor any need to access any of your information.**
 
@@ -205,18 +213,6 @@ See the [Privacy Policy](https://bunnychen.top/BunnyChen-DailyCost/PRIVACY/).
 ---
 
 *Open source · GNU AGPL-3.0 · Your data will always belong only to you*
-
----
-
-## ⭐ Star History
-
-<a href="https://www.star-history.com/?repos=Lizhenghe-Chen%2FBunnyChen-DailyCost&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&theme=dark&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Lizhenghe-Chen/BunnyChen-DailyCost&type=date&legend=top-left&sealed_token=XmlSuMJ1zoZUzwK_LUyZDTbv0TXF_g4upoBEsYjj4zr1TEJ5OheB-BUMEBq4Z9_OjVTP4dP8gxZ60GF4ikqItj7SQxLn5LplJ5kJ2k3QXwnfMGahmWmlIA" />
- </picture>
-</a>
 
 ---
 

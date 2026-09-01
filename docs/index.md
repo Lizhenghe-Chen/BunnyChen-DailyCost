@@ -86,9 +86,13 @@ title: 日耗仓 · DailyCost Vault
 
 <div class="import-platforms-title">📥 一键批量导入 · 数据来源平台</div>
 
-<div class="import-platforms-checklist" markdown>
+<div class="hero-badges import-platform-badges">
 
---8<-- "platforms.zh.md"
+<span class="badge">🐶 京东</span>
+<span class="badge">🛒 淘宝 / 天猫</span>
+<span class="badge">🎮 Steam</span>
+<span class="badge">💬 微信账单</span>
+<span class="badge">💳 支付宝</span>
 
 </div>
 
@@ -150,9 +154,11 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 ## 界面预览
 
-<div class="showcase-grid" markdown>
+<div class="carousel-hint">🎠 左右滑动 · 点击圆点切换</div>
 
-<div class="showcase-card" markdown>
+<div class="theme-carousel showcase-carousel" markdown>
+
+<div class="theme-slide" markdown>
 
 ![资产首页 · 橘之橙深色](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
@@ -160,7 +166,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 </div>
 
-<div class="showcase-card" markdown>
+<div class="theme-slide" markdown>
 
 ![数据分析 · 天之蓝深色](assets/桌面端深色主题 数据分析页 天之蓝.jpg){ loading=lazy }
 
@@ -168,39 +174,7 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 </div>
 
-<div class="showcase-card" markdown>
-
-![多维筛选 · 天之蓝浅色](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
-
-**多维筛选 · 精准定位** — 平台多选过滤、关键词模糊搜索、三维排序叠加使用，秒级定位任意一件物品。
-
-</div>
-
-<div class="showcase-card" markdown>
-
-![自定义表情 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
-
-**自定义表情 · 数千个 emoji 可选** — emoji-mart 全量 Unicode 表情 + 37 个自定义表情（Party Parrots / Blob / Cats / Mascots 四大分类），Picker 中直接选用。
-
-</div>
-
-<div class="showcase-card" markdown>
-
-![个性化设置 · 莓之紫浅色](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
-
-**个性化设置 · 你的工具你做主** — 三态主题、5 套配色、平台自定义颜色、三语切换、货币符号独立设置，深度定制每一项细节。
-
-</div>
-
-<div class="showcase-card" markdown>
-
-![数据分析 · 深色主题](assets/桌面端数据分析页面（深色主题）.jpg){ loading=lazy }
-
-**数据分析 · 深色主题** — KPI 四卡片概览资产全景，月度消费趋势与平台占比一目了然，深色主题下依旧清晰易读。
-
-</div>
-
-<div class="showcase-card" markdown>
+<div class="theme-slide" markdown>
 
 ![微信收支 · 分析页](assets/微信分析页.jpg){ loading=lazy }
 
@@ -208,115 +182,11 @@ SQLite 数据库本地持久化，零服务器依赖。你的消费数据永远�
 
 </div>
 
-</div>
+<div class="theme-slide" markdown>
 
----
+![自定义表情 · 莓之紫深色](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
-## 全平台 · 一套代码
-
-<div class="platform-grid" markdown>
-
-<div class="platform-card" markdown>
-
-### 🪟 Windows ✅
-
-`.exe`
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 🍎 macOS ✅
-
-`.dmg` · Apple Silicon & Intel
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 🐧 Linux ✅
-
-`.deb` / `.AppImage`
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 📱 Android ✅
-
-`.apk`
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 🌐 Web ✅
-
-[浏览器即用](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 📱 iOS 🚧
-
-敬请期待
-
-</div>
-
-</div>
-
----
-
-## 技术驱动
-
-<div class="feature-grid" markdown>
-
-<div class="feature-card" markdown>
-
-### 🦀 Rust 后端
-
-Tauri v2 框架，35 个 Rust 命令处理全部数据操作。SQLite WAL 模式、外键约束、自动数据库迁移。日均成本每次查询动态计算，修改公式无需重新导入。
-
-</div>
-
-<div class="feature-card" markdown>
-
-### ⚡ 极致轻量
-
-Windows 安装包约 5MB。Vanilla TypeScript 前端，零框架依赖。对比 Electron 方案轻 30 倍以上。启动即用，不占用后台资源。
-
-</div>
-
-<div class="feature-card" markdown>
-
-### 🔄 自动更新
-
-Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后自动检查，也可随时手动触发。签名验证保障更新安全。
-
-</div>
-
-<div class="feature-card" markdown>
-
-### 🎨 自定义表情
-
-数千个 emoji 随时选用——emoji-mart 全量 Unicode 表情 + 37 个自定义表情，Party Parrots 动画 GIF、Blob 内联 SVG、Cats、Mascots 四大分类。Picker 中直接选用。
-
-</div>
-
-<div class="feature-card" markdown>
-
-### 🌍 三语国际化
-
-简体中文、繁體中文、English 即时切换，覆盖全部界面。货币符号与界面语言独立设置。i18next 驱动，JSON 翻译文件。
-
-</div>
-
-<div class="feature-card" markdown>
-
-### ♻️ 数据可持续
-
-日均成本公式、emoji 匹配规则、分类关键词均可热更新。旧数据自动回填，算法迭代无需重新导入历史数据。
+**自定义表情 · 数千个 emoji 可选** — emoji-mart 全量 Unicode 表情 + 37 个自定义表情（Party Parrots / Blob / Cats / Mascots 四大分类），Picker 中直接选用。
 
 </div>
 
@@ -332,80 +202,11 @@ Tauri updater 静默下载安装 + GitHub API 全平台版本检测。启动后�
 
 </div>
 
-**你的数据存储在哪里？**
-
-- 🖥️ 桌面端 → `AppData` 目录下的 SQLite 数据库
-- 🤖 Android → 应用私有目录的 SQLite 数据库
-- 🌐 网页版 → 浏览器 localStorage
-
-**绝不会做什么？**
-
-<div class="hero-badges privacy-badges">
-
-<span class="badge">🚫 不上传数据</span>
-<span class="badge">🚫 无消费数据追踪</span>
-<span class="badge">🚫 不读取无关文件</span>
-<span class="badge">🚫 无用户系统</span>
-<span class="badge">🚫 无云同步</span>
-
-</div>
-
-> 🗝️ **项目目前暂不开源，但 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。
+> 🗝️ **项目目前暂不开源，但 BunnyChen 承诺绝不收集、上传或窥探你的任何数据**。你的数据只属于你自己，也请务必 **自己保管好** 它们。详见 [隐私说明](PRIVACY.md)。
 
 ---
 
 *源码暂不公开 · 保留所有权利（All Rights Reserved）· 你的数据永远只属于你自己*
-
-
----
-
-## 五套主题 · 五种气质
-
-<div class="carousel-hint">🎠 自动轮播 · 左右滑动或点击圆点切换</div>
-
-<div class="theme-carousel" markdown>
-
-<div class="theme-slide" markdown>
-
-![抹茶绿 · 首页](assets/首页 抹茶绿 深色模式 展示.jpg){ loading=lazy }
-
-**🍵 抹茶绿** — 沉稳治愈，亲近自然。默认配色，浅色 / 深色双模式独立设计。
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![天之蓝 · 首页](assets/桌面端深色主题 首页 天之蓝.jpg){ loading=lazy }
-
-**☁️ 天之蓝** — 清爽通透，明亮克制。桌面与移动端一致适配。
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![莓之紫 · 设置页](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
-
-**🫐 莓之紫** — 神秘高级，个性鲜明。设置页与表情页深度融入。
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![桃之粉 · 桌面端浅色](assets/桃之粉色 桌面端 浅色主题.jpg){ loading=lazy }
-
-**🍑 桃之粉** — 温柔甜美，暖意十足。桌面端浅色主题同样出彩。
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![橘之橙 · 首页](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
-
-**🍊 橘之橙** — 活力四射，热情洋溢。深色模式下的资产首页。
-
-</div>
-
-</div>
 
 
 ## 🚀 快速上手 · 三步开始

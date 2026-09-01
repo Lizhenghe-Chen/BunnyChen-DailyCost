@@ -66,6 +66,8 @@ title: DailyCost Vault
   <span class="badge">🎨 Multi-Theme</span>
   <span class="badge">😀 Custom Emoji</span>
   <span class="badge">🌍 Multi-Language</span>
+  <span class="badge">💖 Completely Free</span>
+  <span class="badge">🚀 Continuous Updates</span>
 </div>
 
 <!-- Video Introduction -->
@@ -82,7 +84,7 @@ title: DailyCost Vault
 <!-- Batch-import platforms -->
 <div class="import-platforms" markdown>
 
-<div class="import-platforms-title">📥 One-Click Batch Import · Four Platforms</div>
+<div class="import-platforms-title">📥 One-Click Batch Import · Five Platforms</div>
 
 <div class="hero-badges import-platform-badges">
 
@@ -90,12 +92,29 @@ title: DailyCost Vault
 <span class="badge">🛒 Taobao / Tmall</span>
 <span class="badge">🎮 Steam</span>
 <span class="badge">💬 WeChat Bills</span>
+<span class="badge">💳 Alipay</span>
 
 </div>
 
 <div class="import-platforms-hint" markdown>Auto platform detection · Auto emoji matching · Auto deduplication — [📥 Import Guide](import-csv.md)</div>
 
 </div>
+
+---
+
+## 💡 Why This Project?
+
+There's no shortage of bookkeeping / asset management tools, but a few things always get on your nerves:
+
+- 💸 **Paid** — the good features are all behind paywalls, costing more the more you use them
+- ⌨️ **Manual** — you have to fill in every record by hand, and you're already tired before you even start
+- 🗂️ **Scattered** — JD.com, Taobao, Steam, WeChat each keep their own records, and your spending picture is fragmented
+
+But have you ever thought: **every item you bought on every platform — the order info is yours by right.** It shouldn't be locked away in shopping history, and it definitely shouldn't force you to copy it over by hand.
+
+That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-complete** new app that gathers those scattered orders in one click, lets the data speak for itself, and helps you truly understand your spending habits.
+
+> 🐰 [**BunnyChen**](https://github.com/Lizhenghe-Chen) doesn't expect you to use it daily or depend on it long-term. Just hope that in some unguarded moment — maybe looking back, maybe calculating the real cost of something — you suddenly "get it," marvel at your own past, and gain a little interesting insight. That moment alone is already meaningful.
 
 ---
 
@@ -135,9 +154,11 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 ## Interface Preview
 
-<div class="showcase-grid" markdown>
+<div class="carousel-hint">🎠 Swipe left/right · Click dots to switch</div>
 
-<div class="showcase-card" markdown>
+<div class="theme-carousel showcase-carousel" markdown>
+
+<div class="theme-slide" markdown>
 
 ![Asset Home · Tangerine Orange Dark](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
 
@@ -145,7 +166,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 </div>
 
-<div class="showcase-card" markdown>
+<div class="theme-slide" markdown>
 
 ![Analytics · Sky Blue Dark](assets/桌面端深色主题 数据分析页 天之蓝.jpg){ loading=lazy }
 
@@ -153,39 +174,7 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 </div>
 
-<div class="showcase-card" markdown>
-
-![Multi-filter · Sky Blue Light](assets/浅色主题 天之蓝 首页 自定义筛选.jpg){ loading=lazy }
-
-**Multi-Dimensional Filtering · Precise Targeting** — Multi-platform checkboxes, fuzzy keyword search, 3-axis sorting combined. Find any item in seconds.
-
-</div>
-
-<div class="showcase-card" markdown>
-
-![Custom Emoji · Berry Purple Dark](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
-
-**Custom Emoji · Thousands to Choose** — Full emoji-mart Unicode emoji set + 37 custom emojis (Party Parrots / Blob / Cats / Mascots across 4 categories). Pick directly in the picker.
-
-</div>
-
-<div class="showcase-card" markdown>
-
-![Settings · Berry Purple Light](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
-
-**Settings · Your Tool, Your Way** — 3-state theme, 5 color schemes, custom platform colors, 3-language switch, independent currency symbol. Deeply customize every detail.
-
-</div>
-
-<div class="showcase-card" markdown>
-
-![Analytics · Dark Theme](assets/桌面端数据分析页面（深色主题）.jpg){ loading=lazy }
-
-**Analytics · Dark Theme** — Four KPI cards overview your asset landscape. Monthly spending trends and platform breakdown at a glance, clear and readable even in dark theme.
-
-</div>
-
-<div class="showcase-card" markdown>
+<div class="theme-slide" markdown>
 
 ![WeChat Cash Flow · Analytics](assets/微信分析页.jpg){ loading=lazy }
 
@@ -193,107 +182,11 @@ SQLite database with local persistence, zero server dependency. Your spending da
 
 </div>
 
-</div>
+<div class="theme-slide" markdown>
 
----
+![Custom Emoji · Berry Purple Dark](assets/莓之紫 深色模式 emoji页面.jpg){ loading=lazy }
 
-## Cross-Platform · One Codebase
-
-<div class="platform-grid" markdown>
-
-<div class="platform-card" markdown>
-
-### 🪟 Windows
-
-`.exe`
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 🍎 macOS
-
-`.dmg` · Apple Silicon & Intel
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 🐧 Linux
-
-`.deb` / `.AppImage`
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 📱 Android
-
-`.apk`
-
-</div>
-
-<div class="platform-card" markdown>
-
-### 🌐 Web
-
-[Works in browser](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)
-
-</div>
-
-</div>
-
----
-
-## Tech-Driven
-
-<div class="feature-grid" markdown>
-
-<div class="feature-card" markdown>
-
-### 🦀 Rust Backend
-
-Tauri v2 framework, 29 Rust commands handling all data operations. SQLite WAL mode, foreign key constraints, automatic database migration. Daily cost calculated dynamically on every query — formula updates without re-importing.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### ⚡ Ultra Lightweight
-
-Windows installer ~5MB. Vanilla TypeScript frontend, zero framework dependencies. 30× lighter than Electron alternatives. Ready on launch, no background resource consumption.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### 🔄 Auto Update
-
-Tauri updater silent download & install + GitHub API cross-platform version detection. Auto-check on launch, manual check anytime. Signature verification ensures update security.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### 🎨 Custom Emoji
-
-Thousands of emojis at your fingertips — full emoji-mart Unicode emoji set + 37 custom emojis. Party Parrots animated GIFs, Blob inline SVGs, Cats, Mascots across 4 categories. Pick directly in the picker.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### 🌍 Trilingual i18n
-
-简体中文, 繁體中文, English — instant switching covering the entire interface. Currency symbol and interface language independently configurable. i18next-powered, JSON translation files.
-
-</div>
-
-<div class="feature-card" markdown>
-
-### ♻️ Sustainable Data
-
-Daily cost formulas, emoji matching rules, and category keywords are all hot-updatable. Legacy data auto-backfills — algorithm iterations never require re-importing historical data.
+**Custom Emoji · Thousands to Choose** — Full emoji-mart Unicode emoji set + 37 custom emojis (Party Parrots / Blob / Cats / Mascots across 4 categories). Pick directly in the picker.
 
 </div>
 
@@ -309,89 +202,19 @@ Daily cost formulas, emoji matching rules, and category keywords are all hot-upd
 
 </div>
 
-**Where your data lives**
-
-- 🖥️ Desktop → SQLite database in the `AppData` directory
-- 🤖 Android → SQLite database in the app's private directory
-- 🌐 Web → Browser localStorage
-
-**What is never done**
-
-<div class="hero-badges privacy-badges">
-
-<span class="badge">🚫 No data upload</span>
-<span class="badge">🚫 No spending-data tracking</span>
-<span class="badge">🚫 No reading unrelated files</span>
-<span class="badge">🚫 No user accounts</span>
-<span class="badge">🚫 No cloud sync</span>
-
-</div>
-
-> 🗝️ **The project is not open source yet, but BunnyChen promises never to collect, upload, or snoop on any of your data.** Your data belongs only to you — please keep it safe.
+> 🗝️ **The project is not open source yet, but BunnyChen promises never to collect, upload, or snoop on any of your data.** Your data belongs only to you — please keep it safe. See [Privacy Policy](PRIVACY.md).
 
 ---
 
-## Five Themes · Five Personalities
+*Source code is not public yet · All Rights Reserved · Your data always belongs only to you*
 
-<div class="carousel-hint">🎠 Auto-rotating · Swipe or click dots to switch</div>
-
-<div class="theme-carousel" markdown>
-
-<div class="theme-slide" markdown>
-
-![Matcha Green · Home](assets/首页 抹茶绿 深色模式 展示.jpg){ loading=lazy }
-
-**🍵 Matcha Green** — Calm and healing, close to nature. Default color scheme with independent light/dark mode designs.
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![Sky Blue · Home](assets/桌面端深色主题 首页 天之蓝.jpg){ loading=lazy }
-
-**☁️ Sky Blue** — Clean and airy, bright yet restrained. Consistent across desktop and mobile.
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![Berry Purple · Settings](assets/莓之紫 浅色模式 设置页.jpg){ loading=lazy }
-
-**🫐 Berry Purple** — Mysterious and sophisticated, boldly distinctive. Settings and emoji pages deeply integrated.
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![Peach Pink · Desktop Light](assets/桃之粉色 桌面端 浅色主题.jpg){ loading=lazy }
-
-**🍑 Peach Pink** — Soft and sweet, warmly inviting. Desktop light theme shines equally bright.
-
-</div>
-
-<div class="theme-slide" markdown>
-
-![Tangerine Orange · Home](assets/桌面端 首页截图 深色模式 橘之橙.jpg){ loading=lazy }
-
-**🍊 Tangerine Orange** — Energetic and vibrant, full of passion. Asset home page in dark mode.
-
-</div>
-
-</div>
-
----
-
-## Quick Start — See Your Data in 3 Steps
-
-**Data-driven · Import beats manual entry** — No need to type every record by hand. Export your orders from each platform, import them in bulk, and the data organizes itself into asset cards. Manual entry barely covers a handful per day; bulk import gets thousands of orders into your library in seconds.
+## 🚀 Quick Start · 3 Steps
 
 <div class="quickstart-section" markdown>
 
 <div class="quickstart-step" markdown>
 
-### Download & Install
-
-Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) to choose your platform installer, or open the [Web version](https://bunnychen.top/BunnyChen-Item-Bookkeeping/) directly. Windows: `.exe` recommended. macOS: download `.dmg`.
+### ① Download & Install
 
 [Getting Started →](getting-started.md)
 
@@ -399,25 +222,63 @@ Go to [Releases](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)
 
 <div class="quickstart-step" markdown>
 
-### Import Data
+### ② Import Data
 
-Install [browser extensions](assets/dailycost-exporter-extension.zip) to export JD.com, Taobao, and Steam purchase history as CSV, or export WeChat bills directly from the WeChat app. Drag them into the app window or click import in Settings — auto-parse, deduplicate, and categorize.
+Export JD.com / Taobao / Steam purchase history as CSV via browser extensions; export WeChat bills directly from the WeChat app.
 
-[Download the Browser Extension](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary } · [Import Guide →](import-csv.md)
+[Import Guide →](import-csv.md)
 
 </div>
 
 <div class="quickstart-step" markdown>
 
-### All Set
-
-The home page card grid displays all items. Green = earned back. Red = burning money. Click cards for details, go to Analytics for monthly trends and platform breakdown. Start rethinking every purchase you make.
+### ③ All Set
 
 [Manage Assets](manage-items.md) · [Analytics](analytics.md)
 
 </div>
 
 </div>
+
+## ☕ Support · Buy Me a Coffee
+
+Maintained by one person — if you like it, buy me a coffee! 🥺
+
+<div class="donation-cute" markdown>
+
+![Cute](assets/卖萌.webp){ width="140" loading=lazy }
+
+![Donate](assets/求打赏.jpg){ width="140" loading=lazy }
+
+</div>
+
+<div class="donation-section" markdown>
+
+<div class="donation-card" markdown>
+
+**☕ Buy Me a Coffee**
+
+[![Buy Me a Coffee](assets/bmc_button.png){ width="190" loading=lazy }](https://buymeacoffee.com/bunnychen)
+
+buymeacoffee.com/bunnychen
+
+</div>
+
+<div class="donation-card" markdown>
+
+**🧧 WeChat Reward**
+
+![WeChat Reward QR](assets/wechat 赞赏.jpg){ width="190" loading=lazy }
+
+Scan to reward · Any amount
+
+</div>
+
+</div>
+
+> 📬 Business cooperation / Enterprise customization / Platform integration: reach out via the reward links above
+
+---
 
 <div class="bottom-cta" markdown>
 
@@ -428,5 +289,3 @@ Free · Open Beta · Data Fully Local
 [Quick Start](getting-started.md){: .md-button .md-button--primary }
 
 </div>
-
-*Source code is not public yet · All Rights Reserved*

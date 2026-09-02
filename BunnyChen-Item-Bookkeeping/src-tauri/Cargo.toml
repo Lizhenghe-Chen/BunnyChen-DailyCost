@@ -1,6 +1,6 @@
 [package]
 name = "bunnychen-item-bookkeeping"
-version = "1.1.2"
+version = "1.1.4"
 description = "日耗仓 · DailyCost Vault — 个人资产数字化管理工具"
 authors = ["BunnyChen"]
 edition = "2021"

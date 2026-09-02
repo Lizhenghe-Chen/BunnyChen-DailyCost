@@ -13,7 +13,8 @@
 #   - rewrite-links job：独立于慢速同步，快速把 Gitee 侧 Release body 的
 #     GitHub 下载链接改写为 Gitee 附件链接（用 Gitee API 真实 URL），
 #     同样只处理最新两个版本，与 sync 保持一致。
-#   - 通过 if 只处理版本 tag（v*.*.*），跳过 updater tag。
+#   - 通过 if 只处理版本 tag（v*.*.*）。（2026-09 起不再有独立 updater tag，
+#     update.json 已合并进版本 Release，随附件一起同步到 Gitee）
 #
 # 需要 Secrets:
 #   GITEE_TOKEN — Gitee API Token（Settings → Secrets and variables → Actions 配置）

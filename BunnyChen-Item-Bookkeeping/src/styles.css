@@ -394,6 +394,37 @@ a.nav-brand { color: inherit; text-decoration: none; cursor: pointer; }
   font-size: 16px; font-weight: 600; margin-bottom: 12px;
   color: var(--text);
 }
+/* 收支区块（微信/支付宝）折叠标题：默认折叠省版面，点击整行展开 */
+.bill-summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  min-height: 48px; padding: 10px 14px;
+  list-style: none; cursor: pointer; user-select: none;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text);
+  font-size: 16px; font-weight: 600;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.bill-summary::-webkit-details-marker { display: none; }
+.bill-summary:hover, .bill-summary:focus-visible {
+  border-color: var(--primary); background: var(--bg-card-raised);
+  box-shadow: var(--shadow-sm); outline: none;
+}
+.bill-details[open] .bill-summary {
+  border-color: var(--primary); background: var(--primary-soft);
+}
+.bill-summary:hover .bill-title, .bill-details[open] .bill-title { color: var(--primary); }
+.bill-title {
+  display: inline-flex; align-items: center; gap: 4px;
+  transition: color 0.15s;
+}
+.bill-caret {
+  display: grid; width: 26px; height: 26px; place-items: center;
+  border-radius: 50%; background: var(--bg-input); color: var(--primary);
+  font-size: 15px; transition: transform 0.18s, background 0.15s;
+}
+.bill-summary:hover .bill-caret, .bill-details[open] .bill-caret { background: var(--primary-soft); }
+.bill-details[open] .bill-caret { transform: rotate(90deg); }
+.bill-body { margin-top: 14px; }
 .chart-wrap {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1406,6 +1437,40 @@ h2, h3, .modal-name, .empty-title, .nav-brand, .stat-value, .cost-value {
 .db-path-hint code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 11px; }
 .clickable-path { cursor: pointer; color: var(--primary); border-bottom: 1px dashed var(--primary); transition: opacity 0.15s; }
 .clickable-path:hover { opacity: 0.8; }
+
+/* 浏览器扩展安装向导 */
+.ext-badge {
+  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 10px;
+  white-space: nowrap; background: var(--bg); color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.ext-badge-ok { background: var(--success-soft); color: var(--success); border-color: transparent; }
+.ext-badge-warn { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+.ext-wizard {
+  display: flex; flex-direction: column; gap: 14px;
+  margin: 4px 0 10px; padding: 14px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.ext-step { display: flex; gap: 10px; }
+.ext-step-no {
+  flex: 0 0 22px; height: 22px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.ext-step-body { flex: 1; min-width: 0; }
+.ext-step-title { font-size: 13px; font-weight: 600; margin: 3px 0 8px; }
+.ext-step .section-hint { margin: 0; }
+.ext-step .db-actions { margin-bottom: 8px; }
+.ext-browsers { display: flex; gap: 8px; flex-wrap: wrap; }
+.ext-browser {
+  padding: 6px 12px; font-size: 13px; font-family: inherit; cursor: pointer;
+  color: var(--text); background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-xs);
+  transition: border-color 0.15s, background 0.15s;
+}
+.ext-browser:hover { border-color: var(--primary); }
+.ext-browser-active { border-color: var(--primary); background: var(--primary-soft); font-weight: 600; }
 
 /* 设置开关 */
 .setting-row {

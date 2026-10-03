@@ -12,7 +12,7 @@ import {
   setPrecision, platformLabel, formatPrice, escapeHtml,
 } from "./utils";
 import { platformColor } from "./theme";
-import { savePref } from "./prefs";
+import { savePref, loadPref } from "./prefs";
 import { loadItems } from "./ui-home";
 import { showItemModal } from "./ui-modal";
 import { t } from "./i18n";
@@ -56,7 +56,6 @@ export async function initSettings() {
                   csvNames.push(name);
                 }
               } catch (e) {
-                console.error("[DailyCost][UI] 读取导入文件失败:", e, p);
                 showToast(`${t("toast.operation_failed")}: ${p}`, "error");
               }
             }
@@ -76,7 +75,7 @@ export async function initSettings() {
 
           btn.textContent = `📄 ${t("settings.select_csv")}`; (btn as HTMLButtonElement).disabled = false;
         }
-      } catch (e) { console.error("[DailyCost][UI] 选择文件导入失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); resetPickBtn(); }
+      } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); resetPickBtn(); }
     });
   } else {
     const fileInput = document.createElement("input");
@@ -106,9 +105,8 @@ export async function initSettings() {
     const ok = await showConfirm(t("confirm.clear_all"));
     if (!ok) return;
     if (isTauri()) {
-      try { await invoke("clear_all_data"); } catch (e) { console.error("[DailyCost][UI] 清空所有数据失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+      try { await invoke("clear_all_data"); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
     } else { browserDb.clearAll(); }
-    console.warn("[DailyCost][UI] 清空所有数据");
     showToast(t("toast.all_cleared"), "success");
     notifyDataChanged();
   });
@@ -125,6 +123,7 @@ export async function initSettings() {
     setPrecision(isNaN(p) ? 2 : p);
     await savePref("precision", this.value);
     loadItems();
+    notifyDataChanged();
   });
 
   // ── 配色方案 ──
@@ -133,6 +132,7 @@ export async function initSettings() {
   (document.getElementById("select-color-theme") as HTMLSelectElement).addEventListener("change", async function () {
     applyColorTheme(this.value);
     await savePref(COLOR_THEME_KEY, this.value);
+    notifyDataChanged();
   });
 
   // ── 导出 / 导入数据库（仅 Tauri） ──
@@ -149,8 +149,7 @@ export async function initSettings() {
       } else {
         showToast(await invoke<string>("export_database", { path: savePath }), "success");
       }
-      console.log("[DailyCost][UI] 导出存档 →", savePath);
-    } catch (e) { console.error("[DailyCost][UI] 导出存档失败:", e); showToast(`${t("toast.export_failed")}: ${e}`, "error"); }
+    } catch (e) { showToast(`${t("toast.export_failed")}: ${e}`, "error"); }
   });
 
   document.getElementById("btn-import-db")!.addEventListener("click", async () => {
@@ -173,10 +172,27 @@ export async function initSettings() {
         result = await invoke<string>("import_database", { path: selected });
       }
       showToast(result, "success");
-      console.log("[DailyCost][UI] 导入存档 →", selected);
       notifyDataChanged();
       btn.textContent = `📥 ${t("settings.import_db")}`; (btn as HTMLButtonElement).disabled = false;
-    } catch (e) { console.error("[DailyCost][UI] 导入存档失败:", e); showToast(`${t("toast.import_failed")}: ${e}`, "error"); resetImportBtn(); }
+    } catch (e) { showToast(`${t("toast.import_failed")}: ${e}`, "error"); resetImportBtn(); }
+  });
+
+  // ── 导出日志（仅 Tauri） ──
+  document.getElementById("btn-export-log")!.addEventListener("click", async () => {
+    if (!isTauri()) { showToast(t("toast.export_log_only_desktop"), "info"); return; }
+    try {
+      const { save } = await import("@tauri-apps/plugin-dialog");
+      const filters = [{ name: t("csv.log"), extensions: ["log", "txt"] }];
+      const savePath = await save({ defaultPath: t("settings.log_name"), filters });
+      if (!savePath) return;
+      if (isAndroid()) {
+        // Android：save 返回 content:// URI，Rust 无法直接写入
+        // 由原生 ContentResolver 插件（BackupPlugin）复制日志文件到所选位置
+        showToast(await invoke<string>("export_log_to_uri", { dest_uri: savePath }), "success");
+      } else {
+        showToast(await invoke<string>("export_log", { path: savePath }), "success");
+      }
+    } catch (e) { showToast(`${t("toast.export_failed")}: ${e}`, "error"); }
   });
 
   // ── 智能分类：用户可选择仅覆盖 category 或仅覆盖 emoji ──
@@ -189,7 +205,6 @@ export async function initSettings() {
     try {
       if (isTauri()) {
         const [total, updated] = await invoke<[number, number]>("recalculate_categories", { mode });
-        console.log(`[DailyCost][UI] 智能分类 mode=${mode} total=${total} updated=${updated}`);
         showToast(t("settings.smart_categorize_done", { total, updated }), "success");
       } else {
         // 浏览器端：根据 mode 仅更新对应字段
@@ -209,7 +224,7 @@ export async function initSettings() {
         showToast(t("settings.smart_categorize_done", { total: totalItems, updated }), updated > 0 ? "success" : "info");
       }
       notifyDataChanged();
-    } catch (e) { console.error("[DailyCost][UI] 智能分类失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); }
+    } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); }
     btn.textContent = `🤖 ${t("settings.smart_categorize")}`; (btn as HTMLButtonElement).disabled = false;
   });
 
@@ -255,7 +270,6 @@ export async function initSettings() {
           statusEl.style.color = "var(--primary)";
         }
       } catch (e) {
-        console.error("[DailyCost][UI] 检查更新失败:", e);
         const msg = e instanceof TypeError ? t("about.network_error") : `${t("about.update_failed")}: ${e}`;
         statusEl.textContent = msg;
         statusEl.className = "about-update update-error";
@@ -264,6 +278,9 @@ export async function initSettings() {
       }
     });
   }
+
+  // ── 浏览器扩展：随应用分发 + 安装引导 ──
+  await initExtensionSection();
 
   // ── 注册数据变更监听：数据变更后自动刷新批次和归档计数 ──
   onDataChange(() => {
@@ -300,6 +317,195 @@ async function importBrowserFiles(files: Iterable<File>, emptyMessage: string): 
   showImportResult(result);
 }
 
+// ── 浏览器扩展：随应用分发 + 应用内安装引导 ──────────────────
+// 浏览器不允许外部程序静默安装扩展（Chrome 137+ 移除 --load-extension，
+// macOS/Windows 自 Chrome 44 起封禁本地 CRX 外部安装），因此应用能做的是：
+// 释放随应用打包的扩展 → 拉起浏览器打开其扩展管理页 → 读 profile 配置确认是否装好。
+
+interface ExtBrowser {
+  id: string;
+  name: string;
+  extensions_url: string;
+  installed_paths: string[];
+  managed: boolean;
+}
+interface ExtEnv {
+  supported: boolean;
+  install_path: string;
+  version: string;
+  browsers: ExtBrowser[];
+}
+
+const EXT_BROWSER_KEY = "ext_browser";
+let extEnv: ExtEnv | null = null;
+let extBrowserId = "";
+
+const $ext = (id: string) => document.getElementById(id)!;
+
+function selectedBrowser(): ExtBrowser | undefined {
+  return extEnv?.browsers.find(b => b.id === extBrowserId) ?? extEnv?.browsers[0];
+}
+
+async function initExtensionSection() {
+  const section = document.getElementById("extension-section");
+  if (!section) return;
+
+  // 浏览器端没有本地文件系统权限，只保留官网 zip 下载入口
+  if (!isTauri()) {
+    section.style.display = "";
+    $ext("ext-web-hint").style.display = "";
+    $ext("ext-badge").style.display = "none";
+    return;
+  }
+
+  $ext("btn-install-extension").addEventListener("click", () => runExtensionInstall());
+  $ext("btn-recheck-extension").addEventListener("click", () => refreshExtEnv(false));
+  $ext("btn-open-ext-page").addEventListener("click", () => openExtPage());
+  $ext("btn-reveal-ext").addEventListener("click", async () => {
+    if (extEnv?.install_path) await revealItemInDir(extEnv.install_path);
+  });
+  $ext("btn-copy-ext-path").addEventListener("click", async () => {
+    const path = extEnv?.install_path;
+    if (!path) return;
+    try {
+      await navigator.clipboard.writeText(path);
+      showToast(t("settings.ext_copied"), "success");
+    } catch {
+      // 剪贴板不可用时至少把路径显示出来供手动复制
+      showToast(path, "info");
+    }
+  });
+  $ext("btn-confirm-extension").addEventListener("click", () => confirmExtension());
+
+  // 扩展放在默认隐藏的应用数据目录，这里按平台给出「怎么把这个路径交给文件选择框」的引导
+  const ua = navigator.userAgent;
+  const pasteKey = /Mac/i.test(ua) ? "⌘⇧G" : /Win/i.test(ua) ? "Ctrl+V" : "Ctrl+L";
+  const whereHint = document.getElementById("ext-where-hint");
+  if (whereHint) whereHint.textContent = t("settings.ext_where_hint", { key: pasteKey });
+
+  extBrowserId = await loadPref(EXT_BROWSER_KEY);
+  await refreshExtEnv(false);
+}
+
+/** 探测环境；extract=true 时先把随应用打包的扩展释放到应用数据目录 */
+async function refreshExtEnv(extract: boolean) {
+  try {
+    extEnv = await invoke<ExtEnv>(extract ? "install_browser_extension" : "get_extension_env");
+  } catch (e) {
+    // 命令不可用（如移动端/旧版本）时整块隐藏，不占版面；console 会转发进日志便于排查
+    console.warn("get_extension_env 失败，隐藏浏览器扩展区块:", e);
+    document.getElementById("extension-section")!.style.display = "none";
+    return;
+  }
+  renderExtSection();
+}
+
+function renderExtSection() {
+  const section = document.getElementById("extension-section")!;
+  if (!extEnv?.supported) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "";
+
+  const browsers = extEnv.browsers;
+  $ext("ext-no-browser").style.display = browsers.length ? "none" : "";
+  $ext("ext-actions").style.display = browsers.length ? "" : "none";
+  $ext("ext-path-hint").style.display = "";
+  $ext("ext-path-text").textContent = extEnv.install_path;
+
+  // 沿用上次选择；否则优先选已装好扩展的浏览器
+  if (!browsers.some(b => b.id === extBrowserId)) {
+    extBrowserId = (browsers.find(b => b.managed) || browsers.find(b => b.installed_paths.length) || browsers[0])?.id || "";
+  }
+  renderExtBrowsers();
+  renderExtBadge();
+}
+
+function renderExtBrowsers() {
+  const wrap = $ext("ext-browsers");
+  wrap.innerHTML = (extEnv?.browsers || []).map(b => {
+    const mark = b.managed ? " ✓" : b.installed_paths.length ? " ⚠" : "";
+    const cls = b.id === extBrowserId ? "ext-browser ext-browser-active" : "ext-browser";
+    return `<button type="button" class="${cls}" data-id="${escapeHtml(b.id)}">${escapeHtml(b.name)}${mark}</button>`;
+  }).join("");
+  wrap.querySelectorAll<HTMLButtonElement>(".ext-browser").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      extBrowserId = btn.dataset.id!;
+      await savePref(EXT_BROWSER_KEY, extBrowserId);
+      renderExtBrowsers();
+      renderExtBadge();
+    });
+  });
+}
+
+function renderExtBadge() {
+  const badge = $ext("ext-badge");
+  const browser = selectedBrowser();
+  if (!browser) { badge.textContent = "—"; badge.className = "ext-badge"; return; }
+  const [key, cls] = browser.managed
+    ? ["settings.ext_status_installed", "ext-badge ext-badge-ok"]
+    : browser.installed_paths.length
+      ? ["settings.ext_status_stale", "ext-badge ext-badge-warn"]
+      : ["settings.ext_status_missing", "ext-badge"];
+  badge.textContent = `${browser.name} · ${t(key)}`;
+  badge.className = cls;
+}
+
+async function runExtensionInstall() {
+  const btn = $ext("btn-install-extension") as HTMLButtonElement;
+  btn.disabled = true;
+  try {
+    await refreshExtEnv(true);
+    $ext("ext-wizard").style.display = "";
+    await openExtPage();
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function openExtPage() {
+  const browser = selectedBrowser();
+  if (!browser) return;
+  try {
+    await invoke("open_browser_extensions_page", { browserId: browser.id });
+  } catch (e) {
+    showToast(`${t("toast.operation_failed")}: ${e}`, "error");
+  }
+}
+
+async function confirmExtension() {
+  const el = $ext("ext-detect-result");
+  const btn = $ext("btn-confirm-extension") as HTMLButtonElement;
+  const label = btn.textContent;
+  el.style.display = "";
+  btn.disabled = true;
+  try {
+    // 浏览器不会立刻把刚装好的扩展写进 profile 配置文件（通常几秒内落盘），
+    // 所以这里轮询重试，避免用户刚装完就收到「未检测到」的误报
+    const attempts = 5;
+    for (let i = 1; i <= attempts; i++) {
+      await refreshExtEnv(false);
+      const browser = selectedBrowser();
+      if (browser?.managed) {
+        el.textContent = t("settings.ext_detect_ok", { browser: browser.name });
+        return;
+      }
+      if (i < attempts) {
+        btn.textContent = t("settings.ext_detecting", { n: i + 1, total: attempts });
+        await new Promise(r => setTimeout(r, 1200));
+      }
+    }
+    const browser = selectedBrowser();
+    el.textContent = browser?.installed_paths.length
+      ? t("settings.ext_detect_other", { path: browser.installed_paths[0] })
+      : t("settings.ext_detect_fail");
+  } finally {
+    btn.textContent = label;
+    btn.disabled = false;
+  }
+}
+
 // ── 拖拽导入 ──────────────────────────────────────────
 function initDropZone() {
   const dropZone = document.getElementById("drop-zone")!;
@@ -322,7 +528,7 @@ function initDropZone() {
       if (paths.length === 0) { showToast(t("toast.csv_only"), "error"); return; }
       try {
         showImportResult(await invoke<ImportResult>("import_multiple_csv", { paths }));
-      } catch (e) { console.error("[DailyCost][UI] 拖拽导入失败:", e); showToast(`${t("toast.import_failed")}: ${e}`, "error"); }
+      } catch (e) { showToast(`${t("toast.import_failed")}: ${e}`, "error"); }
     } else {
       // 仅保留 CSV/Excel（保持原有拖拽过滤行为，非目标文件静默跳过）
       const csvFiles: File[] = [];
@@ -414,7 +620,7 @@ export async function loadBatches() {
           });
         }
       }
-    } catch (e) { console.error("[DailyCost][UI] 加载导入批次失败:", e); list.innerHTML = `<div class="empty-inline">${t("empty.load_error")}: ${e}</div>`; }
+    } catch (e) { list.innerHTML = `<div class="empty-inline">${t("empty.load_error")}: ${e}</div>`; }
   } else {
     const batches = browserDb.getBatches();
     list.innerHTML = batches.length === 0
@@ -516,7 +722,6 @@ export async function loadArchivedCount() {
       barEl.querySelector("#btn-batch-delete")?.addEventListener("click", batchDelete);
     }
   } catch (e) {
-    console.error("[DailyCost][UI] 加载归档列表失败:", e);
     countEl.textContent = "0";
     listEl.innerHTML = `<div class="empty-inline">${t("empty.load_error")}: ${e}</div>`;
   }
@@ -537,7 +742,7 @@ async function batchRestore() {
   if (!ok) return;
   const ids = [...selectedArchived];
   if (isTauri()) {
-    try { await invoke("batch_restore_items", { ids }); } catch (e) { console.error("[DailyCost][UI] 批量恢复失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+    try { await invoke("batch_restore_items", { ids }); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
   } else {
     browserDb.batchRestoreItems(ids);
   }
@@ -551,7 +756,7 @@ async function batchDelete() {
   if (!ok) return;
   const ids = [...selectedArchived];
   if (isTauri()) {
-    try { await invoke("batch_delete_items", { ids }); } catch (e) { console.error("[DailyCost][UI] 批量永久删除失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+    try { await invoke("batch_delete_items", { ids }); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
   } else {
     browserDb.batchPermanentDeleteItems(ids);
   }

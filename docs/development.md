@@ -8,6 +8,8 @@
     - `BunnyChen-Item-Bookkeeping/` — 应用源码（前端 `src/` + 后端 `src-tauri/`）
     - `dailycost-exporter-extension/` — 浏览器扩展（淘宝 / 京东 / Steam 订单导出）
 
+    扩展也会**随桌面端安装包一起分发**（映射进 `$RESOURCE/browser-extension/`），装好应用后可在「设置 → 🧩 浏览器扩展」一键安装，无需单独下载。源码保留在本仓库是为了让整棵源码树可构建——**请勿删除本仓库的扩展目录**，`bundle.resources` 匹配不到文件会导致 `cargo check` / `pnpm tauri dev` 直接构建失败。
+
 ---
 
 ## 环境要求

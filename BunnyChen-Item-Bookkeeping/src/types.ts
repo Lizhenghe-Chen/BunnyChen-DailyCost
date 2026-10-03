@@ -28,13 +28,13 @@ export interface OrderItem {
   category: string;
 }
 
-/** 微信收入/回款记录（AA 转账回款、退款、红包等）——独立于物品表，不参与资产/消费分析 */
+/** 账单收入/回款记录（AA 转账回款、退款、红包等，微信/支付宝通用）——独立于物品表，不参与资产/消费分析 */
 export interface IncomeRecord {
   id: number;
   order_id: string;
   platform: string;
   peer: string;
-  /** 微信交易类型（转账/退款/红包/二维码收款/群收款/亲属卡等） */
+  /** 账单交易分类（转账/退款/红包/收款等，用于区分回款来源） */
   income_type: string;
   amount: number;
   order_time: string;
@@ -42,41 +42,41 @@ export interface IncomeRecord {
   import_batch: string;
 }
 
-/** 微信收支总览（支出/回款/净支出） */
-export interface WechatOverview {
+/** 账单平台收支总览（支出/回款/净支出） */
+export interface BillOverview {
   expense_total: number;
   income_total: number;
   net_total: number;
 }
 
-/** 微信收入按交易类型分组（退款/转账/红包/收款等） */
+/** 回款按交易类型分组（退款/转账/红包/收款等） */
 export interface IncomeByType {
   income_type: string;
   total: number;
   count: number;
 }
 
-/** 微信收入按交易对方分组（回款来源 Top） */
+/** 回款按交易对方分组（回款来源 Top） */
 export interface IncomePeer {
   peer: string;
   total: number;
   count: number;
 }
 
-/** 微信月度收支（支出/回款/净支出） */
-export interface WechatMonthly {
+/** 账单平台月度收支（支出/回款/净支出） */
+export interface BillMonthly {
   month: string;
   expense: number;
   income: number;
   net: number;
 }
 
-/** 微信收支分析（分析页「微信收支」区块） */
-export interface WechatAnalytics {
-  overview: WechatOverview;
+/** 账单平台收支分析（分析页「微信/支付宝收支」区块，按 platform 区分） */
+export interface BillAnalytics {
+  overview: BillOverview;
   by_type: IncomeByType[];
   peers: IncomePeer[];
-  monthly: WechatMonthly[];
+  monthly: BillMonthly[];
 }
 
 // ── 分类定义 ────────────────────────────────────────────

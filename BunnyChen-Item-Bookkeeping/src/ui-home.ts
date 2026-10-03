@@ -348,7 +348,6 @@ function bindEmptyActions() {
     try {
       if (isTauri()) {
         const msg = await invoke("import_example_data") as string;
-        console.log("[DailyCost][UI] 导入示例数据成功:", msg);
         showToast(msg, "success");
       } else {
         const msg = await browserDb.importExampleData();
@@ -358,7 +357,6 @@ function bindEmptyActions() {
       _cachedItems = null;
       notifyDataChanged();
     } catch (e) {
-      console.error("[DailyCost][UI] 导入示例数据失败:", e);
       const msg = e instanceof Error ? e.message : String(e);
       showToast(msg || t("toast.operation_failed"), "error");
       setLoading(false);
@@ -857,7 +855,7 @@ async function batchArchiveSelected() {
   if (!ok) return;
   const ids = [...selectedIds];
   if (isTauri()) {
-    try { await invoke("batch_archive_items", { ids }); } catch (e) { console.error("[DailyCost][UI] 批量归档失败:", e); showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
+    try { await invoke("batch_archive_items", { ids }); } catch (e) { showToast(`${t("toast.operation_failed")}: ${e}`, "error"); return; }
   } else {
     browserDb.batchArchiveItems(ids);
   }

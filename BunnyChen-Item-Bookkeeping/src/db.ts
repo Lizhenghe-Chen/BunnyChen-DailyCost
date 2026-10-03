@@ -1,7 +1,7 @@
 // ── 浏览器端内存数据库 ────────────────────────────────────
 // Tauri 桌面端走 Rust 后端，浏览器端用 sessionStorage 模拟
 
-import type { OrderItem, ImportResult, IncomeRecord, WechatAnalytics, IncomeByType, IncomePeer, WechatMonthly } from "./types";
+import type { OrderItem, ImportResult, IncomeRecord, BillAnalytics, IncomeByType, IncomePeer, BillMonthly } from "./types";
 import {
   parseCsv, extractJdUrl, platformLabel, detectPlatform,
   calcDailyAvg, normalizeDate, excelSerialToDate,
@@ -421,9 +421,9 @@ class BrowserDb {
       return { success: false, imported: 0, skipped: 0, message: `未找到微信账单表头（需含「交易单号」「金额(元)」列），请确认文件为微信支付账单流水` };
     }
 
-    // 预构建微信去重缓存（支出与收入各自独立，交易单号互不冲突）
+    // 预构建微信去重缓存（支出与收入各自独立，交易单号互不冲突；收入按平台隔离）
     const wxDedup = new Set(this.items.filter(i => i.platform === "wx").map(i => i.order_id));
-    const incomeDedup = new Set(this.incomes.map(i => i.order_id));
+    const incomeDedup = new Set(this.incomes.filter(i => i.platform === "wx").map(i => i.order_id));
     const { matchProductCategory } = await import("./utils");
 
     // 跨平台去重索引：微信可支付淘宝/京东，检查是否已在京东/淘宝订单入库
@@ -531,7 +531,8 @@ class BrowserDb {
   }
 
   /** 支付宝账单核心解析（CSV/xlsx 共用二维数组）——语义同 Rust 端 parse_alipay_rows。
-   *  仅导入「支出」订单进物品表；「收入」「不计收支」（退款/转账/提现/余额宝等）跳过。 */
+   *  支出 → items 物品表；收入行（收款/转账红包等）与退款到账行 → incomes 回款表（platform=alipay）。
+   *  余额宝/基金/账户存取等自转账属于「不计收支」噪声，不导入。 */
   private async importAlipayRows(rows: string[][], fileName: string): Promise<ImportResult> {
     // 定位表头行（跳过前 ~20 行元数据/提示/分隔线，至多扫描前 200 行）
     let headerIdx = -1;
@@ -565,8 +566,9 @@ class BrowserDb {
       return { success: false, imported: 0, skipped: 0, message: `未找到支付宝账单表头（需含「交易订单号」「金额」列），请确认文件为支付宝交易明细导出` };
     }
 
-    // 预构建支付宝去重缓存（仅支出订单，交易订单号全局唯一）
+    // 预构建支付宝去重缓存（支出与收入各自独立去重；收入按平台隔离）
     const aliDedup = new Set(this.items.filter(i => i.platform === "alipay").map(i => i.order_id));
+    const aliIncomeDedup = new Set(this.incomes.filter(i => i.platform === "alipay").map(i => i.order_id));
     const { matchProductCategory } = await import("./utils");
 
     // 跨平台去重索引：支付宝可支付淘宝，检查是否已在京东/淘宝订单入库
@@ -579,12 +581,46 @@ class BrowserDb {
     // （应用定位为订单/支出账本），并靠状态白名单兜底过滤退款/交易关闭等
     const incomeExpenseMissing = col["收/支"] < 0;
 
-    let imported = 0, skipped = 0, crossDup = 0;
+    let imported = 0, incomeImported = 0, skipped = 0, crossDup = 0;
     for (let r = headerIdx + 1; r < rows.length; r++) {
       const row = rows[r];
       if (!row || row.length === 0) { skipped++; continue; }
       const orderId = cell(row, "交易订单号");
       if (!orderId) { skipped++; continue; }
+
+      // ── 收支分流（收/支列存在时）──
+      // 回款 = 真正流入的流水：①「收入」行（收钱码收款/转账红包入账等，状态未失败/未关闭）；
+      // ② 退款到账行（交易状态=退款成功；支付宝退款标记为不计收支且交易分类不定，按状态识别）。
+      if (!incomeExpenseMissing) {
+        const ie = cell(row, "收/支");
+        const st = cell(row, "交易状态");
+        const isRefundBack = st === "退款成功";
+        const isIncome = ie === "收入"
+          && !["交易关闭", "已关闭", "等待付款", "交易失败", "支付失败", "已撤销", "已冻结", "失败", "已失效", "退款失败"].includes(st);
+        if (isRefundBack || isIncome) {
+          const incAmount = Math.abs(parseFloat(cell(row, "金额").replace(/[^\d.\-]/g, "")) || 0);
+          if (incAmount <= 0) { skipped++; continue; }
+          if (aliIncomeDedup.has(orderId)) { skipped++; continue; }
+          // 交易对方回退（退款/付款方；缺列回退对方账号）
+          let peer = cell(row, "交易对方");
+          if (!peer || peer === "/" || peer === "null") peer = cell(row, "对方账号");
+          this.incomes.push({
+            id: this.nextIncomeId++,
+            order_id: orderId,
+            platform: "alipay",
+            peer,
+            income_type: isRefundBack ? "退款" : cell(row, "交易分类"),
+            amount: incAmount,
+            order_time: normalizeDate(excelSerialToDate(cell(row, "交易时间"))),
+            status: st,
+            import_batch: `支付宝 · ${fileName}`,
+          });
+          aliIncomeDedup.add(orderId);
+          incomeImported++;
+          continue;
+        }
+      }
+
       // 仅导入支出流水；收入/不计收支/退款（退款、转账、提现、余额宝等）跳过
       const incomeExpense = incomeExpenseMissing ? "支出" : cell(row, "收/支");
       if (incomeExpense !== "支出") { skipped++; continue; }
@@ -654,7 +690,12 @@ class BrowserDb {
 
     this.recalcDailyCost();
     this.save();
-    return { success: imported > 0, imported, skipped, message: t("csv.import_success_alipay", { imported, skipped }) + crossDupNote(crossDup) };
+    return {
+      success: imported > 0 || incomeImported > 0,
+      imported,
+      skipped,
+      message: t("csv.import_success_alipay", { imported, income: incomeImported, skipped }) + crossDupNote(crossDup),
+    };
   }
 
   /** 重新计算所有物品的日均成本（每个物品基于自身价格和日期独立计算） */
@@ -679,22 +720,24 @@ class BrowserDb {
     return [...new Set(this.items.filter(i => !i.archived).map(i => i.import_batch).filter(Boolean))].sort();
   }
 
-  /** 查询某个回款来源（交易对方）的全部收入流水，按时间倒序（语义同 Rust 端 get_income_records_by_peer） */
-  getIncomeRecordsByPeer(peer: string): IncomeRecord[] {
+  /** 查询某平台某回款来源（交易对方）的全部收入流水，按时间倒序（语义同 Rust 端 get_income_records_by_peer） */
+  getIncomeRecordsByPeer(platform: string, peer: string): IncomeRecord[] {
     return this.incomes
-      .filter(i => (i.peer || "未知") === peer)
+      .filter(i => i.platform === platform && (i.peer || "未知") === peer)
       .sort((a, b) => b.order_time.localeCompare(a.order_time));
   }
 
-  /** 微信收支分析（总览/回款结构/来源 Top/月度）——语义同 Rust 端 get_wechat_analytics
+  /** 某账单平台（wx/alipay）收支分析（总览/回款结构/来源 Top/月度）——语义同 Rust 端 get_bill_analytics
+   *  @param platform 账单平台（wx/alipay）
    *  @param start 可选起始月份 "YYYY-MM"（含），@param end 可选截止月份 "YYYY-MM"（含） */
-  getWechatAnalytics(start?: string, end?: string): WechatAnalytics {
+  getBillAnalytics(platform: string, start?: string, end?: string): BillAnalytics {
     const inRange = (m: string): boolean =>
       (!start || m >= start) && (!end || m <= end);
-    const wxItems = this.items.filter(i =>
-      i.platform === "wx" && !i.archived && inRange(i.order_time.substring(0, 7)));
-    const rangeIncomes = this.incomes.filter(i => inRange(i.order_time.substring(0, 7)));
-    const expenseTotal = wxItems.reduce((s, i) => s + i.total_price, 0);
+    const platItems = this.items.filter(i =>
+      i.platform === platform && !i.archived && inRange(i.order_time.substring(0, 7)));
+    const rangeIncomes = this.incomes.filter(i =>
+      i.platform === platform && inRange(i.order_time.substring(0, 7)));
+    const expenseTotal = platItems.reduce((s, i) => s + i.total_price, 0);
     const incomeTotal = rangeIncomes.reduce((s, i) => s + i.amount, 0);
 
     // 回款结构（按交易类型；含"退款"的类型统一归为"退款"，与 Rust 端 CASE 一致）
@@ -722,9 +765,9 @@ class BrowserDb {
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
 
-    // 月度收支：合并微信支出与回款，按月对齐
+    // 月度收支：合并平台支出与回款，按月对齐
     const monthMap = new Map<string, { expense: number; income: number }>();
-    for (const item of wxItems) {
+    for (const item of platItems) {
       const m = item.order_time.substring(0, 7);
       if (!m) continue;
       const e = monthMap.get(m) || { expense: 0, income: 0 };
@@ -738,7 +781,7 @@ class BrowserDb {
       e.income += inc.amount;
       monthMap.set(m, e);
     }
-    const monthly: WechatMonthly[] = Array.from(monthMap.entries())
+    const monthly: BillMonthly[] = Array.from(monthMap.entries())
       .map(([month, v]) => ({ month, expense: v.expense, income: v.income, net: v.expense - v.income }))
       .sort((a, b) => a.month.localeCompare(b.month));
 

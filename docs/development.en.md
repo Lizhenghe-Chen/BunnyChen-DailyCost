@@ -8,6 +8,8 @@ DailyCost Vault is a **Tauri v2 + Vite + TypeScript strict + Rust/SQLite** full-
     - `BunnyChen-Item-Bookkeeping/` — app source (frontend `src/` + backend `src-tauri/`)
     - `dailycost-exporter-extension/` — browser extension (Taobao / JD.com / Steam order export)
 
+    The extension also **ships inside the desktop installer** (mapped into `$RESOURCE/browser-extension/`), so once the app is installed you can set it up from **Settings → 🧩 Browser Extension** with no separate download. The source stays in this repo so the whole tree remains buildable — **do not delete the extension folder here**: if `bundle.resources` has no matching files, `cargo check` / `pnpm tauri dev` fail outright.
+
 ---
 
 ## Requirements

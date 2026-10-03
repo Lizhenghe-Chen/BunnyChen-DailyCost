@@ -211,6 +211,58 @@
         </div>
       </div>
 
+      <div class="settings-section" id="extension-section" style="display:none">
+        <div class="section-head">
+          <h2>🧩 <span data-i18n="settings.extension">浏览器扩展</span></h2>
+          <span class="ext-badge" id="ext-badge">—</span>
+        </div>
+        <p class="section-desc" data-i18n="settings.extension_desc">扩展随应用一起分发，用于从淘宝 / 京东 / Steam 一键导出订单 CSV</p>
+        <p class="section-hint" id="ext-mobile-hint" style="display:none" data-i18n="settings.ext_mobile_only">浏览器扩展仅在桌面端可用，请到电脑上安装</p>
+        <p class="section-hint" id="ext-web-hint" style="display:none">
+          <a href="https://bunnychen.top/BunnyChen-DailyCost/import-csv/" target="_blank" rel="noopener" data-i18n="settings.ext_web_download">📥 下载浏览器扩展（zip）</a>
+        </p>
+        <p class="section-hint" id="ext-no-browser" style="display:none" data-i18n="settings.ext_no_browser">未检测到 Chrome / Edge 等 Chromium 内核浏览器</p>
+
+        <div class="db-actions" id="ext-actions" style="display:none">
+          <button id="btn-install-extension" class="btn btn-primary">🧩 <span data-i18n="settings.ext_install">一键安装扩展</span></button>
+          <button id="btn-recheck-extension" class="btn btn-secondary" data-i18n="settings.ext_recheck">重新检测</button>
+        </div>
+        <p class="db-path-hint" id="ext-path-hint" style="display:none"><span data-i18n="settings.ext_path">扩展位置：</span><code id="ext-path-text">—</code></p>
+
+        <div id="ext-wizard" class="ext-wizard" style="display:none">
+          <div class="ext-step">
+            <span class="ext-step-no">1</span>
+            <div class="ext-step-body">
+              <p class="ext-step-title" data-i18n="settings.ext_step1">选择要安装到的浏览器</p>
+              <div class="ext-browsers" id="ext-browsers"></div>
+            </div>
+          </div>
+          <div class="ext-step">
+            <span class="ext-step-no">2</span>
+            <div class="ext-step-body">
+              <p class="ext-step-title" data-i18n="settings.ext_step2">打开扩展管理页并加载扩展</p>
+              <div class="db-actions">
+                <button id="btn-open-ext-page" class="btn btn-primary" data-i18n="settings.ext_open_page">打开扩展管理页</button>
+                <button id="btn-reveal-ext" class="btn btn-secondary" data-i18n="settings.ext_reveal">在文件管理器中显示</button>
+                <button id="btn-copy-ext-path" class="btn btn-ghost" data-i18n="settings.ext_copy_path">复制路径</button>
+              </div>
+              <p class="section-hint" data-i18n="settings.ext_step2_hint">在该页开启「开发者模式」→ 点「加载已解压的扩展程序」→ 选中下面这个文件夹</p>
+              <p class="section-hint" id="ext-where-hint"></p>
+            </div>
+          </div>
+          <div class="ext-step">
+            <span class="ext-step-no">3</span>
+            <div class="ext-step-body">
+              <p class="ext-step-title" data-i18n="settings.ext_step3">装好后回到这里确认</p>
+              <div class="db-actions">
+                <button id="btn-confirm-extension" class="btn btn-primary" data-i18n="settings.ext_confirm">我已安装，检测一下</button>
+              </div>
+              <p class="section-hint" id="ext-detect-result" style="display:none"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-section">
         <div class="section-head">
           <h2>📥 <span data-i18n="settings.data_import">数据导入</span></h2>
@@ -249,6 +301,7 @@
         <div class="db-actions">
           <button id="btn-export-db" class="btn btn-primary">📤 <span data-i18n="settings.export_db">导出存档</span></button>
           <button id="btn-import-db" class="btn btn-secondary">📥 <span data-i18n="settings.import_db">导入存档</span></button>
+          <button id="btn-export-log" class="btn btn-secondary">📃 <span data-i18n="settings.export_log">导出日志</span></button>
         </div>
         <p class="db-path-hint"><span data-i18n="settings.db_path">存档位置：</span><code id="db-path-text">—</code></p>
         <p class="db-path-hint"><span data-i18n="settings.log_path">日志位置：</span><code id="log-path-text">—</code></p>
@@ -397,27 +450,33 @@
         </div>
       </div>
 
-      <!-- 微信收支 -->
-      <div class="analytics-section" id="wechat-section" style="display:none">
-        <h2>💚 <span data-i18n="analytics.wechat_title">微信收支</span></h2>
-        <div id="wechat-kpi" class="wechat-kpi"></div>
-        <div class="wechat-charts">
-          <div class="chart-col wechat-monthly-col">
-            <h3 class="chart-subtitle" data-i18n="analytics.wechat_monthly_title">月度支出 vs 回款</h3>
-            <div id="chart-wechat-monthly-wrap" class="chart-wrap">
-              <canvas id="chart-wechat-monthly"></canvas>
+      <!-- 账单平台收支（微信/支付宝）：「全部」时并列展示两平台，选微信/支付宝时展示对应单个 -->
+      <div id="bill-sections"></div>
+
+      <!-- 收支区块模板：每个平台克隆一份并填充，共用同一结构与样式（默认折叠，点击标题展开） -->
+      <template id="bill-section-template">
+        <details class="analytics-section bill-details">
+          <summary class="bill-summary">
+            <span class="bill-title"><span class="bill-section-emoji">💚</span> <span class="bill-section-title">微信收支</span></span>
+            <span class="bill-caret" aria-hidden="true">▸</span>
+          </summary>
+          <div class="bill-body">
+            <div class="wechat-kpi bill-kpi"></div>
+            <div class="wechat-charts">
+              <div class="chart-col wechat-monthly-col">
+                <h3 class="chart-subtitle bill-subtitle-monthly">月度支出 vs 回款</h3>
+                <div class="chart-wrap bill-monthly-wrap"><canvas></canvas></div>
+              </div>
+              <div class="chart-col">
+                <h3 class="chart-subtitle bill-subtitle-type">回款结构</h3>
+                <div class="chart-wrap chart-wrap-donut bill-type-wrap"><canvas></canvas></div>
+                <div class="chart-donut-legend bill-type-legend"></div>
+              </div>
             </div>
+            <div class="bill-peers"></div>
           </div>
-          <div class="chart-col">
-            <h3 class="chart-subtitle" data-i18n="analytics.wechat_type_title">回款结构</h3>
-            <div id="chart-wechat-type-wrap" class="chart-wrap chart-wrap-donut">
-              <canvas id="chart-wechat-type"></canvas>
-            </div>
-            <div class="chart-donut-legend" id="wechat-type-legend"></div>
-          </div>
-        </div>
-        <div id="wechat-peers"></div>
-      </div>
+        </details>
+      </template>
 
       <!-- 平台价值对比 -->
       <div class="analytics-section" id="platform-compare-section" style="display:none">

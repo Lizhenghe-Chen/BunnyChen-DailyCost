@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "DailyCost Vault",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "identifier": "com.bunnychen.dailycostvault",
   "mainBinaryName": "dailycost-vault",
   "build": {
@@ -27,6 +27,12 @@
     "active": true,
     "targets": "all",
     "createUpdaterArtifacts": true,
+    "resources": {
+      "../../dailycost-exporter-extension/*.js": "browser-extension/",
+      "../../dailycost-exporter-extension/*.html": "browser-extension/",
+      "../../dailycost-exporter-extension/*.json": "browser-extension/",
+      "../../dailycost-exporter-extension/*.png": "browser-extension/"
+    },
     "iOS": {
       "developmentTeam": "UQ3MD8G2W3"
     },

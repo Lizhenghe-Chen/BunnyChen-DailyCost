@@ -10,6 +10,7 @@ import { setPrecision, setCurrency, checkForUpdates, renderAutoUpdateStatus, sho
 import { initNavigation, loadItems } from './ui-home';
 import { showAddItemModal } from './ui-modal';
 import { initAnalytics } from './ui-analytics';
+import { notifyDataChanged } from './data-events';
 
 // ── iOS WKWebView 安全区兜底 ────────────────────────────
 // 已知问题：iOS WKWebView 首次布局时 env(safe-area-inset-*) 可能尚未计算
@@ -89,6 +90,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     setCurrency(v);
     await savePref('currency', v);
     loadItems();
+    notifyDataChanged();
   });
 
   // 语言选择器
@@ -98,6 +100,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await changeLang(langSelect.value as SupportedLang);
     translateDOM();
     loadItems();
+    notifyDataChanged();
     const { loadBatches } = await import('./ui-settings');
     loadBatches();
   });
@@ -153,7 +156,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         showToast(`🆕 发现新版本 ${info.version}，前往 Release 页面下载`, 'info');
       }
     } catch (e) {
-      console.error("[DailyCost][UI] 后台检查更新失败:", e);
       // 后台检查失败时在关于区域显示错误，方便用户排查
       const statusEl = document.getElementById('update-status');
       if (statusEl) {

@@ -52,9 +52,30 @@ Check this section before importing to make sure the file you have is in the **r
 
 ### 1. Install the Browser Extension
 
-Supported browsers: **Chrome**, **Edge**, and other Chromium-based browsers.
+Supported browsers: **Chrome**, **Edge**, and other Chromium-based browsers — one extension covers all three platforms.
 
-[📥 Download the Browser Extension (zip)](assets/dailycost-exporter-extension.zip){: .md-button .md-button--primary }
+#### Desktop (recommended): one-click install inside the app
+
+The extension ships with the desktop installer, so there is **nothing extra to download**:
+
+1. Open **Settings → 🧩 Browser Extension** in DailyCost Vault and click **Install Extension**
+   The app extracts the extension into a `browser-extension` folder inside the system app-data directory and opens your chosen browser's extensions page
+2. On that page turn on **Developer mode** → click **Load unpacked** → select that folder
+3. Back in the app click **I installed it, check now** — a ✅ status means you're done
+   (browsers take a few seconds to persist extension records; the app retries automatically)
+
+!!! tip "That folder is hidden by default — no need to hunt for it"
+    The app gives you three shortcuts: click **Show in File Manager** to open it, click **Copy Path** to grab the path, or press `⌘⇧G` (macOS) / `Ctrl+V` (Windows) / `Ctrl+L` (Linux) in the browser's file picker and paste the path.
+
+!!! warning "The last step must be clicked manually"
+    Browsers do not let an external program install an extension silently (Chrome 137+ removed the `--load-extension` flag, and macOS/Windows block external installs from local CRX files), so **Load unpacked** cannot be automated by the app — but it is a **one-time** step.
+
+!!! tip "Auto-updates with the app — no reinstall"
+    The extraction path is fixed, so **the extension updates in place when the app updates**. Do not delete that folder manually — deleting it breaks the extension, though restarting the app restores it.
+
+#### Web version / manual install: download the zip
+
+[📥 Download the Browser Extension (zip)](assets/dailycost-exporter-extension.zip){: .md-button }
 
 1. **Download and unzip** the zip above to get the `dailycost-exporter-extension` folder, which contains `manifest.json`. Do not delete this folder.
 2. Open your browser's extensions page and turn on **Developer mode**:
@@ -66,6 +87,8 @@ Supported browsers: **Chrome**, **Edge**, and other Chromium-based browsers.
 ![Install Extension](assets/install-extension.png){ loading=lazy }
 
 > 💡 After you finish exporting, you can remove the extension from the extensions page. This will not affect your CSV files. **We recommend removing it after use.**
+>
+> If you previously installed an older copy by unzipping the zip, the app will flag it as an **"Old copy found"** — remove it from the extensions page so two copies don't run at once and duplicate your exports.
 
 ---
 

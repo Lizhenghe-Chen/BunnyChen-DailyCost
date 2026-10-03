@@ -8,6 +8,8 @@ use std::sync::Mutex;
 use tauri::{Emitter, Manager};
 use tauri::State;
 
+mod browser_ext;
+
 // ── 数据结构 ──────────────────────────────────────────────
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -43,15 +45,15 @@ pub struct ImportResult {
     pub message: String,
 }
 
-/// 微信收支总览（支出/回款/净支出）
+/// 账单平台收支总览（支出/回款/净支出）
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct WechatOverview {
+pub struct BillOverview {
     pub expense_total: f64,
     pub income_total: f64,
     pub net_total: f64,
 }
 
-/// 微信收入按交易类型分组（退款/转账/红包/收款等）
+/// 回款按交易类型分组（退款/转账/红包/收款等）
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct IncomeByType {
     pub income_type: String,
@@ -59,7 +61,7 @@ pub struct IncomeByType {
     pub count: i64,
 }
 
-/// 微信收入按交易对方分组（回款来源 Top）
+/// 回款按交易对方分组（回款来源 Top）
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct IncomePeer {
     pub peer: String,
@@ -67,22 +69,22 @@ pub struct IncomePeer {
     pub count: i64,
 }
 
-/// 微信月度收支（支出/回款/净支出）
+/// 账单平台月度收支（支出/回款/净支出）
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct WechatMonthly {
+pub struct BillMonthly {
     pub month: String,
     pub expense: f64,
     pub income: f64,
     pub net: f64,
 }
 
-/// 微信收支分析（供分析页「微信收支」区块一次拉取）
+/// 账单平台收支分析（供分析页「微信/支付宝收支」区块一次拉取，按 platform 区分）
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct WechatAnalytics {
-    pub overview: WechatOverview,
+pub struct BillAnalytics {
+    pub overview: BillOverview,
     pub by_type: Vec<IncomeByType>,
     pub peers: Vec<IncomePeer>,
-    pub monthly: Vec<WechatMonthly>,
+    pub monthly: Vec<BillMonthly>,
 }
 
 // ── 数据库状态 ────────────────────────────────────────────
@@ -786,10 +788,10 @@ fn parse_wechat_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
         for row in r { if let Ok(oid) = row { wx_dedup.insert(oid); } }
     }
 
-    // ── 批量预加载已有微信收入交易单号（收入与支出单号互不冲突，独立去重）──
+    // ── 批量预加载已有微信收入交易单号（收入与支出单号互不冲突，独立去重；按平台隔离）──
     let mut income_dedup: HashSet<String> = HashSet::new();
     {
-        let mut stmt = conn.prepare("SELECT order_id FROM income_records")
+        let mut stmt = conn.prepare("SELECT order_id FROM income_records WHERE platform='wx'")
             .map_err(|e| format!("预加载微信收入去重键失败: {}", e))?;
         let r = stmt.query_map([], |row| row.get::<_, String>(0)).map_err(|e| e.to_string())?;
         for row in r { if let Ok(oid) = row { income_dedup.insert(oid); } }
@@ -1041,6 +1043,16 @@ fn is_valid_alipay_status(status: &str) -> bool {
     matches!(status, "" | "/" | "交易成功" | "支付成功")
 }
 
+/// 支付宝收入状态排除白名单：仅跳过未到账/关闭/失败的流水。
+/// 支付宝「收入」行状态既有交易成功，也有交易关闭（关闭=未真正入账，须排除）——
+/// 与微信不同，微信收入行无「交易关闭」这类状态，故采用白名单/排除法差异处理
+fn is_invalid_alipay_income_status(status: &str) -> bool {
+    matches!(
+        status,
+        "交易关闭" | "已关闭" | "等待付款" | "交易失败" | "支付失败" | "已撤销" | "已冻结" | "失败" | "已失效" | "退款失败"
+    )
+}
+
 /// 支付宝店铺/对方名回退：交易对方 → 对方账号 → 交易分类（列被滤掉时逐级回退）
 fn alipay_peer(cols: &AlipayCols, row: &[String]) -> String {
     for key in [cols.peer, cols.peer_account, cols.tx_type] {
@@ -1053,7 +1065,9 @@ fn alipay_peer(cols: &AlipayCols, row: &[String]) -> String {
 }
 
 /// 支付宝账单核心解析：输入任意来源的二维数组（CSV 或 xlsx），统一映射入库。
-/// 仅导入「支出」订单进物品表；「收入」「不计收支」（退款/转账/提现/余额宝等）跳过。
+/// 支出 → orders 物品表；「收入」行（收钱码收款/转账红包入账等）与退款到账行
+/// （交易状态=退款成功）→ income_records 回款表（platform='alipay'）；其余
+/// 「不计收支」（余额宝/基金/账户存取等自转账）噪声跳过。
 /// 金额/日期解析复用微信的通用函数（parse_wechat_amount / wechat_date_to_iso）。
 fn parse_alipay_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -> Result<ImportResult, String> {
     // 定位表头行（跳过前 ~20 行元数据/提示/分隔线，至多扫描前 200 行）
@@ -1076,6 +1090,15 @@ fn parse_alipay_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
         for row in r { if let Ok(oid) = row { ali_dedup.insert(oid); } }
     }
 
+    // ── 批量预加载已有支付宝收入交易单号（收入与支出单号互不冲突，独立去重）──
+    let mut income_dedup: HashSet<String> = HashSet::new();
+    {
+        let mut stmt = conn.prepare("SELECT order_id FROM income_records WHERE platform='alipay'")
+            .map_err(|e| format!("预加载支付宝收入去重键失败: {}", e))?;
+        let r = stmt.query_map([], |row| row.get::<_, String>(0)).map_err(|e| e.to_string())?;
+        for row in r { if let Ok(oid) = row { income_dedup.insert(oid); } }
+    }
+
     // ── 预加载订单平台（京东/淘宝）索引：支付宝可支付淘宝，拦截跨平台重复 ──
     let order_platform = build_order_platform_index(conn)?;
 
@@ -1083,6 +1106,7 @@ fn parse_alipay_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
     let tx = conn.unchecked_transaction().map_err(|e| format!("开启事务失败: {}", e))?;
 
     let mut imported: usize = 0;
+    let mut income_imported: usize = 0;
     let mut skipped: usize = 0;
     let mut cross_dup: usize = 0;
 
@@ -1098,6 +1122,44 @@ fn parse_alipay_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
         if order_id.is_empty() {
             skipped += 1; continue;
         }
+
+        // ── 收支分流（收/支列存在时）──
+        // 回款 = 支付宝账单中真正流入的流水：
+        // ① 「收入」行（收钱码收款/转账红包入账等）——状态非失败/关闭才导入（交易关闭=未入账）；
+        // ② 退款到账行（交易状态=退款成功）——支付宝退款多为「不计收支」且交易分类不定（可能为
+        //    原分类如交通出行），故按状态识别而非按交易分类。余额宝/基金/账户存取等自转账噪声不入。
+        if !income_expense_missing {
+            let ie = cols.cell(row, cols.income_expense);
+            let status = cols.cell(row, cols.status);
+            let is_refund_back = status == "退款成功";
+            let is_income = ie == "收入" && !is_invalid_alipay_income_status(status);
+            if is_refund_back || is_income {
+                let amount = parse_wechat_amount(cols.cell(row, cols.amount)).abs();
+                if amount <= 0.0 { skipped += 1; continue; }
+                if income_dedup.contains(order_id) { skipped += 1; continue; }
+                let order_time = normalize_date(&wechat_date_to_iso(cols.cell(row, cols.time)));
+                let import_batch = format!("支付宝 · {}", file_name);
+                // 回款类型：退款到账统一归为「退款」，收入行保留交易分类（收入/转账红包等）
+                let income_type = if is_refund_back { "退款" } else { cols.cell(row, cols.tx_type) };
+                tx.execute(
+                    "INSERT INTO income_records (order_id, platform, peer, income_type, amount, order_time, status, import_batch)
+                     VALUES (?1, 'alipay', ?2, ?3, ?4, ?5, ?6, ?7)",
+                    params![
+                        order_id,
+                        alipay_peer(&cols, row),
+                        income_type,
+                        amount,
+                        order_time,
+                        status,
+                        import_batch,
+                    ],
+                ).map_err(|e| format!("收入记录插入失败: {}", e))?;
+                income_dedup.insert(order_id.to_string());
+                income_imported += 1;
+                continue;
+            }
+        }
+
         // 仅导入支出流水；收入/不计收支/退款（退款、转账、提现、余额宝等）跳过
         let income_expense = if income_expense_missing { "支出" } else { cols.cell(row, cols.income_expense) };
         if income_expense != "支出" {
@@ -1179,12 +1241,12 @@ fn parse_alipay_rows(rows: &[Vec<String>], file_name: &str, conn: &Connection) -
     tx.commit().map_err(|e| format!("提交事务失败: {}", e))?;
 
     Ok(ImportResult {
-        success: true,
+        success: imported > 0 || income_imported > 0,
         imported,
         skipped,
         message: format!(
-            "成功导入 {} 条支出，跳过 {} 条（收入/不计收支/退款/重复/无效）\n平台: 支付宝 | 文件名: {}{}",
-            imported, skipped, file_name,
+            "成功导入 {} 条支出、{} 条收入（回款），跳过 {} 条（不计收支/重复/无效）\n平台: 支付宝 | 文件名: {}{}",
+            imported, income_imported, skipped, file_name,
             cross_dup_note(cross_dup)
         ),
     })
@@ -1632,38 +1694,23 @@ fn calc_daily_avg(price: f64, order_time: &str, end_date: &str, sell_price: f64)
 
 #[tauri::command]
 fn import_csv(path: String, state: State<DbState>) -> Result<ImportResult, String> {
-    let result = (|| -> Result<ImportResult, String> {
     let file_path = PathBuf::from(&path);
     if !file_path.exists() {
         return Err(format!("文件不存在: {}", path));
     }
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     parse_csv_file(&file_path, &conn)
-    })();
-    match &result {
-        Ok(r) => log::info!("[DailyCost] 导入 CSV 完成 '{}' 导入{} 跳过{}", path, r.imported, r.skipped),
-        Err(e) => log::error!("[DailyCost] 导入 CSV 失败 '{}': {}", path, e),
-    }
-    result
 }
 
 #[tauri::command]
 fn import_multiple_csv(paths: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
-    let result = (|| -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_import_csv(&paths, &conn)
-    })();
-    match &result {
-        Ok(r) => log::info!("[DailyCost] 批量导入完成 文件{} 导入{} 跳过{}", paths.len(), r.imported, r.skipped),
-        Err(e) => log::error!("[DailyCost] 批量导入失败: {}", e),
-    }
-    result
 }
 
 /// 从文本内容导入 CSV（Android content:// URI 场景）
 #[tauri::command]
 fn import_csv_content(contents: Vec<String>, file_names: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
-    let result = (|| -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let mut total_imported = 0usize;
     let mut total_skipped = 0usize;
@@ -1691,29 +1738,18 @@ fn import_csv_content(contents: Vec<String>, file_names: Vec<String>, state: Sta
         skipped: total_skipped,
         message: format!("成功导入 {} 条，跳过 {} 条\n{}", total_imported, total_skipped, messages.join("\n")),
     })
-    })();
-    match &result {
-        Ok(r) => log::info!("[DailyCost] 文本导入完成 导入{} 跳过{}", r.imported, r.skipped),
-        Err(e) => log::error!("[DailyCost] 文本导入失败: {}", e),
-    }
-    result
 }
 
 /// 从 xlsx 字节内容导入（Android content:// URI 场景：xlsx 为二进制，readTextFile 读不了）
 /// 账单为单文件导出，此处按单文件处理（data 为一个 xlsx 的字节，file_names 取首个作批次名）
 #[tauri::command]
 fn import_xlsx_content(data: Vec<u8>, file_names: Vec<String>, state: State<DbState>) -> Result<ImportResult, String> {
-    let result = (|| -> Result<ImportResult, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let file_name = file_names.get(0).map(|s| s.as_str()).unwrap_or("账单");
-    parse_bill_xlsx_content(&data, file_name.trim_end_matches(".xlsx"), &conn)
-        .map_err(|e| format!("{}: {}", file_name, e))
-    })();
-    match &result {
-        Ok(r) => log::info!("[DailyCost] xlsx 导入完成 导入{} 跳过{}", r.imported, r.skipped),
-        Err(e) => log::error!("[DailyCost] xlsx 导入失败: {}", e),
+    match parse_bill_xlsx_content(&data, file_name.trim_end_matches(".xlsx"), &conn) {
+        Ok(r) => Ok(r),
+        Err(e) => Err(format!("{}: {}", file_name, e)),
     }
-    result
 }
 
 /// 批量导入 CSV/Excel 的共享逻辑（命令和拖拽共用）
@@ -1757,7 +1793,6 @@ fn batch_import_csv(paths: &[String], conn: &Connection) -> Result<ImportResult,
 
 #[tauri::command]
 fn get_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
-    let result = (|| -> Result<Vec<OrderItem>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     let mut stmt = conn
@@ -1796,11 +1831,6 @@ fn get_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
         .collect();
 
     Ok(items)
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 查询物品失败: {}", e);
-    }
-    result
 }
 
 /// 从查询结果映射为 OrderItem 列表（get_items / get_archived_items 共用）
@@ -1836,20 +1866,13 @@ fn map_order_rows(stmt: &mut rusqlite::Statement) -> Result<Vec<OrderItem>, Stri
 
 #[tauri::command]
 fn clear_all_data(state: State<DbState>) -> Result<String, String> {
-    let result = (|| -> Result<String, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("DELETE FROM orders", [])
         .map_err(|e| e.to_string())?;
-    // 微信收入/回款记录一并清除
+    // 账单收入/回款记录（微信/支付宝）一并清除
     conn.execute("DELETE FROM income_records", [])
         .map_err(|e| e.to_string())?;
     Ok("所有数据已清除".to_string())
-    })();
-    match &result {
-        Ok(_) => log::warn!("[DailyCost] 清空所有数据（orders + income_records）"),
-        Err(e) => log::error!("[DailyCost] 清空所有数据失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -1870,7 +1893,6 @@ fn update_item(
     category: String,
     state: State<DbState>,
 ) -> Result<(), String> {
-    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let order_time = normalize_date(&order_time);
     let end_date_clean = if end_date.is_empty() { String::new() } else { normalize_date(&end_date) };
@@ -1882,12 +1904,6 @@ fn update_item(
         params![product_name, product_url, order_time, total_price, quantity, emoji, platform, store_name, model_style, end_date_clean, end_reason, sell_price, category, id],
     ).map_err(|e| e.to_string())?;
     Ok(())
-    })();
-    match &result {
-        Ok(()) => log::info!("[DailyCost] 更新物品 id={} name='{}' platform={} price={}", id, product_name, platform, total_price),
-        Err(e) => log::error!("[DailyCost] 更新物品失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command(rename_all = "snake_case")]
@@ -1908,7 +1924,6 @@ fn add_item(
     category: String,
     state: State<DbState>,
 ) -> Result<i64, String> {
-    let result = (|| -> Result<i64, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let import_batch = "自定义";
     let order_time = normalize_date(&order_time);
@@ -1918,48 +1933,27 @@ fn add_item(
         params![order_id, platform, store_name, product_name, model_style, quantity, total_price, order_time, import_batch, product_url, emoji, end_date, end_reason, sell_price, category],
     ).map_err(|e| e.to_string())?;
     Ok(conn.last_insert_rowid())
-    })();
-    match &result {
-        Ok(id) => log::info!("[DailyCost] 添加物品 id={} name='{}' platform={} price={}", id, product_name, platform, total_price),
-        Err(e) => log::error!("[DailyCost] 添加物品失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command]
 fn delete_item(id: i64, state: State<DbState>) -> Result<(), String> {
-    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("DELETE FROM orders WHERE id=?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
-    })();
-    match &result {
-        Ok(()) => log::info!("[DailyCost] 永久删除物品 id={}", id),
-        Err(e) => log::error!("[DailyCost] 永久删除物品失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command]
 fn archive_item(id: i64, state: State<DbState>) -> Result<(), String> {
-    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("UPDATE orders SET archived = 1 WHERE id=?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
-    })();
-    match &result {
-        Ok(()) => log::info!("[DailyCost] 归档物品 id={}", id),
-        Err(e) => log::error!("[DailyCost] 归档物品失败: {}", e),
-    }
-    result
 }
 
 /// 智能分类：根据 mode 参数仅覆盖 category 或 emoji（"category" | "emoji"）
 #[tauri::command]
 fn recalculate_categories(state: State<DbState>, mode: String) -> Result<(usize, usize), String> {
-    let result = (|| -> Result<(usize, usize), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     let column = if mode == "emoji" { "emoji" } else { "category" };
@@ -2001,32 +1995,18 @@ fn recalculate_categories(state: State<DbState>, mode: String) -> Result<(usize,
     }
 
     Ok((total, updated))
-    })();
-    match &result {
-        Ok((total, updated)) => log::info!("[DailyCost] 智能分类 mode={} total={} updated={}", mode, total, updated),
-        Err(e) => log::error!("[DailyCost] 智能分类失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command]
 fn restore_item(id: i64, state: State<DbState>) -> Result<(), String> {
-    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute("UPDATE orders SET archived = 0 WHERE id=?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
-    })();
-    match &result {
-        Ok(()) => log::info!("[DailyCost] 恢复物品 id={}", id),
-        Err(e) => log::error!("[DailyCost] 恢复物品失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command]
 fn get_archived_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
-    let result = (|| -> Result<Vec<OrderItem>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     let mut stmt = conn
@@ -2041,63 +2021,31 @@ fn get_archived_items(state: State<DbState>) -> Result<Vec<OrderItem>, String> {
         .map_err(|e| e.to_string())?;
 
     map_order_rows(&mut stmt)
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 查询归档物品失败: {}", e);
-    }
-    result
 }
 
 #[tauri::command]
 fn get_archived_count(state: State<DbState>) -> Result<i64, String> {
-    let result = (|| -> Result<i64, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.query_row("SELECT COUNT(*) FROM orders WHERE archived = 1", [], |row| row.get(0))
         .map_err(|e| e.to_string())
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 查询归档数量失败: {}", e);
-    }
-    result
 }
 
 #[tauri::command]
 fn batch_restore_items(ids: Vec<i64>, state: State<DbState>) -> Result<usize, String> {
-    let result = (|| -> Result<usize, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_execute(&conn, "UPDATE orders SET archived = 0", &ids)
-    })();
-    match &result {
-        Ok(n) => log::info!("[DailyCost] 批量恢复 {} 条", n),
-        Err(e) => log::error!("[DailyCost] 批量恢复失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command]
 fn batch_delete_items(ids: Vec<i64>, state: State<DbState>) -> Result<usize, String> {
-    let result = (|| -> Result<usize, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_execute(&conn, "DELETE FROM orders", &ids)
-    })();
-    match &result {
-        Ok(n) => log::warn!("[DailyCost] 批量永久删除 {} 条", n),
-        Err(e) => log::error!("[DailyCost] 批量永久删除失败: {}", e),
-    }
-    result
 }
 
 #[tauri::command]
 fn batch_archive_items(ids: Vec<i64>, state: State<DbState>) -> Result<usize, String> {
-    let result = (|| -> Result<usize, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     batch_execute(&conn, "UPDATE orders SET archived = 1", &ids)
-    })();
-    match &result {
-        Ok(n) => log::info!("[DailyCost] 批量归档 {} 条", n),
-        Err(e) => log::error!("[DailyCost] 批量归档失败: {}", e),
-    }
-    result
 }
 
 /// 批量 SQL 执行（构建 IN (?) 占位符）
@@ -2111,7 +2059,6 @@ fn batch_execute(conn: &Connection, sql: &str, ids: &[i64]) -> Result<usize, Str
 
 #[tauri::command]
 fn export_database(path: String, state: State<DbState>) -> Result<String, String> {
-    let result = (|| -> Result<String, String> {
     let source = state.db.lock().map_err(|e| e.to_string())?;
     let mut destination = Connection::open(&path)
         .map_err(|e| format!("无法创建备份文件: {}", e))?;
@@ -2119,12 +2066,6 @@ fn export_database(path: String, state: State<DbState>) -> Result<String, String
         .map_err(|e| format!("创建备份失败: {}", e))?;
     backup.step(-1).map_err(|e| format!("导出失败: {}", e))?;
     Ok(format!("数据库已导出到: {}", path))
-    })();
-    match &result {
-        Ok(_) => log::info!("[DailyCost] 导出数据库 → {}", path),
-        Err(e) => log::error!("[DailyCost] 导出数据库失败: {}", e),
-    }
-    result
 }
 
 // ── Android 导出：ContentResolver 原生复制 ─────────────────
@@ -2173,12 +2114,8 @@ fn export_database_to_uri(
                     dest_uri,
                 },
             )
-            .map_err(|e| {
-                log::error!("[DailyCost] Android 导出数据库失败: {}", e);
-                format!("复制到所选位置失败: {}", e)
-            })?;
+            .map_err(|e| format!("复制到所选位置失败: {}", e))?;
         let _ = fs::remove_file(&tmp_path);
-        log::info!("[DailyCost] Android 导出数据库 → {}", dest_uri);
         Ok("数据库已导出".to_string())
     }
 
@@ -2192,10 +2129,8 @@ fn export_database_to_uri(
 
 #[tauri::command(rename_all = "snake_case")]
 fn import_database(path: String, state: State<DbState>) -> Result<String, String> {
-    let result = (|| -> Result<String, String> {
     let src = PathBuf::from(&path);
     if !src.exists() {
-        log::error!("[DailyCost] 导入数据库失败: 文件不存在 ({})", path);
         return Err("文件不存在".to_string());
     }
 
@@ -2208,19 +2143,12 @@ fn import_database(path: String, state: State<DbState>) -> Result<String, String
     restore_result?;
 
     Ok("数据库导入成功，数据已恢复".to_string())
-    })();
-    match &result {
-        Ok(_) => log::info!("[DailyCost] 导入数据库 → {}", path),
-        Err(e) => log::error!("[DailyCost] 导入数据库失败: {}", e),
-    }
-    result
 }
 
 /// Android 端导入：open() 返回 content:// URI，Rust 无法直接读取
 /// 前端用 fs 插件 readFile 读字节 → 本命令写入临时文件后走同一恢复逻辑
 #[tauri::command(rename_all = "snake_case")]
 fn import_database_bytes(data: Vec<u8>, state: State<DbState>) -> Result<String, String> {
-    let result = (|| -> Result<String, String> {
     let temp_path = state.db_path.with_extension("import.tmp");
     let _ = fs::remove_file(&temp_path);
     fs::write(&temp_path, &data).map_err(|e| format!("无法准备导入文件: {}", e))?;
@@ -2230,12 +2158,6 @@ fn import_database_bytes(data: Vec<u8>, state: State<DbState>) -> Result<String,
     restore_result?;
 
     Ok("数据库导入成功，数据已恢复".to_string())
-    })();
-    match &result {
-        Ok(_) => log::info!("[DailyCost] Android 导入数据库（{} 字节）", data.len()),
-        Err(e) => log::error!("[DailyCost] Android 导入数据库失败: {}", e),
-    }
-    result
 }
 
 /// 校验并恢复导入的数据库（从临时文件导入到主库），import_database / import_database_bytes 共用
@@ -2444,19 +2366,22 @@ fn import_example_data(state: State<DbState>) -> Result<String, String> {
             imported += 1;
         }
 
-        // ── 微信回款（income_records）：独立去重（order_id），与支出单号互不冲突 ──
-        let mut income_dedup: HashSet<String> = HashSet::new();
+        // ── 账单回款（income_records）：按 (platform, order_id) 独立去重，与支出单号互不冲突 ──
+        let mut income_dedup: HashSet<(String, String)> = HashSet::new();
         {
-            let mut stmt = conn.prepare("SELECT order_id FROM income_records")
+            let mut stmt = conn.prepare("SELECT platform, order_id FROM income_records")
                 .map_err(|e| e.to_string())?;
-            let r = stmt.query_map([], |row| row.get::<_, String>(0))
+            let r = stmt.query_map([], |row| {
+                Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
+            })
                 .map_err(|e| e.to_string())?;
-            for row in r { if let Ok(oid) = row { income_dedup.insert(oid); } }
+            for row in r { if let Ok(key) = row { income_dedup.insert(key); } }
         }
 
         let mut income_imported = 0usize;
         for income in &example_incomes {
-            if income_dedup.contains(&income.order_id) {
+            let key = (income.platform.clone(), income.order_id.clone());
+            if income_dedup.contains(&key) {
                 skipped += 1;
                 continue;
             }
@@ -2468,12 +2393,12 @@ fn import_example_data(state: State<DbState>) -> Result<String, String> {
                     income.amount, normalize_date(&income.order_time), income.status, income.import_batch,
                 ],
             ).map_err(|e| format!("回款插入失败: {}", e))?;
-            income_dedup.insert(income.order_id.clone());
+            income_dedup.insert(key);
             income_imported += 1;
         }
 
         Ok(format!(
-            "成功导入 {} 条物品、{} 条微信回款，跳过 {} 条已存在",
+            "成功导入 {} 条物品、{} 条账单回款，跳过 {} 条已存在",
             imported, income_imported, skipped
         ))
     })();
@@ -2481,27 +2406,17 @@ fn import_example_data(state: State<DbState>) -> Result<String, String> {
     // 清理临时文件
     let _ = fs::remove_file(&tmp_path);
 
-    match &result {
-        Ok(msg) => log::info!("[DailyCost] 导入示例数据: {}", msg),
-        Err(e) => log::error!("[DailyCost] 导入示例数据失败: {}", e),
-    }
     result
 }
 
 #[tauri::command]
 fn save_setting(key: String, value: String, state: State<DbState>) -> Result<(), String> {
-    let result = (|| -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute(
         "INSERT INTO settings (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = ?2",
         params![key, value],
     ).map_err(|e| e.to_string())?;
     Ok(())
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 保存设置 '{}' 失败: {}", key, e);
-    }
-    result
 }
 
 #[tauri::command]
@@ -2533,15 +2448,61 @@ fn get_database_path(state: State<DbState>) -> String {
 
 #[tauri::command]
 fn get_log_path(app: tauri::AppHandle) -> Result<String, String> {
-    // tauri-plugin-log 的 LogDir target 使用 file_name = "logs" → app_log_dir/logs.log
-    // macOS: ~/Library/Logs/{identifier}/logs.log；Windows/Linux: {localData}/{identifier}/logs/logs.log
+    let log_path = get_log_file_path(&app)?;
+    Ok(log_path.to_string_lossy().to_string())
+}
+
+/// 日志文件路径（tauri-plugin-log 的 LogDir target 使用 file_name = "logs" → app_log_dir/logs.log）
+/// macOS: ~/Library/Logs/{identifier}/logs.log；Windows/Linux: {localData}/{identifier}/logs/logs.log
+fn get_log_file_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
     let log_dir = app.path().app_log_dir().map_err(|e| e.to_string())?;
-    Ok(log_dir.join("logs.log").to_string_lossy().to_string())
+    Ok(log_dir.join("logs.log"))
+}
+
+/// 桌面端导出日志：把日志文件复制到用户选择的路径
+#[tauri::command]
+fn export_log(path: String, app: tauri::AppHandle) -> Result<String, String> {
+    let src = get_log_file_path(&app)?;
+    if !src.exists() {
+        return Err("日志文件不存在".to_string());
+    }
+    fs::copy(&src, &path).map_err(|e| format!("导出日志失败: {}", e))?;
+    Ok(format!("日志已导出到: {}", path))
+}
+
+/// Android 端导出日志：save() 返回 content:// URI，Rust 无法直接写入
+/// 复用 BackupPlugin.copyFileToUri（ContentResolver.openOutputStream）复制到所选位置
+#[tauri::command(rename_all = "snake_case")]
+fn export_log_to_uri(dest_uri: String, app: tauri::AppHandle) -> Result<String, String> {
+    let src = get_log_file_path(&app)?;
+    if !src.exists() {
+        return Err("日志文件不存在".to_string());
+    }
+
+    #[cfg(target_os = "android")]
+    {
+        let handle = &app.state::<BackupAndroid>().0;
+        handle
+            .run_mobile_plugin::<serde_json::Value>(
+                "copyFileToUri",
+                CopyToUriArgs {
+                    source_path: src.to_string_lossy().to_string(),
+                    dest_uri,
+                },
+            )
+            .map_err(|e| format!("复制到所选位置失败: {}", e))?;
+        Ok("日志已导出".to_string())
+    }
+
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = (dest_uri, app);
+        Err("该命令仅支持 Android".to_string())
+    }
 }
 
 #[tauri::command]
 fn get_import_batches(state: State<DbState>) -> Result<Vec<String>, String> {
-    let result = (|| -> Result<Vec<String>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare("SELECT DISTINCT import_batch FROM orders WHERE import_batch != '' ORDER BY import_batch")
@@ -2552,11 +2513,6 @@ fn get_import_batches(state: State<DbState>) -> Result<Vec<String>, String> {
         .collect::<Result<Vec<String>, _>>()
         .map_err(|e| e.to_string())?;
     Ok(batches)
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 查询导入批次失败: {}", e);
-    }
-    result
 }
 
 /// Tauri Updater 仅支持桌面系统；移动端必须回退到手动下载。
@@ -2588,110 +2544,123 @@ fn month_range_cond(start: &Option<String>, end: &Option<String>, col: &str) -> 
     (cond, params)
 }
 
-/// 微信收支分析：总览（支出/回款/净支出）、回款结构（按交易类型）、回款来源 Top、月度收支
-/// start/end 为可选时间范围（"YYYY-MM"），仅统计该区间内的微信支出与回款
+/// 账单平台收支分析：总览（支出/回款/净支出）、回款结构（按交易类型）、回款来源 Top、月度收支
+/// platform 为账单平台（wx/alipay）；start/end 为可选时间范围（"YYYY-MM"），仅统计该区间内的支出与回款
 #[tauri::command]
-fn get_wechat_analytics(
-    state: State<DbState>,
+fn get_bill_analytics(
+    platform: String,
     start: Option<String>,
     end: Option<String>,
-) -> Result<WechatAnalytics, String> {
-    let result = (|| -> Result<WechatAnalytics, String> {
+    state: State<DbState>,
+) -> Result<BillAnalytics, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
 
     // 时间范围条件（orders 与 income_records 均按 order_time 前缀匹配）
     let (time_cond, time_params) = month_range_cond(&start, &end, "order_time");
 
-    // ── 总览：微信支出（orders）+ 微信回款（income_records）──
+    // 每类查询统一前置 platform 参数（?1），后接时间范围参数
+    let bill_params = |tail: &[String]| {
+        let mut v = vec![platform.clone()];
+        v.extend_from_slice(tail);
+        v
+    };
+
+    // ── 总览：平台支出（orders）+ 平台回款（income_records）──
     let expense_total: f64 = conn
         .query_row(
             &format!(
                 "SELECT COALESCE(SUM(total_price), 0) FROM orders
-                 WHERE platform='wx' AND archived=0{}",
+                 WHERE platform=?1 AND archived=0{}",
                 time_cond
             ),
-            rusqlite::params_from_iter(time_params.iter()),
+            rusqlite::params_from_iter(bill_params(&time_params).iter()),
             |r| r.get(0),
         )
         .map_err(|e| e.to_string())?;
     let income_total: f64 = conn
         .query_row(
             &format!(
-                "SELECT COALESCE(SUM(amount), 0) FROM income_records WHERE 1=1{}",
+                "SELECT COALESCE(SUM(amount), 0) FROM income_records WHERE platform=?1{}",
                 time_cond
             ),
-            rusqlite::params_from_iter(time_params.iter()),
+            rusqlite::params_from_iter(bill_params(&time_params).iter()),
             |r| r.get(0),
         )
         .map_err(|e| e.to_string())?;
-    let overview = WechatOverview {
+    let overview = BillOverview {
         expense_total,
         income_total,
         net_total: expense_total - income_total,
     };
 
     // ── 回款结构：按交易类型分组（含"退款"的类型统一归为"退款"，避免商户名碎片化）──
-    let mut stmt = conn
-        .prepare(
-            &format!(
-                "SELECT CASE WHEN income_type LIKE '%退款%' THEN '退款'
-                        WHEN income_type = '' THEN '未知'
-                        ELSE income_type END AS t,
-                        SUM(amount) AS total, COUNT(*) AS cnt
-                 FROM income_records WHERE 1=1{} GROUP BY t ORDER BY total DESC",
-                time_cond
-            ),
-        )
-        .map_err(|e| e.to_string())?;
-    let by_type: Vec<IncomeByType> = stmt
-        .query_map(rusqlite::params_from_iter(time_params.iter()), |row| {
-            Ok(IncomeByType {
-                income_type: row.get(0)?,
-                total: row.get(1)?,
-                count: row.get(2)?,
+    let by_type: Vec<IncomeByType> = {
+        let mut stmt = conn
+            .prepare(
+                &format!(
+                    "SELECT CASE WHEN income_type LIKE '%退款%' THEN '退款'
+                            WHEN income_type = '' THEN '未知'
+                            ELSE income_type END AS t,
+                            SUM(amount) AS total, COUNT(*) AS cnt
+                     FROM income_records WHERE platform=?1{} GROUP BY t ORDER BY total DESC",
+                    time_cond
+                ),
+            )
+            .map_err(|e| e.to_string())?;
+        let rows = stmt
+            .query_map(rusqlite::params_from_iter(bill_params(&time_params).iter()), |row| {
+                Ok(IncomeByType {
+                    income_type: row.get(0)?,
+                    total: row.get(1)?,
+                    count: row.get(2)?,
+                })
             })
-        })
-        .map_err(|e| e.to_string())?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| e.to_string())?;
+            .map_err(|e| e.to_string())?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| e.to_string())?;
+        rows
+    };
 
     // ── 回款来源 Top 10：按交易对方分组 ──
-    let mut stmt = conn
-        .prepare(
-            &format!(
-                "SELECT COALESCE(NULLIF(peer, ''), '未知') AS p, SUM(amount) AS total, COUNT(*) AS cnt
-                 FROM income_records WHERE 1=1{} GROUP BY p ORDER BY total DESC LIMIT 10",
-                time_cond
-            ),
-        )
-        .map_err(|e| e.to_string())?;
-    let peers: Vec<IncomePeer> = stmt
-        .query_map(rusqlite::params_from_iter(time_params.iter()), |row| {
-            Ok(IncomePeer {
-                peer: row.get(0)?,
-                total: row.get(1)?,
-                count: row.get(2)?,
+    let peers: Vec<IncomePeer> = {
+        let mut stmt = conn
+            .prepare(
+                &format!(
+                    "SELECT COALESCE(NULLIF(peer, ''), '未知') AS p, SUM(amount) AS total, COUNT(*) AS cnt
+                     FROM income_records WHERE platform=?1{} GROUP BY p ORDER BY total DESC LIMIT 10",
+                    time_cond
+                ),
+            )
+            .map_err(|e| e.to_string())?;
+        let rows = stmt
+            .query_map(rusqlite::params_from_iter(bill_params(&time_params).iter()), |row| {
+                Ok(IncomePeer {
+                    peer: row.get(0)?,
+                    total: row.get(1)?,
+                    count: row.get(2)?,
+                })
             })
-        })
-        .map_err(|e| e.to_string())?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| e.to_string())?;
+            .map_err(|e| e.to_string())?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| e.to_string())?;
+        rows
+    };
 
-    // ── 月度收支：合并微信支出与回款，按月对齐 ──
+    // ── 月度收支：合并平台支出与回款，按月对齐 ──
     let mut monthly_map: HashMap<String, (f64, f64)> = HashMap::new();
     {
         let mut stmt = conn
             .prepare(
                 &format!(
                     "SELECT substr(order_time, 1, 7) AS m, SUM(total_price) AS total
-                     FROM orders WHERE platform='wx' AND archived=0 AND order_time <> ''{}
+                     FROM orders WHERE platform=?1 AND archived=0 AND order_time <> ''{}
                      GROUP BY m",
                     time_cond
                 ),
             )
             .map_err(|e| e.to_string())?;
         let rows = stmt
-            .query_map(rusqlite::params_from_iter(time_params.iter()), |row| {
+            .query_map(rusqlite::params_from_iter(bill_params(&time_params).iter()), |row| {
                 Ok((row.get::<_, String>(0)?, row.get::<_, f64>(1)?))
             })
             .map_err(|e| e.to_string())?;
@@ -2706,13 +2675,13 @@ fn get_wechat_analytics(
             .prepare(
                 &format!(
                     "SELECT substr(order_time, 1, 7) AS m, SUM(amount) AS total
-                     FROM income_records WHERE order_time <> ''{} GROUP BY m",
+                     FROM income_records WHERE platform=?1 AND order_time <> ''{} GROUP BY m",
                     time_cond
                 ),
             )
             .map_err(|e| e.to_string())?;
         let rows = stmt
-            .query_map(rusqlite::params_from_iter(time_params.iter()), |row| {
+            .query_map(rusqlite::params_from_iter(bill_params(&time_params).iter()), |row| {
                 Ok((row.get::<_, String>(0)?, row.get::<_, f64>(1)?))
             })
             .map_err(|e| e.to_string())?;
@@ -2722,21 +2691,16 @@ fn get_wechat_analytics(
             }
         }
     }
-    let mut monthly: Vec<WechatMonthly> = monthly_map
+    let mut monthly: Vec<BillMonthly> = monthly_map
         .into_iter()
-        .map(|(month, (expense, income))| WechatMonthly { month, expense, income, net: expense - income })
+        .map(|(month, (expense, income))| BillMonthly { month, expense, income, net: expense - income })
         .collect();
     monthly.sort_by(|a, b| a.month.cmp(&b.month));
 
-    Ok(WechatAnalytics { overview, by_type, peers, monthly })
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 微信分析查询失败: {}", e);
-    }
-    result
+    Ok(BillAnalytics { overview, by_type, peers, monthly })
 }
 
-/// 微信收入/回款记录（单条流水，供回款来源下钻查看）
+/// 回款记录（单条流水，供回款来源下钻查看）
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct IncomeRecord {
     pub id: i64,
@@ -2749,23 +2713,22 @@ pub struct IncomeRecord {
     pub import_batch: String,
 }
 
-/// 查询某个回款来源（交易对方）的全部收入流水，按时间倒序（回款来源 Top 榜点击下钻）
+/// 查询某平台某回款来源（交易对方）的全部收入流水，按时间倒序（回款来源 Top 榜点击下钻）
 #[tauri::command]
-fn get_income_records_by_peer(peer: String, state: State<DbState>) -> Result<Vec<IncomeRecord>, String> {
-    let result = (|| -> Result<Vec<IncomeRecord>, String> {
+fn get_income_records_by_peer(platform: String, peer: String, state: State<DbState>) -> Result<Vec<IncomeRecord>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
-    // 展示层将空 peer 回退为「未知」，此处还原为空值以精确匹配
+    // 展示层将空 peer 回退为「未知」，此处还原为空值以精确匹配；平台隔离避免跨平台同名对方混淆
     let is_unknown = peer == "未知";
     let mut stmt = if is_unknown {
         conn.prepare(
             "SELECT id, order_id, peer, income_type, amount, order_time, status, import_batch
-             FROM income_records WHERE (peer = '' OR peer IS NULL) ORDER BY order_time DESC",
+             FROM income_records WHERE platform=?1 AND (peer = '' OR peer IS NULL) ORDER BY order_time DESC",
         )
         .map_err(|e| e.to_string())?
     } else {
         conn.prepare(
             "SELECT id, order_id, peer, income_type, amount, order_time, status, import_batch
-             FROM income_records WHERE peer = ?1 ORDER BY order_time DESC",
+             FROM income_records WHERE platform=?1 AND peer = ?2 ORDER BY order_time DESC",
         )
         .map_err(|e| e.to_string())?
     };
@@ -2782,19 +2745,14 @@ fn get_income_records_by_peer(peer: String, state: State<DbState>) -> Result<Vec
         })
     };
     let rows = (if is_unknown {
-        stmt.query_map([], map_row)
+        stmt.query_map(params![platform.clone()], map_row)
     } else {
-        stmt.query_map(params![peer], map_row)
+        stmt.query_map(params![platform.clone(), peer.clone()], map_row)
     })
     .map_err(|e| e.to_string())?
     .collect::<Result<Vec<_>, _>>()
     .map_err(|e| e.to_string())?;
     Ok(rows)
-    })();
-    if let Err(e) = &result {
-        log::error!("[DailyCost] 回款下钻查询失败: {}", e);
-    }
-    result
 }
 
 // ── 应用入口 ──────────────────────────────────────────────
@@ -2873,7 +2831,7 @@ pub fn run() {
             fs::create_dir_all(&app_data_dir).expect("Failed to create app data dir");
 
             let db_path = get_db_path(app_data_dir);
-            log::info!("[DailyCost] Database path: {}", db_path.display());
+            println!("Database path: {:?}", db_path);
 
             let conn = Connection::open(&db_path).expect("Failed to open database");
             conn.execute_batch("PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;")
@@ -2886,13 +2844,16 @@ pub fn run() {
                 db_path: db_path.clone(),
             });
 
-            // 启动日志：确认日志通路与版本/平台信息（写入 logs.log，终端 Stdout 同步可见）
-            log::info!(
-                "[DailyCost] 应用启动 v{} · platform {} · db {}",
-                env!("CARGO_PKG_VERSION"),
-                std::env::consts::OS,
-                db_path.display()
-            );
+            // ── 浏览器扩展：随应用升级自动同步（内容一致时零写入） ──
+            #[cfg(not(any(target_os = "android", target_os = "ios")))]
+            {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    if let Err(e) = browser_ext::sync_extension(&handle) {
+                        log::warn!("浏览器扩展释放失败: {e}");
+                    }
+                });
+            }
 
             // ── 拖拽导入监听 ──
             let window = app.get_webview_window("main").expect("no main window");
@@ -2948,6 +2909,8 @@ pub fn run() {
             export_database_to_uri,
             import_database,
             import_database_bytes,
+            export_log,
+            export_log_to_uri,
             import_example_data,
             get_database_path,
             get_log_path,
@@ -2969,8 +2932,11 @@ pub fn run() {
             clear_all_data,
             get_import_batches,
             updater_is_supported,
-            get_wechat_analytics,
+            get_bill_analytics,
             get_income_records_by_peer,
+            browser_ext::get_extension_env,
+            browser_ext::install_browser_extension,
+            browser_ext::open_browser_extensions_page,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

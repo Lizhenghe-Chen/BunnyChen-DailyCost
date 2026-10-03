@@ -3,17 +3,15 @@
 // 颜色全部通过 CSS 变量读取，自动跟随亮/暗主题
 
 import { Chart, registerables } from 'chart.js';
-import { invoke } from '@tauri-apps/api/core';
 import { aggregatePlatform, aggregateCategory, sumTotal, sumDaily, recoveredStats, monthlyTrend } from './aggregate';
-import { isTauri, formatPrice, formatNetCost, platformLabel, categoryLabel, showToast, escapeHtml, debounce } from './utils';
+import { formatPrice, formatNetCost, platformLabel, categoryLabel, showToast, escapeHtml, debounce } from './utils';
 import { platformColor, chartPalette, hexToRgba } from './theme';
 import { renderEmoji } from './custom-emoji';
 import { t } from './i18n';
-import type { MonthlySpending, PlatformSummary, CategorySummary, OrderItem, WechatAnalytics, IncomeByType, IncomePeer, IncomeRecord, WechatMonthly } from './types';
-import { browserDb } from './db';
+import type { MonthlySpending, PlatformSummary, CategorySummary, OrderItem, BillAnalytics, IncomeByType, IncomePeer, IncomeRecord, BillMonthly } from './types';
 import { onDataChange } from './data-events';
 import { showItemModal } from './ui-modal';
-import { fetchItems } from './data';
+import { fetchItems, fetchBillAnalytics, fetchIncomeRecordsByPeer } from './data';
 
 Chart.register(...registerables);
 
@@ -21,8 +19,8 @@ Chart.register(...registerables);
 let _monthlyChart: Chart | null = null;
 let _platformChart: Chart | null = null;
 let _categoryChart: Chart | null = null;
-let _wechatMonthlyChart: Chart | null = null;
-let _wechatTypeChart: Chart | null = null;
+let _billCharts: Chart[] = [];   // 收支区块图表（多平台并列，重建前统一销毁）
+let _billOpen = new Set<string>(); // 用户展开过的收支平台（默认折叠，重建后保持记忆）
 
 // ── 加载状态（避免每次切页都重建图表）──────────────────
 let _analyticsLoaded = false; // 分析页是否已完成至少一次加载
@@ -143,20 +141,11 @@ async function renderAllFromState(seq: number): Promise<void> {
   renderCategoryChart(category);
   renderPlatformCompare(filtered, platform);
 
-  // 微信收支：仅当平台筛选为「全部」或「微信」时显示（与当前筛选维度一致），
-  // 否则传空数据使其隐藏——避免看京东时还出现微信数据造成困惑
-  let wechat: WechatAnalytics;
-  if (!_rangePlatform || _rangePlatform === 'wx') {
-    const rangeStart = _rangeMonths[_rangeStartMonth];
-    const rangeEnd = _rangeMonths[_rangeEndMonth === -1 ? _rangeMonths.length - 1 : _rangeEndMonth];
-    wechat = isTauri()
-      ? await invoke<WechatAnalytics>('get_wechat_analytics', { start: rangeStart, end: rangeEnd })
-      : browserDb.getWechatAnalytics(rangeStart, rangeEnd);
-  } else {
-    wechat = { overview: { expense_total: 0, income_total: 0, net_total: 0 }, by_type: [], peers: [], monthly: [] };
-  }
+  // 账单平台收支（微信/支付宝）：「全部」→ 两平台并列展示；顶部选微信/支付宝 → 仅展示该平台；
+  // 其他订单平台(jd/tb/steam)下不展示，避免看京东时还出现微信数据造成困惑
+  const billSections = await resolveBillSections(seq);
   if (seq !== _analyticsLoadSeq) return;
-  renderWechatSection(wechat);
+  renderBillSections(billSections);
 
   // 月度消费图
   renderFilteredMonthlyChart();
@@ -555,13 +544,16 @@ function showMonthlyDrilldown(month: string): void {
 
 // ── 平台 & 分类饼图（label 统一走 i18n categoryLabel） ──
 
-/** 渲染可点击 HTML 图例，点击切换对应扇区显隐 */
+/** 渲染可点击 HTML 图例（元素级），点击切换对应扇区显隐 */
 function renderDonutLegend(
-  elId: string, chart: Chart | null,
-  labels: string[], palette: string[], total: number, values: number[],
+  el: HTMLElement | null,
+  chart: Chart,
+  labels: string[],
+  palette: string[],
+  values: number[],
 ): void {
-  const el = document.getElementById(elId);
-  if (!el || !chart) return;
+  if (!el) return;
+  const total = values.reduce((s, v) => s + v, 0);
   const meta = chart.getDatasetMeta(0);
   el.innerHTML = labels.map((label, i) => {
     const pct = ((values[i] / total) * 100).toFixed(1);
@@ -591,23 +583,14 @@ function filterTinySlices<T extends { total: number }>(data: T[]): T[] {
   return data.filter(d => d.total / total >= 0.0005);
 }
 
-/** 统一渲染环形图 + HTML 图例（平台/分类/微信回款结构三处共用） */
-function renderDonutChart(
-  canvasId: string,
-  wrapId: string,
-  legendId: string,
+/** 创建环形图实例（平台/分类/收支回款结构三处共用的环形图配置） */
+function createDonutChart(
+  canvas: HTMLCanvasElement,
   labels: string[],
   values: number[],
-  emptyMsg: string,
   hoverVar: string,                                                              // '--chart-2' | '--chart-3'
   tooltipLabel: (label: string, value: number, pct: string) => string,
-): Chart | null {
-  const canvas = prepareChartCanvas(wrapId, canvasId);
-  if (!canvas) return null;
-  if (values.length === 0) {
-    renderEmptyChart(wrapId, emptyMsg);
-    return null;
-  }
+): { chart: Chart; palette: string[] } {
   const palette = chartPalette(values.length);
   const bgCard = cssVar('--bg-card');
   const total = values.reduce((s, v) => s + v, 0);
@@ -638,7 +621,28 @@ function renderDonutChart(
       },
     },
   });
-  renderDonutLegend(legendId, chart, labels, palette, total, values);
+  return { chart, palette };
+}
+
+/** 平台/分类环形图入口（id 定位 canvas/图例，包装 prepareChartCanvas/空态） */
+function renderDonutChart(
+  canvasId: string,
+  wrapId: string,
+  legendId: string,
+  labels: string[],
+  values: number[],
+  emptyMsg: string,
+  hoverVar: string,
+  tooltipLabel: (label: string, value: number, pct: string) => string,
+): Chart | null {
+  const canvas = prepareChartCanvas(wrapId, canvasId);
+  if (!canvas) return null;
+  if (values.length === 0) {
+    renderEmptyChart(wrapId, emptyMsg);
+    return null;
+  }
+  const { chart, palette } = createDonutChart(canvas, labels, values, hoverVar, tooltipLabel);
+  renderDonutLegend(document.getElementById(legendId), chart, labels, palette, values);
   return chart;
 }
 
@@ -672,78 +676,171 @@ function renderCategoryChart(data: CategorySummary[]): void {
   );
 }
 
-// ── 微信收支区块 ────────────────────────────────────────
+// ── 账单平台收支区块（微信 / 支付宝）────────────────
 
-/** 渲染「微信收支」区块：KPI + 月度支出/回款/净支出图 + 回款结构 + 来源 Top 榜 */
-function renderWechatSection(data: WechatAnalytics): void {
-  const section = document.getElementById('wechat-section');
-  if (!section) return;
+/** 账单平台收支的可选平台 */
+type BillPlatform = 'wx' | 'alipay';
 
-  // 无任何微信数据时隐藏整个区块
-  if (data.overview.expense_total === 0 && data.overview.income_total === 0) {
-    section.style.display = 'none';
-    return;
+/** 当前筛选需展示的收支平台：顶部选「微信/支付宝」→ 该平台；「全部」→ 微信与支付宝并列；其他订单平台 → 无 */
+function billTargets(): BillPlatform[] {
+  if (_rangePlatform === 'wx' || _rangePlatform === 'alipay') return [_rangePlatform as BillPlatform];
+  return _rangePlatform ? [] : ['wx', 'alipay'];
+}
+
+/** 该平台在区间内是否有收支数据（支出与回款均为空即视为无） */
+function isBillEmpty(data: BillAnalytics): boolean {
+  return data.overview.expense_total === 0 && data.overview.income_total === 0;
+}
+
+/** 平台收支标题的品牌 emoji（微信绿 / 支付宝蓝） */
+function billEmoji(platform: BillPlatform): string {
+  return platform === 'alipay' ? '💙' : '💚';
+}
+
+/**
+ * 拉取当前筛选下各收支平台的数据（复用统一取数层 fetchBillAnalytics）。
+ * 「全部」模式下微信与支付宝各自独立拉取；仅返回有数据的平台，避免空区块占位。
+ */
+async function resolveBillSections(seq: number): Promise<Array<{ platform: BillPlatform; data: BillAnalytics }>> {
+  const targets = billTargets();
+  if (targets.length === 0) return [];
+  const rangeStart = _rangeMonths[_rangeStartMonth];
+  const rangeEnd = _rangeMonths[_rangeEndMonth === -1 ? _rangeMonths.length - 1 : _rangeEndMonth];
+  const result: Array<{ platform: BillPlatform; data: BillAnalytics }> = [];
+  for (const platform of targets) {
+    const data = await fetchBillAnalytics(platform, rangeStart, rangeEnd);
+    if (seq !== _analyticsLoadSeq) return [];
+    if (!isBillEmpty(data)) result.push({ platform, data });
   }
-  section.style.display = 'block';
+  return result;
+}
 
-  // KPI 迷你卡片：微信支出 / 微信回款 / 微信净支出 / 回款率
-  const kpiEl = document.getElementById('wechat-kpi');
+// ── 收支区块的多实例渲染（「全部」时每平台一份，复用同一模板与填充逻辑）──
+
+/** 登记一个收支区块图表（重建前统一销毁，避免 canvas 被替换后实例泄漏） */
+function trackBillChart(chart: Chart | null): void {
+  if (chart) _billCharts.push(chart);
+}
+
+/** 销毁并清空当前全部收支图表 */
+function destroyBillCharts(): void {
+  for (const c of _billCharts) c.destroy();
+  _billCharts = [];
+}
+
+/** 渲染「平台收支」区块组：容器清空重建，每个平台克隆一份模板并填充（「全部」=并列多份） */
+function renderBillSections(list: Array<{ platform: BillPlatform; data: BillAnalytics }>): void {
+  const container = document.getElementById('bill-sections');
+  if (!container) return;
+  destroyBillCharts();
+  container.innerHTML = '';
+  for (const { platform, data } of list) {
+    // 默认折叠；用户展开过的平台恢复展开（此时图表在可见容器内正常建图）
+    const root = cloneBillSection() as HTMLDetailsElement;
+    if (_billOpen.has(platform)) root.open = true;
+    // 先挂载再填充：Chart.js 需要 canvas 已接入文档才能读取尺寸
+    container.appendChild(root);
+    bindBillCollapse(root, platform);
+    fillBillSection(root, platform, data);
+  }
+}
+
+/**
+ * 绑定区块折叠交互：折叠/展开即同步记忆；首次展开折叠态建出的图表时重排尺寸
+ * （details 折叠时 canvas 宽高为 0，展开后需 resize 恢复）
+ */
+function bindBillCollapse(root: HTMLDetailsElement, platform: BillPlatform): void {
+  root.addEventListener('toggle', () => {
+    if (root.open) {
+      _billOpen.add(platform);
+      requestAnimationFrame(() => {
+        void root.offsetHeight; // 强制重排，确保 details 内容已进入可见布局再量尺寸
+        for (const c of _billCharts) {
+          if (root.contains(c.canvas)) c.resize();
+        }
+      });
+    } else {
+      _billOpen.delete(platform);
+    }
+  });
+}
+
+/** 从 <template> 克隆一份收支区块空壳（标题/KPI/月度图/回款结构/回款来源） */
+function cloneBillSection(): HTMLElement {
+  const tpl = document.getElementById('bill-section-template') as HTMLTemplateElement;
+  return tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+}
+
+/** 填充单个收支区块（标题随平台命名 + KPI + 月度图 + 回款结构 + 回款来源 Top；全部基于 root 内元素，天然支持多实例并列） */
+function fillBillSection(root: HTMLElement, platform: BillPlatform, data: BillAnalytics): void {
+  const platName = platformLabel(platform);
+  const emojiEl = root.querySelector('.bill-section-emoji');
+  const titleEl = root.querySelector('.bill-section-title');
+  if (emojiEl) emojiEl.textContent = billEmoji(platform);
+  if (titleEl) titleEl.textContent = t('analytics.bill_title', { platform: platName });
+  const subMonthly = root.querySelector('.bill-subtitle-monthly');
+  const subType = root.querySelector('.bill-subtitle-type');
+  if (subMonthly) subMonthly.textContent = t('analytics.bill_monthly_title');
+  if (subType) subType.textContent = t('analytics.bill_type_title');
+
+  // KPI 迷你卡片：平台支出 / 平台回款 / 平台净支出 / 回款率
+  const kpiEl = root.querySelector('.bill-kpi');
   if (kpiEl) {
-    const incomeCount = data.by_type.reduce((s, t) => s + t.count, 0);
+    const incomeCount = data.by_type.reduce((s, x) => s + x.count, 0);
     const rate = data.overview.expense_total > 0
       ? ((data.overview.income_total / data.overview.expense_total) * 100).toFixed(1)
       : '0.0';
-    kpiEl.innerHTML = `
+    (kpiEl as HTMLElement).innerHTML = `
       <div class="wechat-kpi-card">
-        <span class="kpi-label">${t('analytics.wechat_expense')}</span>
+        <span class="kpi-label">${t('analytics.bill_expense', { platform: platName })}</span>
         <span class="kpi-value">${formatPrice(data.overview.expense_total)}</span>
       </div>
       <div class="wechat-kpi-card">
-        <span class="kpi-label">${t('analytics.wechat_income')}</span>
+        <span class="kpi-label">${t('analytics.bill_income', { platform: platName })}</span>
         <span class="kpi-value">${formatPrice(data.overview.income_total)}<span class="kpi-unit"> ${t('analytics.income_unit', { count: incomeCount })}</span></span>
       </div>
       <div class="wechat-kpi-card">
-        <span class="kpi-label">${t('analytics.wechat_net')}</span>
+        <span class="kpi-label">${t('analytics.bill_net', { platform: platName })}</span>
         <span class="kpi-value">${formatPrice(data.overview.net_total)}</span>
       </div>
       <div class="wechat-kpi-card wechat-kpi-secondary">
-        <span class="kpi-label">${t('analytics.wechat_refund_rate')}</span>
+        <span class="kpi-label">${t('analytics.bill_refund_rate')}</span>
         <span class="kpi-value">${rate}<span class="kpi-unit">%</span></span>
       </div>`;
   }
 
-  renderWechatMonthlyChart(data.monthly);
-  renderWechatTypeChart(data.by_type);
-  renderWechatPeers(data.peers);
+  renderBillMonthlyIn(root, platform, data.monthly);
+  renderBillTypeIn(root, data.by_type);
+  renderBillPeersIn(root, platform, data.peers);
 }
 
-/** 微信月度图表：支出/回款双柱 + 净支出折线 */
-function renderWechatMonthlyChart(data: WechatMonthly[]): void {
-  const canvas = prepareChartCanvas('chart-wechat-monthly-wrap', 'chart-wechat-monthly');
-  if (!canvas) return;
-  if (_wechatMonthlyChart) { _wechatMonthlyChart.destroy(); _wechatMonthlyChart = null; }
-
-  const wrap = document.getElementById('chart-wechat-monthly-wrap');
-  if (data.length === 0) {
-    if (wrap) wrap.innerHTML = `<div class="chart-empty">📊<p>${t('analytics.no_monthly_data')}</p></div>`;
+/** 平台月度图：支出/回款双柱 + 净支出折线（图例随平台命名）——渲染进该区块 root */
+function renderBillMonthlyIn(root: HTMLElement, platform: BillPlatform, monthly: BillMonthly[]): void {
+  const wrap = root.querySelector<HTMLElement>('.bill-monthly-wrap');
+  if (!wrap) return;
+  if (monthly.length === 0) {
+    wrap.innerHTML = `<div class="chart-empty">📊<p>${t('analytics.no_monthly_data')}</p></div>`;
     return;
   }
+  const canvas = wrap.querySelector('canvas');
+  if (!canvas) return;
 
-  const labels = data.map(d => d.month);
+  const platName = platformLabel(platform);
+  const labels = monthly.map(d => d.month);
   const expenseColor = cssVar('--chart-0');
   const incomeColor = cssVar('--chart-1');
   const netColor = cssVar('--chart-2');
   const textSecondary = cssVar('--text-secondary');
   const borderColor = cssVar('--border');
 
-  _wechatMonthlyChart = new Chart(canvas, {
+  trackBillChart(new Chart(canvas, {
     data: {
       labels,
       datasets: [
         {
           type: 'bar',
-          label: t('analytics.wechat_expense'),
-          data: data.map(d => d.expense),
+          label: t('analytics.bill_expense', { platform: platName }),
+          data: monthly.map(d => d.expense),
           backgroundColor: hexToRgba(expenseColor, 0.75),
           borderColor: expenseColor,
           borderWidth: 1,
@@ -752,8 +849,8 @@ function renderWechatMonthlyChart(data: WechatMonthly[]): void {
         },
         {
           type: 'bar',
-          label: t('analytics.wechat_income'),
-          data: data.map(d => d.income),
+          label: t('analytics.bill_income', { platform: platName }),
+          data: monthly.map(d => d.income),
           backgroundColor: hexToRgba(incomeColor, 0.55),
           borderColor: incomeColor,
           borderWidth: 1,
@@ -762,8 +859,8 @@ function renderWechatMonthlyChart(data: WechatMonthly[]): void {
         },
         {
           type: 'line',
-          label: t('analytics.wechat_net'),
-          data: data.map(d => d.net),
+          label: t('analytics.bill_net', { platform: platName }),
+          data: monthly.map(d => d.net),
           borderColor: netColor,
           backgroundColor: hexToRgba(netColor, 0.08),
           borderWidth: 2,
@@ -798,52 +895,60 @@ function renderWechatMonthlyChart(data: WechatMonthly[]): void {
         },
       },
     },
-  });
+  }));
 }
 
-/** 微信回款结构环形图：按交易类型（退款/转账/红包/收款等） */
-function renderWechatTypeChart(data: IncomeByType[]): void {
-  if (_wechatTypeChart) { _wechatTypeChart.destroy(); _wechatTypeChart = null; }
+/** 回款结构环形图 + 元素级图例：按交易类型（退款/转账/红包/收款等）——渲染进该区块 root */
+function renderBillTypeIn(root: HTMLElement, byType: IncomeByType[]): void {
+  const wrap = root.querySelector<HTMLElement>('.bill-type-wrap');
+  const legendEl = root.querySelector<HTMLElement>('.bill-type-legend');
+  if (!wrap) return;
 
   // 只保留金额 > 0 的类型；超出前 5 项聚合为「其他」，保持环形图与图例紧凑
-  const positive = data.filter(d => d.total > 0);
+  const positive = byType.filter(d => d.total > 0);
   let display = positive.slice(0, 5);
   const rest = positive.slice(5);
   if (rest.length > 0) {
     display = display.concat([{
-      income_type: t('analytics.wechat_other'),
+      income_type: t('analytics.bill_other'),
       total: rest.reduce((s, x) => s + x.total, 0),
       count: rest.reduce((s, x) => s + x.count, 0),
     }]);
   }
   // 尾部聚合后若占比仍 <0.05%（显示 0.0%）则直接丢弃，避免图例出现 0.0% 项
   display = filterTinySlices(display);
-  _wechatTypeChart = renderDonutChart(
-    'chart-wechat-type', 'chart-wechat-type-wrap', 'wechat-type-legend',
-    display.map(d => d.income_type),
-    display.map(d => d.total),
-    t('analytics.no_category_data'),
-    '--chart-3',
-    (label, value, pct) => `${label}: ${formatPrice(value)} (${pct}%)`,
-  );
-}
 
-/** 微信回款来源 Top 10 榜：按金额降序；点击行展开下钻面板查看该来源的流水细节 */
-const PEER_DEFAULT_LIMIT = 10;
-
-function renderWechatPeers(data: IncomePeer[]): void {
-  const el = document.getElementById('wechat-peers');
-  if (!el) return;
-  if (data.length === 0) {
-    el.innerHTML = '';
+  if (display.length === 0) {
+    if (legendEl) legendEl.innerHTML = '';
+    wrap.innerHTML = `<div class="chart-empty">🍩<p>${t('analytics.no_category_data')}</p></div>`;
     return;
   }
 
-  const visible = data.slice(0, PEER_DEFAULT_LIMIT);
-  const max = data[0]?.total || 1;
+  const canvas = wrap.querySelector('canvas');
+  if (!canvas) return;
+  const values = display.map(d => d.total);
+  const labels = display.map(d => d.income_type);
+  const { chart, palette } = createDonutChart(
+    canvas, labels, values, '--chart-3',
+    (label, value, pct) => `${label}: ${formatPrice(value)} (${pct}%)`,
+  );
+  trackBillChart(chart);
+  renderDonutLegend(legendEl, chart, labels, palette, values);
+}
+
+/** 回款来源 Top 10 榜（该区块）：按金额降序；点击行展开下钻面板查看该来源的流水细节 */
+const PEER_DEFAULT_LIMIT = 10;
+
+function renderBillPeersIn(root: HTMLElement, platform: BillPlatform, peers: IncomePeer[]): void {
+  const el = root.querySelector<HTMLElement>('.bill-peers');
+  if (!el) return;
+  if (peers.length === 0) { el.innerHTML = ''; return; }
+
+  const visible = peers.slice(0, PEER_DEFAULT_LIMIT);
+  const max = peers[0]?.total || 1;
 
   el.innerHTML = `
-    <h3 class="chart-subtitle">${t('analytics.wechat_peers_title')}</h3>
+    <h3 class="chart-subtitle">${t('analytics.bill_peers_title')}</h3>
     <div class="wechat-peer-list">
       ${visible.map((d, i) => `
         <div class="wechat-peer-row wechat-peer-clickable" data-peer="${escapeHtml(d.peer)}">
@@ -858,29 +963,29 @@ function renderWechatPeers(data: IncomePeer[]): void {
   // 点击行 → 展开/收起该来源的完整回款流水（手风琴式，再点即收起）
   el.querySelectorAll('.wechat-peer-clickable').forEach((row) => {
     row.addEventListener('click', () => {
-      const el = row as HTMLElement;
+      const rowEl = row as HTMLElement;
       // 已展开 → 收起
-      if (el.classList.contains('wechat-peer-active')) {
-        closeWechatPeerDrilldown();
+      if (rowEl.classList.contains('wechat-peer-active')) {
+        closeBillPeerDrilldown();
         return;
       }
-      const peer = el.dataset.peer || '';
+      const peer = rowEl.dataset.peer || '';
       const item = visible.find(p => p.peer === peer);
-      if (item) openWechatPeerDrilldown(el, item);
+      if (item) openBillPeerDrilldown(platform, rowEl, item);
     });
   });
 }
 
 /** 关闭已展开的回款来源下钻面板 */
-function closeWechatPeerDrilldown(): void {
+function closeBillPeerDrilldown(): void {
   document.querySelectorAll('.wechat-peer-drilldown').forEach(el => el.remove());
   document.querySelectorAll('.wechat-peer-clickable.wechat-peer-active').forEach(el => el.classList.remove('wechat-peer-active'));
 }
 
 /** 在点击行下方展开下钻面板：展示该交易对方的全部收入流水（手风琴式，类似月度柱状图下钻） */
-async function openWechatPeerDrilldown(row: HTMLElement, peer: IncomePeer): Promise<void> {
+async function openBillPeerDrilldown(platform: BillPlatform, row: HTMLElement, peer: IncomePeer): Promise<void> {
   // 只保留一个展开面板：先关闭其他行
-  closeWechatPeerDrilldown();
+  closeBillPeerDrilldown();
 
   // 面板直接插入到点击行之后（行内展开）
   const panel = document.createElement('div');
@@ -898,11 +1003,8 @@ async function openWechatPeerDrilldown(row: HTMLElement, peer: IncomePeer): Prom
 
   let records: IncomeRecord[];
   try {
-    records = isTauri()
-      ? await invoke<IncomeRecord[]>('get_income_records_by_peer', { peer: peer.peer })
-      : browserDb.getIncomeRecordsByPeer(peer.peer);
-  } catch (e) {
-    console.error("[DailyCost][UI] 回款下钻查询失败:", e);
+    records = await fetchIncomeRecordsByPeer(platform, peer.peer);
+  } catch {
     records = [];
   }
 

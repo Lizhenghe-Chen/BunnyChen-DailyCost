@@ -36,6 +36,15 @@
 
 建议按年份分段导出，而不是一次性导出全部历史。例如：先导出 2024 年，完成后再导出 2025 年。
 
+### Q: 导出完成但显示「0 个订单」怎么办？
+
+!!! warning "网站改版是主要原因"
+    淘宝 / 京东 / Steam 的网页结构与接口**随时可能变动**，扩展依赖页面数据导出，改版后可能出现导出失败（最典型就是「导出完成：0 个订单」）。
+
+请先确认：已登录、打开的是对应用户的订单页、扩展为最新版本（在应用里重新安装一次扩展）。
+
+如果仍为 0 条，多半是站点改版导致，请到 [GitHub Issues](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) 或 [B 站视频评论区](https://www.bilibili.com/video/BV1KZu16eE3v/) 反馈（附上平台与页面地址即可），一般会尽快适配。
+
 ### Q: 淘宝导出的 CSV 文件在哪里？
 
 导出完成后 Chrome 会自动下载到系统的「下载」文件夹。文件命名格式为 `tb-orders-YYYYMMDD-HHmmss-complete.csv`。

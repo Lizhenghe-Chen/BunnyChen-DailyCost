@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DailyCost Vault Exporter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "导出淘宝/京东/Steam 订单数据，用于 DailyCost Vault 资产数字化管理",
   "icons": {
     "16": "icon-16.png",
@@ -30,6 +30,8 @@
     "https://order.jd.com/*",
     "https://details.jd.com/*",
     "https://details.yiyaojd.com/*",
+    "https://svp.jd.com/*",
+    "https://api.m.jd.com/*",
     "https://store.steampowered.com/*"
   ],
   "content_scripts": [

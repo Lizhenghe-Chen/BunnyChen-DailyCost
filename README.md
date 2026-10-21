@@ -120,44 +120,44 @@
 
 **✅ 当前支持**
 
-- [X]  🐶 **京东** — 浏览器扩展一键导出 CSV
-- [X]  🛒 **淘宝 / 天猫** — 浏览器扩展一键导出 CSV
-- [X]  🎮 **Steam** — 浏览器扩展一键导出 CSV
-- [X]  💬 **微信账单** — 微信 App 内「下载账单」导出 CSV / Excel
-- [X]  💳 **支付宝** — 支付宝 App 内「交易明细」导出 CSV / Excel
+- [X] 🐶 **京东** — 浏览器扩展一键导出 CSV
+- [X] 🛒 **淘宝 / 天猫** — 浏览器扩展一键导出 CSV
+- [X] 🎮 **Steam** — 浏览器扩展一键导出 CSV
+- [X] 💬 **微信账单** — 微信 App 内「下载账单」导出 CSV / Excel
+- [X] 💳 **支付宝** — 支付宝 App 内「交易明细」导出 CSV / Excel
+
+> ⚠️ **扩展依赖的网站随时可能改版**：淘宝 / 京东 / Steam 调整网页或接口后，扩展可能出现导出失败（最典型是「导出完成：0 个订单」）。遇到问题请到 [Issues](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) 或 [B 站视频评论区](https://www.bilibili.com/video/BV1KZu16eE3v/) 反馈。
 
 **⏳ 敬请期待（规划中）**
 
-- [ ]  🛍️ **拼多多**
-- [ ]  🐟 **闲鱼**
-- [ ]  📱 **抖音商城**
+- [ ] 🛍️ **拼多多**
+- [ ] 🐟 **闲鱼**
+- [ ] 📱 **抖音商城**
 
 > 💡 「手动添加」支持任意平台（天猫、拼多多、闲鱼、得物等），不受上表批量导入限制。
 
 ### 运行设备
 
-
-| 平台         | 状态 | 下载                                                                                              |
-| :------------- | :----: | :-------------------------------------------------------------------------------------------------- |
-| 🖥️ Windows |  ✅  | [`.exe` / `.msi`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                 |
+| 平台         | 状态 | 下载                                                                                               |
+| :----------- | :--: | :------------------------------------------------------------------------------------------------- |
+| 🖥️ Windows |  ✅  | [`.exe` / `.msi`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)               |
 | 🍎 macOS     |  ✅  | [`.dmg`（Apple Silicon + Intel）](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases) |
-| 🐧 Linux     |  ✅  | [`.deb` / `.AppImage`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)            |
+| 🐧 Linux     |  ✅  | [`.deb` / `.AppImage`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)          |
 | 🤖 Android   |  ✅  | [`.apk`](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/releases)                          |
-| 🌐 Web       |  ✅  | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)                                |
-| 📱 iOS       |  🚧  | 敬请期待                                                                                          |
+| 🌐 Web       |  ✅  | [bunnychen.top](https://bunnychen.top/BunnyChen-Item-Bookkeeping/)                                  |
+| 📱 iOS       |  🚧  | 敬请期待                                                                                           |
 
 ---
 
 ## 🛠 技术架构
 
-
-| 层级     | 技术选型                        |
-| :--------- | :-------------------------------- |
+| 层级     | 技术选型                              |
+| :------- | :------------------------------------ |
 | 桌面框架 | **Tauri v2**                    |
 | 前端     | **TypeScript** + Vite           |
 | 后端     | **Rust**                        |
 | 数据库   | **SQLite**（rusqlite, bundled） |
-| UI       | Vanilla HTML/CSS                |
+| UI       | Vanilla HTML/CSS                      |
 
 ---
 

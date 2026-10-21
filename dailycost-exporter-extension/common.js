@@ -165,14 +165,28 @@
     /** 通过 background.js 代理 fetch（统一消息类型 DCE_FETCH） */
     async fetchText(url) {
       const u = new URL(url);
-      // 同源直接 fetch
-      if (u.hostname === location.hostname) {
+      // 先直连：content script 以页面源发起请求，京东详情页对 order.jd.com 已放行 CORS。
+      // 直连失败（CORS/CSP/网络）再退回 background 代理——代理不受 CORS 限制。
+      try {
         const r = await fetch(u.href, { credentials: "include", redirect: "follow" });
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return await r.text();
-      }
+        if (r.ok) return await r.text();
+      } catch (_) { /* 落到下面的代理 */ }
       // 跨域通过 background 代理
       const m = await chrome.runtime.sendMessage({ type: "DCE_FETCH", url });
+      if (!m || !m.ok) throw new Error(m?.error || "HTTP " + (m?.status || "error"));
+      return m.text || "";
+    },
+
+    /** POST 表单请求（京东订单接口用）；直连失败时退回 background 代理 */
+    async postForm(url, body) {
+      const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+      try {
+        const r = await fetch(url, { method: "POST", credentials: "include", headers, body });
+        if (r.ok) return await r.text();
+      } catch (_) { /* 落到下面的代理 */ }
+      const m = await chrome.runtime.sendMessage({
+        type: "DCE_FETCH", url, method: "POST", headers, body
+      });
       if (!m || !m.ok) throw new Error(m?.error || "HTTP " + (m?.status || "error"));
       return m.text || "";
     },

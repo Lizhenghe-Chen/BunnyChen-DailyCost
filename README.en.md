@@ -133,6 +133,8 @@ That's why **DailyCost Vault** exists — a **free, easy-to-use, feature-rich** 
 - [X]  💬 **WeChat Bills** — "Download Bill" inside the WeChat app (CSV / Excel)
 - [X]  💳 **Alipay** — "Transaction Details" export inside the Alipay app (CSV / Excel)
 
+> ⚠️ **The sites the extension relies on can change at any time**: when Taobao / JD.com / Steam redesign their pages or APIs, exporting may break (most typically "Export finished: 0 orders"). If that happens, please report it on [Issues](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) or in the [Bilibili video comments](https://www.bilibili.com/video/BV1KZu16eE3v/).
+
 **⏳ Coming Soon (in the pipeline)**
 
 - [ ]  🛍️ **Pinduoduo**

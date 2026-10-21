@@ -36,6 +36,15 @@ The following orders are automatically filtered during import:
 
 We recommend exporting by year segments rather than all history at once. For example: export 2024 first, then 2025 after completion.
 
+### Q: The export finished but shows "0 orders" — what now?
+
+!!! warning "Site redesigns are the main cause"
+    The page structure and APIs of Taobao / JD.com / Steam **can change at any time**. The extension reads data from those pages, so a redesign can break exporting (most typically "Export finished: 0 orders").
+
+First check that you are logged in, that the order page belongs to your account, and that the extension is up to date (reinstall it once from the app).
+
+If it still returns 0, a site redesign is the likely cause — please report it on [GitHub Issues](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) or in the [Bilibili video comments](https://www.bilibili.com/video/BV1KZu16eE3v/) (just include the platform and page URL) and it will usually be fixed quickly.
+
 ### Q: Where is the exported Taobao CSV file?
 
 Chrome automatically downloads to your system's "Downloads" folder after export. File naming format: `tb-orders-YYYYMMDD-HHmmss-complete.csv`.

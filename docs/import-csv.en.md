@@ -9,6 +9,10 @@
     - **Do not** rename the WeChat / Alipay email's **`.zip` archive** directly to `.xlsx` — always **unzip it first**, then import the `.csv` / `.xlsx` inside
     - Just import the **freshly downloaded original file** (no need to open it or convert it)
 
+!!! danger "The sites the extension relies on can change at any time"
+    The page structure and APIs of Taobao / JD.com / Steam **can change at any time**. When they do, exporting may break (most typically the export finishes but reports **"0 orders"**).
+    If that happens, please report it on [GitHub Issues](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) or in the [Bilibili video comments](https://www.bilibili.com/video/BV1KZu16eE3v/), and it will usually be fixed quickly.
+
 ---
 
 ## Supported Batch-Import Platforms

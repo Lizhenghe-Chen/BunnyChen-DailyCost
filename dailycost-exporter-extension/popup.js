@@ -38,6 +38,7 @@ function collectJDOptions() {
     status: el("jdStatus").value,
     delayMs: Math.max(300, Number(el("jdDelay").value || 1000)),
     maxPages: el("jdMaxPages").value.trim() ? Math.max(1, Number(el("jdMaxPages").value)) : null,
+    includeDetails: el("jdDetails")?.checked ?? false,
     maskSensitive: el("jdMask")?.checked ?? false
   };
 }

@@ -9,6 +9,10 @@
     - **不要**把微信 / 支付宝邮件里的 **`.zip` 压缩包**直接改名成 `.xlsx`——必须先**解压**，再导入里面的 `.csv` / `.xlsx`
     - 直接导入**刚下载的原始文件**即可（无需打开，也无需转码）
 
+!!! danger "扩展依赖的网站随时可能改版"
+    淘宝 / 京东 / Steam 的网页结构与接口**随时可能发生变动**，一旦改版，扩展可能导出失败（最典型是导出完成却显示「0 个订单」）。
+    遇到这种情况请到 [GitHub Issues](https://github.com/Lizhenghe-Chen/BunnyChen-DailyCost/issues) 或 [B 站视频评论区](https://www.bilibili.com/video/BV1KZu16eE3v/) 反馈，一般会尽快适配。
+
 ---
 
 ## 支持批量导入的平台

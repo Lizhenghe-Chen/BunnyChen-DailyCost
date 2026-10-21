@@ -59,8 +59,51 @@
     return Number.isFinite(n) ? Math.max(min, Math.min(max, Math.trunc(n))) : min;
   }
 
-  function buildListUrl(dateValue, statusValue, page) {
-    return `https://order.jd.com/center/list.action?d=${dateValue}&s=${statusValue}&page=${page}`;
+  // ---------- 列表接口 ----------
+  // 2026 年改版后，list.action 只下发空壳，#orderLite 由 React 前端调接口渲染；
+  // 直接抓 HTML 会拿到 0 个订单。这里改为调用前端同款接口拿 JSON。
+  // 该接口不要求 h5st 签名，仅依赖登录 cookie，且对 order.jd.com 放行 CORS。
+
+  const LIST_API = "https://api.m.jd.com/api";
+  const LIST_QUERY = "appid=order-jd-com&client=pc&clientVersion=1.0.0&loginType=3"
+    + "&functionId=pcorder_center_list&source=pc";
+  const PAGE_SIZE = 20;
+
+  // 接口在个别订单上只返回 orderState 数值、缺 orderStateName，按已验证取值兜底
+  const JD_STATE_NAMES = { 18: "已完成", "-100": "已取消" };
+
+  async function fetchJdOrderPage(dateValue, statusValue, page) {
+    const status = Number(statusValue);
+    const date = Number(dateValue);
+    const payload = {
+      page,
+      s: Number.isFinite(status) ? status : 4096,
+      d: Number.isFinite(date) ? date : 1
+    };
+    const url = `${LIST_API}?${LIST_QUERY}&t=${Date.now()}`;
+    const text = await D.postForm(url, "body=" + encodeURIComponent(JSON.stringify(payload)));
+
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch (_) {
+      throw new Error("订单接口返回非 JSON 内容，请刷新订单页并确认已登录");
+    }
+    if (json.success !== true) {
+      throw new Error("订单接口返回异常" + (json.msg ? "：" + json.msg : "")
+        + "，请刷新订单页并确认登录状态");
+    }
+    // 该日期段没有订单时，京东会省略 data 字段（只剩 revision/success/traceId 等），
+    // 这是正常空结果而非错误
+    if (!json.data) {
+      return { orders: [], total: 0, businessInfo: {} };
+    }
+    const data = json.data;
+    return {
+      orders: data.orderList || [],
+      total: Number(data.totalNum) || 0,
+      businessInfo: data.orderListBusinessInfo || {}
+    };
   }
 
   // ---------- 登录检测 ----------
@@ -81,81 +124,75 @@
 
   // ---------- 列表解析 ----------
 
-  function parseOrderList(doc, dateLabel, batch) {
-    const rows = doc.querySelectorAll(".td-void > tbody");
-    const orders = [];
+  // ---------- 列表解析（接口 JSON → CSV 行）----------
 
-    for (const row of rows) {
-      const rowId = row.getAttribute("id") || "";
-      if (rowId.startsWith("parent-")) continue;
+  function mapApiOrder(o, dateLabel, batch, businessInfo) {
+    const items = (o.wareList || []).map(w => ({
+      "商品编号": String(w.productId || ""),
+      "商品名称": D.clean(w.name),
+      "数量": w.num === undefined || w.num === null ? "" : String(w.num),
+      "商品链接": w.wareUrl ? stripQuery(normalizeUrl(w.wareUrl)) : ""
+    })).filter(it => it["商品名称"] || it["商品编号"]);
 
-      const orderLink = row.querySelector('[name="orderIdLinks"]');
-      const orderId = firstMatch(D.clean(orderLink?.textContent || ""), /\d{6,}/);
-      if (!orderId) continue;
+    const pay = o.itemPayInfo || {};
+    const consignee = o.consigneeInfo || {};
+    const detailUrl = o.itemDetail && o.itemDetail.itemUrl
+      ? normalizeUrl(o.itemDetail.itemUrl) : "";
+    const invoice = (businessInfo.invoiceMap || {})[o.orderId];
+    const beans = (businessInfo.orderSendBeansMap || {})[o.orderId];
+    // 售后按钮挂在商品级（wareButtonList），订单级（operateButtonList）只有删除/立即购买
+    const buttons = [
+      ...(o.operateButtonList || []).map(b => b.buttonName || ""),
+      ...(o.wareList || []).flatMap(w => (w.wareButtonList || []).map(b => b.buttonName || ""))
+    ].join(" ");
+    const parentId = o.parentId === undefined || o.parentId === null ? "" : String(o.parentId);
+    // 接口的 totalPrice 比列表页展示更准（补贴单页面显示 ¥0.00，接口给真实成交价）
+    // 注意：0 是有效金额，不能走 `|| ""`，否则零元单会被当成空值
+    const payAmount = pay.totalPrice ?? pay.price ?? pay.shouldPay;
+    // 部分订单（如京东大药房/互联网医院）只给 orderState 数值、缺 orderStateName，
+    // 按已验证的取值兜底，避免状态列空白
+    const stateInfo = o.statusInfo || {};
+    const stateName = D.clean(stateInfo.orderStateName)
+      || JD_STATE_NAMES[stateInfo.orderState] || "";
 
-      const amountTexts = [...row.querySelectorAll(".amount span")]
-        .map(n => D.clean(n.textContent)).filter(Boolean);
-      const rowText = D.clean(row.textContent);
-      const detailUrl = normalizeUrl(orderLink?.getAttribute("href"));
-      const items = parseGoods(row);
-
-      const pids = items.map(it => it["商品编号"]).filter(Boolean);
-      const pnames = items.map(it => it["商品名称"]).filter(Boolean);
-      const pqty = items.map(it => it["数量"]).filter(v => v !== "");
-
-      orders.push({
-        "导出批次": batch, "日期范围": dateLabel, "订单编号": orderId,
-        "父订单编号": row.getAttribute("data-parentid") || "",
-        "店铺名称": D.clean(textOf(row, ".shop-txt")),
-        "商品编号": pids.join("\n"), "商品名称": pnames.join("\n"),
-        "商品数量": pqty.join("\n"),
-        "实付金额": D.parseMoney(amountTexts.find(t => /¥|￥/.test(t)) || ""),
-        "支付方式": amountTexts.find(t => !/¥|￥/.test(t))
-          || firstMatch(rowText, /(在线支付|货到付款|公司转账|京东支付|微信支付|白条支付|银行卡支付)/),
-        "付款时间": "", "订单返豆": D.parseInteger(textOf(row, 'a[href*="myJingBean/list"]')),
-        "京豆抵扣金额": "", "下单时间": D.clean(textOf(row, ".dealtime")),
-        "订单状态": D.clean(textOf(row, ".status span")) || D.clean(textOf(row, ".order-status")),
-        "收货人姓名": D.clean(textOf(row, ".pc strong")),
-        "收货地址": D.clean(textOf(row, ".pc p:nth-of-type(1)")),
-        "收货人电话": D.clean(textOf(row, ".pc p:nth-of-type(2)")),
-        "物流公司": "", "快递单号": "", "配送方式": "",
-        "商品总价": "", "运费": "", "详情补充状态": "未请求",
-        "订单详情域名路径": detailUrl ? D.hostPath(detailUrl) : "",
-        "商品明细JSON": JSON.stringify(items),
-        "有售后入口": /申请售后/.test(rowText) ? "是" : "否",
-        "有发票入口": /查看发票|发票详情/.test(rowText) ? "是" : "否",
-        "_detailUrl": detailUrl
-      });
-    }
-    return orders;
-  }
-
-  function parseGoods(row) {
-    return [...row.querySelectorAll(".goods-item")].map(item => {
-      const link = item.querySelector(".p-name a.a-link") || item.querySelector(".p-name a") || item.querySelector("a");
-      const href = link ? normalizeUrl(link.getAttribute("href")) : "";
-      const pid = firstMatch(href, /\d{3,}/);
-      const qty = D.clean(textOf(item, ".goods-number")).replace(/^x/i, "");
-      return {
-        "商品编号": pid || "",
-        "商品名称": D.clean(link ? link.textContent : textOf(item, ".p-name")),
-        "数量": qty,
-        "商品链接": href ? stripQuery(href) : ""
-      };
-    }).filter(it => it["商品名称"] || it["商品编号"]);
-  }
-
-  function hasListEnded(doc) {
-    if (doc.querySelector(".empty-box")) return true;
-    return !!(doc.querySelector(".next-disabled")) || !doc.querySelector(".next");
+    return {
+      "导出批次": batch, "日期范围": dateLabel,
+      "订单编号": String(o.orderId || ""),
+      "父订单编号": parentId === "0" ? "" : parentId,
+      "店铺名称": D.clean((o.shopInfo || {}).shopName),
+      "商品编号": items.map(it => it["商品编号"]).filter(Boolean).join("\n"),
+      "商品名称": items.map(it => it["商品名称"]).filter(Boolean).join("\n"),
+      "商品数量": items.map(it => it["数量"]).filter(v => v !== "").join("\n"),
+      "实付金额": payAmount === undefined || payAmount === null
+        ? "" : D.parseMoney(String(payAmount)),
+      "支付方式": D.clean(pay.paymentTypeName),
+      "付款时间": "",
+      "订单返豆": beans && beans.beanNumTotal ? String(beans.beanNumTotal) : "",
+      "京豆抵扣金额": "",
+      "下单时间": D.clean(o.dateSubmit),
+      "订单状态": stateName,
+      "收货人姓名": D.clean(consignee.customerName),
+      "收货地址": D.clean(consignee.address),
+      "收货人电话": D.clean(consignee.mobile),
+      "物流公司": "", "快递单号": "",
+      // 接口已给配送方式，无需从详情页正则提取（旧正则会误抓到「付款方式」标签）
+      "配送方式": D.clean(o.shipmentTypeName),
+      "商品总价": "", "运费": "",
+      "详情补充状态": "未请求",
+      "订单详情域名路径": detailUrl ? D.hostPath(detailUrl) : "",
+      "商品明细JSON": JSON.stringify(items),
+      "有售后入口": /售后|退款|退货|换货/.test(buttons) ? "是" : "否",
+      "有发票入口": invoice && invoice.ivcLandStatus === 1 ? "是" : "否",
+      "_detailUrl": detailUrl
+    };
   }
 
   // ---------- 详情补充 ----------
 
   async function enrichOrderFromDetail(order) {
     const url = order._detailUrl;
-    if (!url || !/^https:\/\/details\.(jd|yiyaojd)\.com\//.test(url)) {
-      order["详情补充状态"] = "无详情链接";
+    if (!url || !/^https:\/\/(details\.(jd|yiyaojd)\.com|svp\.jd\.com)\//.test(url)) {
+      order["详情补充状态"] = url ? "不支持的详情页" : "无详情链接";
       return;
     }
     try {
@@ -163,59 +200,52 @@
       assertLoggedIn(html, url);
       const doc = D.parseHtml(html);
       const t = D.compactText(doc.body?.textContent || "");
-      const stateText = D.clean(textOf(doc, ".order-state"));
+      let hits = 0;
+      // 只统计「真正补上了空字段」的次数，避免详情页没有有效内容却报成功
+      const set = (key, value) => {
+        if (!value || order[key]) return;
+        order[key] = value;
+        hits++;
+      };
 
-      order["付款时间"] = order["付款时间"] || D.valueByPatterns(t, [
+      set("付款时间", D.valueByPatterns(t, [
         /付款时间：\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/
-      ]);
-      order["支付方式"] = order["支付方式"] || D.valueByPatterns(t, [
+      ]));
+      set("支付方式", D.valueByPatterns(t, [
         /付款方式：\s*([^\s：]+支付|货到付款|公司转账|银行卡|微信|白条)/
-      ]);
-      order["物流公司"] = D.valueByPatterns(t, [
+      ]));
+      set("物流公司", D.valueByPatterns(t, [
         /承运人：\s*(.*?)(?:快递咨询|货运单号：|\s{2,}|$)/,
         /国内物流承运方：\s*(.*?)\s*货运单号：/,
         /交付([\u4e00-\u9fa5A-Za-z]+)，/
-      ]) || order["物流公司"];
-      order["快递单号"] = D.valueByPatterns(t, [
+      ]));
+      set("快递单号", D.valueByPatterns(t, [
         /货运单号：\s*([A-Za-z0-9-]+)/,
         /运单号为\s*([A-Za-z0-9-]+)/,
         /快递单号：\s*([A-Za-z0-9-]+)/
-      ]) || order["快递单号"];
-      order["配送方式"] = D.valueByPatterns(t, [
-        /送货方式：\s*([^\s]+(?:快递|配送|自提)?)/,
-        /配送方式：\s*([^\s]+(?:快递|配送|自提)?)/
-      ]) || order["配送方式"];
-      order["商品总价"] = D.parseMoney(D.valueByPatterns(t, [
+      ]));
+      set("配送方式", D.valueByPatterns(t, [
+        /送货方式[：:]\s*([^\s：:]{1,12}(?:快递|配送|自提))/
+      ]));
+      set("商品总价", D.parseMoney(D.valueByPatterns(t, [
         /商品总(?:价|额)：\s*([+－-]?\s*[¥￥]?\s*\d+(?:\.\d+)?)/
-      ])) || order["商品总价"];
-      order["运费"] = D.parseMoney(D.valueByPatterns(t, [
+      ])));
+      set("运费", D.parseMoney(D.valueByPatterns(t, [
         /运费：\s*([+－-]?\s*[¥￥]?\s*\d+(?:\.\d+)?)/
-      ])) || order["运费"];
-      order["京豆抵扣金额"] = D.parseMoney(D.valueByPatterns(t, [
+      ])));
+      set("京豆抵扣金额", D.parseMoney(D.valueByPatterns(t, [
         /京豆：\s*([+－-]?\s*[¥￥]?\s*\d+(?:\.\d+)?)/
-      ])) || order["京豆抵扣金额"];
+      ])));
+      set("订单返豆", D.parseInteger(D.valueByPatterns(t, [/购物返京豆已获得\s*(\d+)\s*京豆/])));
 
-      const returnedBeans = D.parseInteger(D.valueByPatterns(t, [/购物返京豆已获得\s*(\d+)\s*京豆/]));
-      if (returnedBeans && !order["订单返豆"]) order["订单返豆"] = returnedBeans;
-      if (!order["订单状态"] && stateText) order["订单状态"] = stateText;
-
-      order["详情补充状态"] = "成功";
+      // svp.jd.com 等新版详情页由前端渲染，抓到的 HTML 可能没有正文字段
+      order["详情补充状态"] = hits > 0 ? "成功" : "无有效详情";
     } catch (e) {
       order["详情补充状态"] = "失败：" + (e instanceof Error ? e.message : String(e));
     }
   }
 
   // ---------- 工具 ----------
-
-  function textOf(root, sel) {
-    const n = root.querySelector(sel);
-    return n ? n.textContent || "" : "";
-  }
-
-  function firstMatch(v, re) {
-    const m = String(v || "").match(re);
-    return m ? m[0] : "";
-  }
 
   function normalizeUrl(href) {
     if (!href) return "";
@@ -252,22 +282,27 @@
 
     for (const range of dateRanges) {
       let page = 1;
+      let fetched = 0;
+      let total = 0;
       while (!D.cancelRequested) {
         if (options.maxPages && page > options.maxPages) break;
 
-        const listUrl = buildListUrl(range.value, options.status || "4096", page);
         D.updateOverlay("读取 " + range.label + " 第 " + page + " 页，已收集 " + ordersById.size + " 个订单...");
 
-        const html = await D.fetchText(listUrl);
-        assertLoggedIn(html, listUrl);
-        const doc = D.parseHtml(html);
-        const pageOrders = parseOrderList(doc, range.label, batch);
+        const { orders: pageOrders, total: pageTotal, businessInfo } =
+          await fetchJdOrderPage(range.value, options.status || "4096", page);
+        total = pageTotal;
 
-        for (const o of pageOrders) {
-          if (!ordersById.has(o["订单编号"])) ordersById.set(o["订单编号"], o);
+        for (const raw of pageOrders) {
+          const row = mapApiOrder(raw, range.label, batch, businessInfo);
+          if (row["订单编号"] && !ordersById.has(row["订单编号"])) {
+            ordersById.set(row["订单编号"], row);
+          }
         }
+        fetched += pageOrders.length;
 
-        if (pageOrders.length === 0 || hasListEnded(doc)) break;
+        // 接口会返回总数，按总数与空页判断结束，避免多余请求
+        if (pageOrders.length < PAGE_SIZE || fetched >= total) break;
         page++;
         await D.delay(options.delayMs || 1000);
       }
@@ -289,7 +324,9 @@
     const suffix = D.cancelRequested ? "partial" : "complete";
     D.downloadCSV("jd-orders-" + batch + "-" + suffix + ".csv", final, HEADERS);
     D.updateOverlay(
-      "导出完成：" + final.length + " 个订单。" + (D.cancelRequested ? "（提前停止）" : ""),
+      "导出完成：" + final.length + " 个订单。" + (D.cancelRequested ? "（提前停止）" : "")
+        // 0 条最常见的成因就是站点改版/接口变动，此时直接给反馈入口
+        + (final.length === 0 ? "若确认有订单却导出为 0，可能是京东改版，请到 GitHub Issues 或 B 站视频评论区反馈。" : ""),
       true
     );
   }

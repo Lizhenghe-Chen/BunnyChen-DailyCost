@@ -9,7 +9,9 @@ const ALLOWED_HOSTS = new Set([
   // 京东
   "order.jd.com",
   "details.jd.com",
-  "details.yiyaojd.com"
+  "details.yiyaojd.com",
+  "svp.jd.com",
+  "api.m.jd.com"
 ]);
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -22,10 +24,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         throw new Error("Blocked non-whitelisted URL: " + url.hostname);
       }
 
-      const response = await fetch(url.href, {
-        credentials: "include",
-        redirect: "follow"
-      });
+      const method = (message.method || "GET").toUpperCase();
+      const init = { credentials: "include", redirect: "follow", method };
+      if (method !== "GET" && method !== "HEAD") {
+        init.headers = message.headers || {};
+        init.body = message.body || "";
+      }
+
+      const response = await fetch(url.href, init);
       const text = await response.text();
       sendResponse({
         ok: response.ok,

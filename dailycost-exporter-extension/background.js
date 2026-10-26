@@ -6,11 +6,14 @@ const ALLOWED_HOSTS = new Set([
   "trade.taobao.com",
   "trade.tmall.com",
   "buyertrade.taobao.com",
-  // 京东
+  // 京东（order.jd.com 境内 / order.jd.hk 港站，两者是同一订单中心应用）
   "order.jd.com",
+  "order.jd.hk",
   "details.jd.com",
+  "details.jd.hk",
   "details.yiyaojd.com",
   "svp.jd.com",
+  "svp.jd.hk",
   "api.m.jd.com"
 ]);
 

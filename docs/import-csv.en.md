@@ -63,7 +63,8 @@ Supported browsers: **Chrome**, **Edge**, and other Chromium-based browsers — 
 The extension ships with the desktop installer, so there is **nothing extra to download**:
 
 1. Open **Settings → 🧩 Browser Extension** in DailyCost Vault and click **Install Extension**
-   The app extracts the extension into a `browser-extension` folder inside the system app-data directory and opens your chosen browser's extensions page
+   The app extracts the extension into a `browser-extension` folder inside the system app-data directory and launches your chosen browser
+   (⚠️ browsers discard internal addresses passed by external apps, so **Open Extensions Page** only lands on a new tab — type `edge://extensions/` or `chrome://extensions/` in its address bar and press Enter; the settings page also shows the exact address for your browser)
 2. On that page turn on **Developer mode** → click **Load unpacked** → select that folder
 3. Back in the app click **I installed it, check now** — a ✅ status means you're done
    (browsers take a few seconds to persist extension records; the app retries automatically)
@@ -108,7 +109,7 @@ The three platforms follow the same basic flow:
 | Platform | Open this page | Suggested options |
 |------|--------------|-----------|
 | 🛒 Taobao | [Purchased Items](https://buyertrade.taobao.com/trade/itemlist/list_bought_items.htm) | Set **Order Status** to **Completed** |
-| 🐶 JD.com | [My Orders](https://order.jd.com/center/list.action) | Use a **custom year range** for **Date Range** and set **Order Status** to **Completed** |
+| 🐶 JD.com | [My Orders](https://order.jd.com/center/list.action) (also works if redirected to the HK site `order.jd.hk`) | Use a **custom year range** for **Date Range** and set **Order Status** to **Completed** |
 | 🎮 Steam | [Purchase History](https://store.steampowered.com/account/history) | Click **Start Export** directly |
 
 > 💡 Exporting JD.com orders in **year-based batches** reduces the chance of risk-control blocks. Files are automatically named like `jd-orders-20260804-103000-complete.csv`.

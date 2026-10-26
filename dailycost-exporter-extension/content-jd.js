@@ -63,6 +63,8 @@
   // 2026 年改版后，list.action 只下发空壳，#orderLite 由 React 前端调接口渲染；
   // 直接抓 HTML 会拿到 0 个订单。这里改为调用前端同款接口拿 JSON。
   // 该接口不要求 h5st 签名，仅依赖登录 cookie，且对 order.jd.com 放行 CORS。
+  // 港站（order.jd.hk）是同一个订单中心应用（响应头 Pfinder 同样标记 order-jd-com），
+  // API 仍走 api.m.jd.com；api.m.jd.hk 未在京东证书 SAN 内，不可用。
 
   const LIST_API = "https://api.m.jd.com/api";
   const LIST_QUERY = "appid=order-jd-com&client=pc&clientVersion=1.0.0&loginType=3"
@@ -191,7 +193,8 @@
 
   async function enrichOrderFromDetail(order) {
     const url = order._detailUrl;
-    if (!url || !/^https:\/\/(details\.(jd|yiyaojd)\.com|svp\.jd\.com)\//.test(url)) {
+    // 详情域名为京东自有 CDN：境内 details./svp.jd.com，港站 details./svp.jd.hk
+    if (!url || !/^https:\/\/(?:details\.(?:jd|yiyaojd)|svp\.jd)\.(?:com|hk)\//.test(url)) {
       order["详情补充状态"] = url ? "不支持的详情页" : "无详情链接";
       return;
     }

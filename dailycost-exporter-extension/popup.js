@@ -8,7 +8,8 @@ const el = (id) => document.getElementById(id);
 function detectPlatform(url) {
   if (!url) return null;
   if (/buyertrade\.taobao\.com\/trade\/itemlist\/list_bought_items/i.test(url)) return "tb";
-  if (/order\.jd\.com\/center\/list\.action/i.test(url)) return "jd";
+  // 京东订单中心有两种落地域名：order.jd.com（境内）/ order.jd.hk（部分账号被跳转到港站）
+  if (/order\.jd\.(?:com|hk)\/center\/list\.action/i.test(url)) return "jd";
   if (/store\.steampowered\.com\/account\/history/i.test(url)) return "steam";
   return null;
 }

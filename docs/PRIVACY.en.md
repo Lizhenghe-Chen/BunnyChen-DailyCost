@@ -66,7 +66,7 @@ Each extension can only access its declared specific domains:
 
 | Extension | Accessible Domains |
 |-----------|-------------------|
-| JD Order Exporter | `order.jd.com`, `details.jd.com`, `details.yiyaojd.com` |
+| JD Order Exporter | `order.jd.com`, `order.jd.hk`, `details.jd.com`, `details.jd.hk`, `details.yiyaojd.com`, `svp.jd.com`, `svp.jd.hk`, `api.m.jd.com` |
 | TB Order Exporter | `buyertrade.taobao.com`, `trade.taobao.com`, `trade.tmall.com` |
 | Steam Order Exporter | `store.steampowered.com` |
 

@@ -1,0 +1,10 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {readFileSync}=require('node:fs');
+const vm=require('node:vm');
+const code=readFileSync(require('node:path').join(__dirname,'../docs/javascripts/page-counter.js'),'utf8');
+function document(url,reject=false){const calls=[];const context=vm.createContext({window:{location:new URL(url)},fetch:(...args)=>{calls.push(args);return reject?Promise.reject(new Error('offline')):Promise.resolve({ok:true})}});return{calls,run:()=>vm.runInContext(code,context)}}
+test('document initialization is idempotent; refresh is a new view',()=>{const first=document('https://bunnychen.top/BunnyChen-DailyCost/?token=private#secret');first.run();first.run();assert.equal(first.calls.length,1);const [url,request]=first.calls[0];assert.equal(url,'https://events.vercount.one/api/v2/log');assert.equal(request.method,'POST');assert.equal(request.credentials,'omit');assert.equal(request.referrerPolicy,'no-referrer');assert.deepEqual(JSON.parse(request.body),{url:'https://bunnychen.top/BunnyChen-DailyCost/',isNewUv:false});const refresh=document('https://bunnychen.top/BunnyChen-DailyCost/');refresh.run();assert.equal(refresh.calls.length,1)});
+test('English and www paths retain pathname and canonicalize host',()=>{const doc=document('https://www.bunnychen.top/BunnyChen-DailyCost/en/getting-started/?utm=x#start');doc.run();assert.deepEqual(JSON.parse(doc.calls[0][1].body),{url:'https://bunnychen.top/BunnyChen-DailyCost/en/getting-started/',isNewUv:false})});
+test('local, file, other hosts and sibling apps never count',()=>{for(const url of ['http://localhost/BunnyChen-DailyCost/','file:///BunnyChen-DailyCost/index.html','https://evil.test/BunnyChen-DailyCost/','https://bunnychen.top/BunnyChen-Item-Bookkeeping/','https://bunnychen.top/BunnyChen-DailyCost-copy/']){const doc=document(url);doc.run();assert.equal(doc.calls.length,0,url)}});
+test('network failures do not retry or reject into page',async()=>{const doc=document('https://bunnychen.top/BunnyChen-DailyCost/',true);doc.run();await new Promise(setImmediate);doc.run();assert.equal(doc.calls.length,1)});

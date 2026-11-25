@@ -1,6 +1,6 @@
 # 🔒 Privacy Policy
 
-> Last updated: August 2026 · Current phase: Public Beta
+> Last updated: November 25, 2026 · Current phase: Public Beta
 
 DailyCost Vault is a **completely offline** personal asset digital management tool, currently in public beta. We take your privacy and data security very seriously.
 
@@ -26,6 +26,12 @@ DailyCost Vault does **NOT** collect, upload, or share any of the following:
 - ❌ Third-party SDKs
 - ❌ Advertising system
 - ❌ Automatic crash reporting
+
+---
+
+## Website Page Views
+
+This website (`bunnychen.top/BunnyChen-DailyCost/`) uses Vercount to count page views. Each document load or refresh sends one request whose body contains only the canonical page URL (without query parameters or fragments) and `isNewUv: false`. The counter uses no cookies or local storage, reads no asset or order data, and sends no unique visitor identifier. The service still receives information needed to handle a network request, such as the IP address. This counter covers the website and its Chinese and English documentation; it is not loaded in the desktop app, Android app, or browser extensions.
 
 ---
 

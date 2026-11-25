@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bunnychen.top/BunnyChen-DailyCost/sitemap.xml
